@@ -1,0 +1,418 @@
+@CHARSET "UTF-8";
+/* login */
+
+#login{
+	background-image: url('../imagenes/generales/inicio.jpg');
+	background-size: 900px auto;
+	background-repeat: no-repeat;
+	background-position: center top;
+	padding: 10px 50px 60px 590px;
+}
+
+#login-bg {
+	/* Absolutely position it, but stretch it to all four corners, then put it just behind #search's z-index */
+	position: absolute;
+	top: 50px;
+	right: 0px;
+	bottom: 0px;
+	left: 0px;
+	z-index: 99;
+}
+
+#caja {
+	/* Put this on top of the blurred layer */
+	position: relative;
+	z-index: 100;
+	padding: 40px;
+	background: rgb(8, 72, 122); /* for IE */
+	background: rgba(8, 72, 122, 0.85);
+}
+
+#caja, #usuario { color: #fefefe; margin-bottom: 30px }
+#caja, #boton { margin-bottom: 10px; }
+
+
+/*FIN de estilos de login*/
+
+/* estilos generales de diseño de layout */
+
+#Contenido{
+	width: 900px;
+	margin-left:auto;
+	margin-right: auto;
+	top:10px;
+	background-color: white;
+	height: 700px;
+}
+
+#Cabecera{
+	top:10px;
+	background-color: white;
+	height: 65px;
+}
+
+#MenuPrincipal{
+	background-image: url("../imagenes/generales/fondoMenu.jpg") ;
+	height: 85px;
+}
+
+.TextoMenu{
+	font-family: Roboto;
+	text-indent: 30px;
+	line-height: 85px;
+	vertical-align: middle;
+	/*padding-right: 40px;*/
+}
+
+#Pie{
+	clear:both;
+	margin-top: 10px;
+	height: 50px;
+	margin-top: 20px;
+	border-top-color: #ccc;
+	border-top-width: thin;
+	border-top-style: solid;
+}
+
+.textoPie{
+	font-family: Roboto;
+	font-size: 12px;
+	line-height: 20px;
+	color: #ccc;
+	margin: auto;
+
+}
+
+.texto{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 18px;
+	font-variant: normal;
+	font-size: 14px;
+	color: #666;
+}
+
+.textoError{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 18px;
+	font-variant: normal;
+	font-size: 14px;
+	color: #981f32;
+}
+
+.textoLateralIzq{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 14px;
+	font-variant: normal;
+	font-size: 10px;
+	color: #666;
+	margin-right: 5px;
+}
+
+.textoLateralDer{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 14px;
+	font-variant: normal;
+	font-size: 10px;
+	color: #666;
+	margin-left: 5px;
+}
+
+.subtitulo{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 30px;
+	font-variant: normal;
+	font-size: 20px;
+	color: #666;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-left: 17px;
+}
+
+.tituloLateralIzq{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 20px;
+	font-variant: normal;
+	font-size: 14px;
+	color: #666;
+	margin-top: 40px;
+	/*margin-bottom: 10px;*/
+	/*padding-left: 17px;*/
+}
+
+.tituloLateralDer{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 20px;
+	font-variant: normal;
+	font-size: 14px;
+	color: #666;
+	margin-top: 0px;
+	margin-left: 5px;
+}
+
+
+.espacioArriba{
+	margin-top: 20px;
+}
+
+#listaBotones{
+	margin-left: 20px;
+}
+/* layout en tres columnas con tres divisiones de la columna central (ficha buena practica) */
+
+.azul{
+	background-color: #8FBFFB;
+}
+
+.verde{
+	background-color: chartreuse;
+}
+
+.rojo{
+	background-color: #981f32;
+}
+
+.gris{
+	background-color: #999999;
+}
+
+.morado{
+	background-color: blueviolet;
+}
+
+#ColIzquierda{
+	width: 150px;
+	float: left;
+	/*background-color: darkcyan;*/
+	/*height: 500px;*/
+}
+
+#ColDerecha{
+	float: right;
+	width: 150px;
+	/*background-color: gray;*/
+	/*height: 500px;*/
+}
+
+#ColCentroArriba{
+	display: inline-block;
+	width: 550px;
+	margin-left: 25px;
+	/*height: 150px;*/
+	/*background-color: gold;*/
+	/*padding: 10px;*/
+}
+
+#ColCentroCentro{
+	display: inline-block;
+	width: 550px;
+	/*margin-left: 25px;*/
+	/*height: 200px;*/
+	/*background-color: darkgoldenrod;*/
+}
+
+#ColCentroAbajo{
+	display: inline-block;
+	width: 550px;
+	/*margin-left: 25px;*/
+	/*height: 150px;*/
+	/*background-color: thistle;*/
+}
+
+/* FIN layout en tres columnas con tres divisiones de la columna central (ficha buena practica, pagina de categorias) */
+
+
+/* layout en 3 columnas con una division de la columna central (pagina de categorias de b. practicas) */
+
+#ColIzquierdaCategoria{
+	width: 150px;
+	float: left;
+	height: 500px;
+	/*background-color: darkcyan;*/
+}
+
+
+#ColCentroArribaCategoria{
+	display: inline-block;
+	width: 700px;
+	/*background-color: gold;*/
+}
+
+#ColCentroCentroCategoria{
+	display: inline-block;
+	width: 700px;
+	/*background-color: darkgoldenrod;*/
+}
+
+#ColCentroAbajoCategoria{
+	display: inline-block;
+	width: 700px;
+	/*background-color: thistle;*/
+}
+
+
+/* FIN layout en 2 columnas con una division de la columna central (pagina de categorias de b. practicas) */
+
+
+
+.inputNormal{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 18px;
+	font-variant: normal;
+	font-size: 12px;
+	background-color: #fff;
+	color: #333;
+}
+
+.tituloPagina{
+	font-family: Arial, sans-serif;
+	font-weight: bolder;
+	font-style: normal;
+	line-height: 50px;
+	font-variant: normal;
+	font-size: 35px;
+	color: #666;
+}
+
+
+.tituloInterno{
+	font-family: Arial ,sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	color: #999;
+	line-height: 70px;
+}
+
+.texto{
+	font-family: Arial,sans-serif;
+	font-size: 12px;
+	line-height: 20px;
+	color: #999;
+}
+
+.centrado{
+	margin-left: 350px;
+}
+
+.floatleft210 {
+	float: left;
+	width: 220px;
+	margin: auto;
+}
+
+
+/* hojas de categorias */
+
+.categorias{
+
+}
+
+.categorias .titulo{
+	font-family: Arial, sans-serif;
+	font-weight: bolder;
+	font-style: normal;
+	line-height: 50px;
+	font-variant: normal;
+	font-size: 35px;
+	color: #666;
+}
+.categorias .subtitulo{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 30px;
+	font-variant: normal;
+	font-size: 20px;
+	color: #666;
+	margin-top: 0px;
+	padding-left: 17px;
+}
+
+
+.categorias .texto{
+	/*position: relative;*/
+
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 18px;
+	font-variant: normal;
+	font-size: 14px;
+	color: #666;
+	padding-left: 17px;
+}
+
+.categorias .fotoIzquierda{
+	text-align: left;
+	left: 0px;
+	/*width: 150px;*/
+	border: 0px solid #73AD21;
+	padding: 0px;
+	margin: 0px 30px 0px 0px;
+
+}
+
+
+.pull-left { /* pull-left class referred and given attributes */
+	float: left !important;
+}
+.pull-right { /* pull-right class referred and given attributes */
+	float: right !important;
+}
+
+
+
+
+/* jquery para pestanas de pagina buenas practicas */
+
+.tab-panels ul {
+	margin: 0;
+	padding: 0;
+}
+.tab-panels ul li {
+	list-style-type: none;
+	display: inline-block;
+	background: #999;
+	margin: 0;
+	padding: 3px 10px;
+	border-radius: 10px 10px 0 0;
+	color: #fff;
+	font-weight: 200;
+	cursor: pointer;
+
+}
+.tab-panels ul li:hover {
+	color: #fff;
+	background: #666;
+}
+
+.tab-panels ul li.active {
+	color: #fff;
+	background: #666;
+}
+
+.tab-panels .panel {
+	display:none;
+	background: #eee;
+	padding: 30px;
+	border-radius: 0 10px 10px 10px;
+}
+
+.tab-panels .panel.active {
+	display:block;
+}
