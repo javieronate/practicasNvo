@@ -29,7 +29,7 @@
  */
 
 include_once ("Modelo.php");
-include_once ("Compania.php");
+include_once ("Empresa.php");
 include_once ("FxFormularios.php");
 
 /**
@@ -79,35 +79,15 @@ class Controlador
 	 */
 	var $arrDatosPaginaPractica=array();
 
-	var $empresa=array();
+	var $empresa;
 
-	var $usuario=array();
+	var $personal=array();
 
 	var $mensaje='';
 
+	var $arrListaPracticas=array();
 
-	///////// variables legacy que habra que desechar
-
-	/**
-	 * Almacena el id del reporte seleccionado por el usuario
-	 */
-    var $reporteSeleccionado;
-
-	/**
-	 * Almacena el índice del arreglo modelo->arrFiltros activo por la seleccion del usuario
-	 */
-	var $itemFiltroSeleccionado;
-
-	/**
-	 * Almacena el arreglo con los valores disponibles de acuerdo al item del arreglo de filtros
-     * este arreglo puebla el menu desplegable de datos en la seccion de filtros
-	 */
-	//var $arrOpcionesFiltroSeleccionado=array();
-
-	/**
-	 * Bandera que indica si se despliega el campo de opción multiple con datos de filtrado o no
-	 */
-	var $ensenarComboFiltro=0;
+	var $arrPreguntasAutoevaluacion=array();
 
 
 	/**
@@ -172,18 +152,19 @@ class Controlador
 		        $usuario=$this->modelo->validarLogin($post['usuario'],$post['clave']);
 				if($usuario['rol']=='fallo') {
 					$this->empresa=array();
-					$this->usuario=array();
+					$this->personal=array();
 					$this->mensaje="No se encontro el usuario. Vuelva a intentar";
 					$this->pantalla='pantallas/general/login.php';
 				} else if ($usuario['rol']=='empresa'){
-					$this->usuario=array();
-					$this->empresa=$usuario;
+					$this->personal=array();
+					$this->empresa=new Empresa($usuario);
+					$this->hacerArreglosDeSeccionEmpresa();
 					$this->pantalla='pantallas/empresa/inicio.php';
 				}else if($usuario['rol']=='administrador'){
-					$this->usuario=$usuario;
+					$this->personal=$usuario;
 					$this->pantalla='pantallas/admin/inicio.php';
 				}else if($usuario['rol']=='mentor'){
-					$this->usuario=$usuario;
+					$this->personal=$usuario;
 					$this->pantalla='pantallas/mentor/inicio.php';
 				}
 				break;
@@ -212,7 +193,28 @@ class Controlador
 					case 'inicio':
 						$this->pantalla='pantallas/empresa/inicio.php';
 						break;
+					case 'perfil':
+						$this->pantalla='pantallas/empresa/perfil.php';
+						break;
+					case 'autoevaluacion':
+						$this->arrPreguntasAutoevaluacion=$this->modelo->hacerArregloAutoevaluacion();
+						$this->pantalla='pantallas/empresa/autoevaluacion.php';
+						break;
+					case 'agregarPractica':
+						$this->pantalla='pantallas/empresa/agregarPractica.php';
+						break;
+					case 'evidencias':
+						$this->pantalla='pantallas/empresa/agregarEvidencias.php';
+						break;
 				}
+				break;
+			case 'autoevaluacionGrabar':
+				$this->actualizarRespuestasAutoevaluacion($post);
+
+				//$this->modelo->validarAutoevaluacion($post,$this->arrPreguntasAutoevaluacion,$this->empresa->id);
+				//$this->pantalla='pantallas/empresa/agregarPractica.php';
+				break;
+
 		}
 	}
 
@@ -239,13 +241,6 @@ class Controlador
 				}
 		}
 	}
-
-
-
-
-
-
-
 
 	function evaluarPostGeneral($post)
 	{
@@ -281,21 +276,46 @@ class Controlador
 		}
 	}
 
-
-
-
-
-
-	function postEmpresa($post)
+	function hacerArreglosDeSeccionEmpresa()
 	{
-		switch ($post['subaccion']){
-			case 'idrADescripcionPractica':
-//				echo ($post['item']);
-				$this->modelo->arrPracticaDescripcion = $this->modelo->buscarDescripcionPractica($post['item']);
-				$this->pantalla = "pantallas/".$this->zona."/descripcionPractica.php";
-				break;
+		// hacer arreglo de todas las practicas anotando los estatus y fechas de las ingresadas por la empresa
+		$this->arrListaPracticas= $this->modelo->hacerArregloBuenasPracticas($this->empresa->id);
+
+		// hacer arreglo de las practicas terminadas por la empresa
+		$arrPracticasTerminadas=$this->modelo->hacerArregloPracticas($this->empresa->id,3);
+		$this->empresa->arrPracticasTerminadas=$arrPracticasTerminadas;
+
+		// hacer arreglo de las practicas en proces de la empresa
+		$arrPracticasEnProceso=$this->modelo->hacerArregloPracticas($this->empresa->id,2);
+		$this->empresa->arrPracticasEnProceso=$arrPracticasEnProceso;
+
+	}
+
+	function actualizarRespuestasAutoevaluacion($post)
+	{
+		for($x=0;$x<count($this->arrPreguntasAutoevaluacion);$x++){
+			$nombre="respuesta".$x;
+			if(!isset($post[$nombre])){
+				$this->arrPreguntasAutoevaluacion[$x]['correcta']=0;
+				$this->arrPreguntasAutoevaluacion[$x]['valor']='';
+			}else{
+				$this->arrPreguntasAutoevaluacion[$x]['correcta']=1;
+				$this->arrPreguntasAutoevaluacion[$x]['valor']=$post[$nombre];
+			}
 		}
 	}
+
+
+//	function postEmpresa($post)
+//	{
+//		switch ($post['subaccion']){
+//			case 'idrADescripcionPractica':
+////				echo ($post['item']);
+//				$this->modelo->arrPracticaDescripcion = $this->modelo->buscarDescripcionPractica($post['item']);
+//				$this->pantalla = "pantallas/".$this->zona."/descripcionPractica.php";
+//				break;
+//		}
+//	}
 
 
 
@@ -314,26 +334,11 @@ class Controlador
 	    include ('pantallas/general/cabecera.php');
 	    include ('pantallas/general/menuPrincipal.php');
 	    include ($this->pantalla);
-//	    switch ($this->zona){
-//		    case 'general':
-//			    include ($this->pantalla);
-//			    break;
-////		    case 'login';
-////			    include 'pantallas/inicio.php';
-////			    break;
-////		    case 'admin':
-////			    include 'pantallas/admin/inicio.php';
-////			    break;
-////		    case 'enlace':
-////			    include 'pantallas/enlace/inicio.php';
-////			    break;
-////		    case 'compania':
-////			    //include 'pantallas/compania/inicio.php';
-//////			    include $this->pantalla;
-////
-////			    break;
-//	    }
 	    include ('pantallas/general/pie.php');
+	    if(DEBUG==1){
+		    include ('pantallas/general/debug.php');
+	    }
+
 //	    $this->fx->ensenarArreglo($this->arrDatosPaginaCategoria,'arrDatosPaginaCategoria');
     }
 

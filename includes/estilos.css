@@ -1,4 +1,185 @@
 @CHARSET "UTF-8";
+
+/*empresa pagina principal*/
+
+#empresas .titulo{
+	font-family: Arial, sans-serif;
+	font-weight: bolder;
+	font-style: normal;
+	line-height: 50px;
+	font-variant: normal;
+	font-size: 25px;
+	color: #666;
+}
+
+#empresas .subtitulo{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 16px;
+	font-variant: normal;
+	font-size: 15px;
+	color: #666;
+}
+
+.tituloDesempeno{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 16px;
+	font-variant: normal;
+	font-size: 15px;
+	color: #666;
+	/*margin-top: 40px;*/
+	/*margin-bottom: 10px;*/
+	/*padding-left: 17px;*/
+}
+.practicaDesempeno{
+	font-family:  Arial, sans-serif;
+	font-weight:  normal;
+	font-style:   normal;
+	line-height:  14px;
+	font-variant: normal;
+	font-size:    11px;
+	/*color:        #5cbb00;*/
+	/*margin-top: 40px;*/
+	/*margin-bottom: 10px;*/
+	/*padding-left: 17px;*/
+}
+.leyendaFaltantes{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 16px;
+	font-variant: normal;
+	font-size: 15px;
+	color: #981f32;
+}
+
+.tituloCuestionario{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 20px;
+	font-variant: normal;
+	font-size: 16px;
+	color: black;
+}
+.preguntaTexto{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 28px;
+	font-variant: normal;
+	font-size: 16px;
+	color: #666;
+}
+
+.preguntaTextoFaltante{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 28px;
+	font-variant: normal;
+	font-size: 16px;
+	color: #981f32;
+
+
+}
+
+.textoTerminada{
+	color:        #5cbb00;
+}
+
+.textoEnProceso{
+	color:        #B8860B;
+}
+
+.fechaDesempeno{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 12px;
+	font-variant: normal;
+	font-size: 9px;
+	color: #666;
+}
+.lineaDelgada{
+	border-top: rgba(69, 140, 68, 0.5) ;
+	border-top: inset ;
+	/*border-top: thin;*/
+}
+
+#EmpresaColIzquierda{
+	width: 295px;
+	float: left;
+	/*background-color: darkcyan;*/
+	/*height: 500px;*/
+}
+
+#EmpresaColDerecha{
+	float: right;
+	width: 295px;
+	/*background-color: gray;*/
+	/*height: 500px;*/
+}
+
+#EmpresaColCentroArriba{
+	display: inline-block;
+	width: 295px;
+	/*margin-left: 25px;*/
+	/*height: 150px;*/
+	/*background-color: gold;*/
+	/*padding: 10px;*/
+}
+
+#saltoDeRenglon{
+	clear:both;
+}
+
+
+#seccionCategoria{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: italic;
+	line-height: 18px;
+	font-variant: normal;
+	font-size: 12px;
+	color: #666;
+}
+
+
+.seccionPractica{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 12px;
+	font-variant: normal;
+	font-size: 9px;
+	color: #999;
+}
+
+.seccionPracticaAprobada{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 12px;
+	font-variant: normal;
+	font-size: 9px;
+	color: #5cbb00;
+}
+
+.seccionPracticaEnProceso{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 12px;
+	font-variant: normal;
+	font-size: 9px;
+	color: darkgoldenrod;
+}
+
+
 /* login */
 
 #login{

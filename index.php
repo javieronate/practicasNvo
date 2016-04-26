@@ -24,6 +24,8 @@ include_once "includes/conf.php";
 session_start();
 
 $db = new mysqli($mysqlServidor, $mysqlUser,$mysqlClave, $mysqlDb);
+$db->query("SET NAMES utf8");
+
 
 if (isset($_POST)) {
 	if (isset($_POST['accion']) && $_POST['accion']=='salir' ) unset($_SESSION['controlador']);

@@ -45,7 +45,7 @@
 		<div id="listaBotones">
 		<?php
 		for($x=0;$x<count($this->arrPracticasDeCategoria);$x++){
-			$this->fx->ponerBoton('general','irAPractica',$this->arrPracticasDeCategoria[$x]['id'],$this->arrPracticasDeCategoria[$x]['nombre'],NULL,NULL,NULL,'btn ',0);
+			$this->fx->ponerBoton('general','irAPractica',$this->arrPracticasDeCategoria[$x]['id'],$this->arrPracticasDeCategoria[$x]['nombre'],NULL,NULL,NULL,'btn',0);
 			echo "<br>";
 		}
 		?>

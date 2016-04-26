@@ -16,7 +16,7 @@
 error_reporting(E_ALL);
 
 // constantes de programa
-define('DEBUG','1');
+define('DEBUG','0');
 
 //$mysqlServidor =   "dedalocommx1.ipagemysql.com";
 //$mysqlUser =  "javier";
@@ -25,7 +25,7 @@ define('DEBUG','1');
 //$mysqlPort="3306";
 
 
-// Configuracion MySQL
+ //Configuracion MySQL
 $mysqlServidor =   "localhost";
 $mysqlUser =  "jom";
 $mysqlClave =    "lehendakari";
@@ -38,6 +38,7 @@ $salt = "7?4E`]/j|Ocq]H6XMh,w(=]Xn >-pO6J8s,WTYb+C{ip!hIf|jdwM|67z!Z#*2d?C;|,8~l
 // Carpeta de Archivos guardados (de preferencia fuera del public_html, wwww)
 $uploadfolder = "";
 
-define('NOMBRE_FORMULARIO','reporteador');
-define('FOLDER_IMAGENES_CATEGORIAS','imagenes/categorias/');
-define('FOLDER_IMAGENES_PRACTICAS','imagenes/practicas/');
+include_once ('constantes.php');
+//define('NOMBRE_FORMULARIO','reporteador');
+//define('FOLDER_IMAGENES_CATEGORIAS','imagenes/categorias/');
+//define('FOLDER_IMAGENES_PRACTICAS','imagenes/practicas/');

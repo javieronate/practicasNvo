@@ -128,6 +128,7 @@
 
 		<div class="empresaTitulo">
 			<?php $this->fx->ponerBoton('general','irACategoria',$this->arrDatosPaginaPractica['categoriaId'],'Regresar',NULL,NULL,NULL,'btn btn-primary',0); ?>
+			<?php $this->fx->ponerBoton('empresa','irA','inicio','Regresar',NULL,NULL,NULL,'btn btn-primary',0); ?>
 		</div>
 	</div>
 
