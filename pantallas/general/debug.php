@@ -11,5 +11,6 @@
  *
  */
 
+$this->fx->ensenarArreglo($this->empresa,'empresa');
 $this->fx->ensenarArreglo($_POST,'post');
 $this->fx->ensenarArreglo($this->arrPreguntasAutoevaluacion,'arrPreguntasAutoevaluacion');

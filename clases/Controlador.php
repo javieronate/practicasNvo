@@ -213,11 +213,16 @@ class Controlador
 
 				$correcto=$this->modelo->validarAutoevaluacion($this->arrPreguntasAutoevaluacion,$this->empresa->id);
 				if($correcto==1){
+					$hoy=date('Y-m-d');
 					$this->hacerArreglosDeSeccionEmpresa();
+					$this->empresa->datos['autoevaluacionHecha']=1;
+					$this->empresa->datos['fechaAutoevaluacion']=$hoy;
 					$this->pantalla='pantallas/empresa/inicio.php';
 				}
 				break;
-
+			case 'perfilGrabar':
+				//echo "Validar  gabar perfil<br>";
+				break;
 		}
 	}
 

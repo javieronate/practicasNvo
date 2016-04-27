@@ -65,6 +65,27 @@
 	font-size: 16px;
 	color: #666;
 }
+
+.formularioEtiqueta{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 16px;
+	font-variant: normal;
+	font-size: 14px;
+	color: #ccc;
+}
+
+.formularioCampo{
+	font-family: Arial, sans-serif;
+	font-weight: bolder;
+	font-style: normal;
+	line-height: 24px;
+	font-variant: normal;
+	font-size: 14px;
+	color: #666;
+}
+
 .preguntaTexto{
 	font-family: Arial, sans-serif;
 	font-weight: normal;
