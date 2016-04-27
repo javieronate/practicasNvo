@@ -264,7 +264,7 @@ class FxFormularios
 
 		for ($x=0;$x<count($arreglo);$x++){
 			$marcado=($arreglo[$x]['id']==$valor)? " checked " : '';
-			echo "$claseTxt &nbsp;<input name='".$nombre."' type='radio' value='".$arreglo[$x]['id']."' $marcado $cambioTxt>".$arreglo[$x]['nombre'].$claseTxtFin;
+			echo "$claseTxt &nbsp;&nbsp;&nbsp;<input name='".$nombre."' type='radio' value='".$arreglo[$x]['id']."' $marcado $cambioTxt>".$arreglo[$x]['nombre'].$claseTxtFin;
 		}
 	}
 

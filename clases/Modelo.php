@@ -360,48 +360,53 @@ class Modelo
 		while ($fila = $resultado->fetch_assoc()) {
 
 			$arrTmp[]=array('idPregunta'=>$fila['id'], 'pregunta'=>$fila['pregunta'], 'puntos'=>$fila['puntos'], 'idBuenaPractica'=>$fila['idBuenaPractica'],
-				'valor'=>'','correcta'=>1);
+				'valor'=>'0','correcta'=>1);
 		}
 		return($arrTmp);
 	}
 
-	function validarAutoevaluacion($post,$arrPreguntas,$empresaId)
+	function validarAutoevaluacion($arrPreguntas,$empresaId)
 	{
 		$correcto=1;
-		echo "dentro de validar autoevaluacion<br>";
 		for($x=0;$x<count($arrPreguntas);$x++){
-			$nombre="respuesta".$x;
-			if(!isset($post[$nombre])){
-				echo "falto respuesta de pregunta $x<br>";
-				$correcto=0;
-			}
+			if($arrPreguntas[$x]['correcta']==0) $correcto=0;
 		}
 		if($correcto==1){
-			$arrValores=array();
-			for($x=0;$x<count($arrPreguntas);$x++){
-				$nombre="respuesta".$x;
-				$y=$x+1;
-				$arrValores[]=array($empresaId,$y,$post[$nombre]);
-
-				//$sql="insert into bp_empresaResultadoAutoevaluacion ($empresaId,$x,$post[$nombre])";
-				//echo "$sql<br>";
-				//$this->db->query($sql);
-			}
+			$hoy=date('Ymd');
+			// grabar en bp_empresaResultadoAutoevaluacion
 			$valoresTxt='';
-			for($x=0;$x<count($arrValores);$x++){
+			for($x=0;$x<count($arrPreguntas);$x++){
 				if(strlen($valoresTxt)>0) $valoresTxt.=",";
-				$valoresTxt.="('".$arrValores[$x][0]."','".$arrValores[$x][1]."','".$arrValores[$x][2]."')";
+				$valoresTxt.="('".$empresaId."','".$arrPreguntas[$x]['idPregunta']."','".$arrPreguntas[$x]['valor']."')";
 			}
 			$sql="insert into bp_empresaResultadoAutoevaluacion (idEmpresa,idPregunta,respuesta) values $valoresTxt";
-			echo "$sql<br>";
 			$this->db->query($sql);
-			$sql1="update bp_empresas set autoevaluacionHecha=1";
-			$this->db->query($sql1);
-		}
 
+			// update empresas para poner que ya hizo la evaluación
+			$sql1="update bp_empresas set autoevaluacionHecha=1, fechaAutoevaluacion='".$hoy."'";
+			$this->db->query($sql1);
+
+			// agregar buenas practicas que se marcaron como si
+			$mensaje="Agregada automaticamente como resultado de la autoevaluación";
+			for($x=0;$x<count($arrPreguntas);$x++){
+				if($arrPreguntas[$x]['valor']=='1')
+					$this->agregarPracticaAEmpresa($empresaId, $arrPreguntas[$x]['idBuenaPractica'], '2', $hoy,'1',$mensaje,'3');
+			}
+		}
+		return($correcto);
 	}
 
+	function agregarPracticaAEmpresa($empresaId,$practicaId,$statusId,$fechaInicio,$tipoEventoId,$mensaje,$prioridadId)
+	{
+		$textoValores="($empresaId,$practicaId,$statusId,'".$fechaInicio."')";
+		$sql="insert into bp_empresa_buenaPractica (empresaId,buenasPracticasId,estatus,fechaIncio) values $textoValores";
+		$this->db->query($sql);
+		$idNuevo=$this->db->insert_id;
 
+		$textoValores1="($tipoEventoId,$idNuevo,'".$fechaInicio."',$statusId,'".$mensaje."',$prioridadId)";
+		$sql1="insert into bp_empresa_buenaPractica_eventos (idTipoDeEvento,empresa_buenaPracticaId,fecha,estatusBuenaPractica,mensaje,prioridad) values $textoValores1";
+		$this->db->query($sql1);
+	}
 
 
 

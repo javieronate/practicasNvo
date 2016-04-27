@@ -26,27 +26,21 @@ Autoevaluación "<?php echo ($this->empresa->datos['nombreEmpresa']); ?>"
 		Por favor conteste el siguente cuestionario para poder evaluar la situación actual de su empresa
 	</div>
 
+	<?php for($x=0;$x<count($this->arrPreguntasAutoevaluacion);$x++){
+		$nombre="respuesta".$x;
+		$numeroDisplay=$x+1;
+		$claseTexto=($this->arrPreguntasAutoevaluacion[$x]['correcta']==1) ? 'preguntaTexto' : 'preguntaTextoFaltante';
+	?>
 
-	<table border="1" width="100%">
+	<div class="<?php echo "$claseTexto";?>">
+		<?php echo ($numeroDisplay." - ".$this->arrPreguntasAutoevaluacion[$x]['pregunta']);?>
+	</div>
+	<div class="textoPequeno">
+		<?php $this->fx->ponerRadioButtons($nombre,$arreglo,$this->arrPreguntasAutoevaluacion[$x]['valor']); ?>
+	</div>
 
+	<?php }?>
 
-
-		<?php for($x=0;$x<count($this->arrPreguntasAutoevaluacion);$x++){
-			$nombre="respuesta".$x;
-			$numeroDisplay=$x+1;
-			$claseTexto=($this->arrPreguntasAutoevaluacion[$x]['correcta']==1) ? 'preguntaTexto' : 'preguntaTextoFaltante';
-		?>
-			<tr>
-				<td class="<?php echo "$claseTexto";?>">
-					<?php echo ($numeroDisplay);?>
-				</td>
-				<td class="$claseTexto">
-					<?php echo ($this->arrPreguntasAutoevaluacion[$x]['pregunta']);?>
-				</td>
-				<td> <?php $this->fx->ponerRadioButtons($nombre,$arreglo,$this->arrPreguntasAutoevaluacion[$x]['valor']); ?></td>
-			</tr>
-		<?php }?>
-	</table>
 </div>
 
 

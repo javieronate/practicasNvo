@@ -63,7 +63,7 @@
 	line-height: 20px;
 	font-variant: normal;
 	font-size: 16px;
-	color: black;
+	color: #666;
 }
 .preguntaTexto{
 	font-family: Arial, sans-serif;
@@ -83,8 +83,17 @@
 	font-variant: normal;
 	font-size: 16px;
 	color: #981f32;
+}
 
-
+.textoPequeno{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	/*line-height: 28px;*/
+	font-variant: normal;
+	font-size: 12px;
+	color: #666;
+	margin-bottom: 20px;
 }
 
 .textoTerminada{

@@ -211,8 +211,11 @@ class Controlador
 			case 'autoevaluacionGrabar':
 				$this->actualizarRespuestasAutoevaluacion($post);
 
-				//$this->modelo->validarAutoevaluacion($post,$this->arrPreguntasAutoevaluacion,$this->empresa->id);
-				//$this->pantalla='pantallas/empresa/agregarPractica.php';
+				$correcto=$this->modelo->validarAutoevaluacion($this->arrPreguntasAutoevaluacion,$this->empresa->id);
+				if($correcto==1){
+					$this->hacerArreglosDeSeccionEmpresa();
+					$this->pantalla='pantallas/empresa/inicio.php';
+				}
 				break;
 
 		}
@@ -227,6 +230,10 @@ class Controlador
 						$this->pantalla='pantallas/mentor/inicio.php';
 						break;
 				}
+				break;
+			case 'irAEmpresa':
+				$this->pantalla='pantallas/mentor/detalleEmpresa.php';
+				break;
 		}
 	}
 
@@ -237,6 +244,9 @@ class Controlador
 				switch ($post['item']) {
 					case 'inicio':
 						$this->pantalla='pantallas/admin/inicio.php';
+						break;
+					case 'manejoMentor':
+						$this->pantalla='pantallas/admin/manejoMentor.php';
 						break;
 				}
 		}
