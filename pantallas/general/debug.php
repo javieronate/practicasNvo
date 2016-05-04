@@ -10,7 +10,8 @@
  * @author Javier Oñate Mendía (Dédalo)
  *
  */
-
-$this->fx->ensenarArreglo($this->empresa,'empresa');
+$this->fx->ensenarArreglo($this->empresa->arrPracticasEnProceso,'arrPracticasEnProceso');
 $this->fx->ensenarArreglo($_POST,'post');
-$this->fx->ensenarArreglo($this->arrPreguntasAutoevaluacion,'arrPreguntasAutoevaluacion');
+$this->fx->ensenarArreglo($this->arrDatosEmpresaTmp,'arrDatosEmpresaTmp');
+$this->fx->ensenarArreglo($this->empresa,'empresa');
+//$this->fx->ensenarArreglo($this->arrPreguntasAutoevaluacion,'arrPreguntasAutoevaluacion');

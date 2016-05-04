@@ -9,6 +9,8 @@
  *
  * @author  Javier Oñate Mendía (Dédalo)
  */
+
+$jom2='';
 ?>
 
 <img src="imagenes/generales/inicio.jpg" width="900"/>

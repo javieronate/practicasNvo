@@ -1,19 +1,28 @@
 <?php
+
 /**
  *
  * Buenas Prácticas
  *
  * PHP Version 5.6.16
  *
- * @copyright 2016 Hasselbit, S.C. / Dédalo (http://hasselbit.com)
+ * @copyright 2016 Hasselbit,S.C. / Dédalo (http://www.hasselbit.com)
  *
- * @author Javier Oñate Mendía (Dédalo)
+ * Constantes de sitio Buenas Prácticas
  *
+ * @package BuenasPracticas
+ * @author  Javier Oñate Mendía (Dédalo)
  */
+
+
 define('NOMBRE_FORMULARIO','reporteador');
 define('FOLDER_IMAGENES_CATEGORIAS','imagenes/categorias/');
 define('FOLDER_IMAGENES_PRACTICAS','imagenes/practicas/');
+define('ROOT_FOLDER_EVIDENCIAS','evidencias/');
 
+define('TAMANO_MAX_EVIDENCIA','2000000');
+
+define('HOY',date('Y-m-d'));
 
 // mensajes para log
 define('MENSAJE_LOGIN_EMPRESA','Login de empresa');

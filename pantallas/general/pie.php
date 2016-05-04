@@ -9,6 +9,8 @@
  *
  * @author  Javier Oñate Mendía (Dédalo)
  */
+
+$jom2='';
 ?>
 
 <div id="Pie">

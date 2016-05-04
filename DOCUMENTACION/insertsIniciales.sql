@@ -17,6 +17,9 @@ insert into bp_catStatus values(1,'No iniciada',1),(2,'En proceso',2),(3,'Aproba
 -- bp_catTipoEvidencia
 insert into bp_catTipoEvidencia values(1,'Documento',1),(2,'Imagen',2),(3,'Video',3); 
 
+-- bp_catTipoEvento
+insert into bp_catTipoEvento values(1,'Alta de práctica'),(2,'Agregar evidencia'),(3,'Descartar evidencia'),(4,'Aprobar evidencia'),(5,'Aprobar practica'); 
+
 -- bp_personal
 insert into bp_personal set nombre='Jorge González Miranda', usuario='Jorge', clave='gonzalez', email='j.gonzalez@semarnat.com.mx', fechaCreado='20160105', fechaClaveUpdate='20160105', nota='Usuario inventado', esSuperAdmin=1;
 insert into bp_personal set nombre='Sofía Aguilar Pérez', usuario='sofia', clave='aguilar', email='s.aguilar@semarnat.com.mx', fechaCreado='20160105', fechaClaveUpdate='20160105', nota='Usuario inventado', esSuperAdmin=0;

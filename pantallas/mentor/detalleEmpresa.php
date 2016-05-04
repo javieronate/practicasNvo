@@ -11,6 +11,7 @@
  *
  */
 
+$jom2='';
 ?>
 	<div id="empresas">
 		<div class="titulo">

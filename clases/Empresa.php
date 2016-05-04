@@ -22,29 +22,48 @@
  *
  * Clase Empresa
  *
- * Aquí se concentra la informacion de la empresa logueda
+ * Aquí se concentra la información de la empresa logueada
  *
  * @package BuenasPracticas
  * @author  Javier Oñate Mendía (Dédalo)
  */
 
-
 class Empresa
 {
+	/**
+	 *
+	 *  Variable que almacena el id de la empresa logueada
+	 *
+	 */
 	var $id;
 
+	/**
+	 *
+	 *  Variable que almacena arreglo con los datos de la empresa logueada
+	 *
+	 */
 	var $datos;
 
+	/**
+	 *
+	 *  Variable que almacena arreglo con las prácticas aprobadas por la empresa
+	 *
+	 */
 	var $arrPracticasTerminadas=array();
+
+	/**
+	 *
+	 *  Variable que almacena arreglo con las prácticas en proceso de la empresa
+	 *
+	 */
 
 	var $arrPracticasEnProceso=array();
 
 
-
 	/**
+	 * constructor de clase Empresa.
 	 *
-	 *  Constructor de la clase que:
-	 *
+	 * @param $usuario
 	 */
 	function __construct($usuario)
 	{

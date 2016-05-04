@@ -314,4 +314,53 @@ class FxFormularios
 		print_r($arreglo);
 		print "</pre>";
 	}
+
+	/**
+	 *
+	 * Función para insertar un menú desplegable con categorias de agrupación
+	 * de práctica y criterios
+	 *
+	 * @param      $arreglo
+	 * @param null $clase
+	 */
+	function ponerMenuJerarquico($arreglo, $clase=null)
+	{
+		$titulo="Elija criterio";
+		$claseTxt=($clase!=null) ? " class='".$clase."' " :'' ;
+		echo "<select name='menuPracticaCriterio' id='menuPracticaCriterio'  >";
+		echo "<option value='".$titulo."' >$titulo</option>";
+		for($x=0;$x<count($arreglo);$x++){
+			echo "<option value='".$arreglo[$x]['id']."' ><div class='tituloSeccion'>".$arreglo[$x]['nombrePractica']."</div></option>";
+			for($y=0;$y<count($arreglo[$x]['criterios']);$y++){
+				echo "<option value='".$arreglo[$x]['criterios'][$y]['criterioId']."'><div class='tituloSeccion'>"."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$arreglo[$x]['criterios'][$y]['nombre']."</div></option>";
+			}
+		}
+		echo "</select>";
+	}
+
+	/**
+	 *
+	 * Función para insertar un menú desplegable con categorias de agrupación
+	 * de categoría y prácticas
+	 *
+	 * @param      $arreglo
+	 * @param null $clase
+	 */
+	function ponerMenuPracticasPendientes($arreglo, $clase=null)
+	{
+		$titulo="Elija practica";
+		$claseTxt=($clase!=null) ? " class='".$clase."' " :'' ;
+		echo "<select name='menuPracticaPendiente' id='menuPracticaPendiente'  >";
+		echo "<option value='".$titulo."' >$titulo</option>";
+		for($x=0;$x<count($arreglo);$x++){
+			echo "<option value='".$arreglo[$x]['idCategoria']."' ><div class='tituloSeccion'>".$arreglo[$x]['nombreCategoria']."</div></option>";
+			for($y=0;$y<count($arreglo[$x]['practicas']);$y++){
+				if($arreglo[$x]['practicas'][$y]['idEstatus'] == '') {
+					echo "<option value='".$arreglo[$x]['practicas'][$y]['idPractica']."'><div class='tituloSeccion'>"."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$arreglo[$x]['practicas'][$y]['nombrePractica']."</div></option>";
+				}
+			}
+		}
+		echo "</select>";
+	}
+
 }

@@ -11,6 +11,7 @@
  *
  */
 
+$jom2='';
 ?>
 <div id="empresas">
 	<div class="titulo">
@@ -30,7 +31,7 @@
 		</tr>
 		<tr>
 			<td colspan="3" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','nombreEmpresa',100,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','nombreEmpresa',100,255,$this->arrDatosEmpresaTmp['nombreEmpresa'],'formularioCampo','nombreEmpresa');?>
 			</td>
 		</tr>
 		<tr>
@@ -52,13 +53,13 @@
 		</tr>
 		<tr>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','calle',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','calle',30,255,$this->arrDatosEmpresaTmp['calle'],'formularioCampo','nombreEmpresa');?>
 			</td>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','noExt',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','noExt',30,255,$this->arrDatosEmpresaTmp['noExt'],'formularioCampo','nombreEmpresa');?>
 			</td>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','noInt',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','noInt',30,255,$this->arrDatosEmpresaTmp['noInt'],'formularioCampo','nombreEmpresa');?>
 			</td>
 		</tr>
 
@@ -81,13 +82,13 @@
 		</tr>
 		<tr>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','colonia',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','colonia',30,255,$this->arrDatosEmpresaTmp['colonia'],'formularioCampo','nombreEmpresa');?>
 			</td>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','cp',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','cp',30,255,$this->arrDatosEmpresaTmp['cp'],'formularioCampo','nombreEmpresa');?>
 			</td>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','ciudad',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','ciudad',30,255,$this->arrDatosEmpresaTmp['ciudad'],'formularioCampo','nombreEmpresa');?>
 			</td>
 		</tr>
 
@@ -100,6 +101,7 @@
 		<tr>
 			<td colspan="1" class="formularioEtiqueta">
 				Estado
+
 			</td>
 			<td colspan="1" class="formularioEtiqueta">
 				Municipio
@@ -110,13 +112,17 @@
 		</tr>
 		<tr>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','estado',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerMenu('estado','Estado',$this->arrEstados,null,$this->arrDatosEmpresaTmp['estado'],'empresa','cambiarEstado',null,'formularioCampo',1);?>
 			</td>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','municipio',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php
+				if($this->arrDatosEmpresaTmp['estado']!='' and $this->arrDatosEmpresaTmp['estado']!='Estado') {
+					$this->fx->ponerMenu('municipio', 'Municipio', $this->arrMunicipios, $this->arrDatosEmpresaTmp['estado'], $this->arrDatosEmpresaTmp['municipio'],null,null,null,'formularioCampo',null);
+				}
+				?>
 			</td>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','ubicacion',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','ubicacion',30,255,$this->arrDatosEmpresaTmp['ubicacion'],'formularioCampo','nombreEmpresa');?>
 			</td>
 		</tr>
 
@@ -134,7 +140,7 @@
 
 		<tr>
 			<td colspan="3" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','nombreContacto',100,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','contactoNombre',100,255,$this->arrDatosEmpresaTmp['contactoNombre'],'formularioCampo','nombreEmpresa');?>
 			</td>
 		</tr>
 
@@ -157,13 +163,13 @@
 		</tr>
 		<tr>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','telefono',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','telefono',30,255,$this->arrDatosEmpresaTmp['telefono'],'formularioCampo','nombreEmpresa');?>
 			</td>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','correos',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','correos',30,255,$this->arrDatosEmpresaTmp['correos'],'formularioCampo','nombreEmpresa');?>
 			</td>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','pagWeb',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','sitioWeb',30,255,$this->arrDatosEmpresaTmp['sitioWeb'],'formularioCampo','nombreEmpresa');?>
 			</td>
 		</tr>
 
@@ -184,10 +190,10 @@
 		</tr>
 		<tr>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','usuario',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','usuario',30,255,$this->arrDatosEmpresaTmp['usuario'],'formularioCampo','nombreEmpresa');?>
 			</td>
 			<td colspan="2" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','clave',30,255,'','formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','clave',30,255,$this->arrDatosEmpresaTmp['clave'],'formularioCampo','nombreEmpresa');?>
 			</td>
 		</tr>
 	</table>

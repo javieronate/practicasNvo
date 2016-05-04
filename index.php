@@ -38,7 +38,10 @@ if (!isset($_SESSION['controlador'])) {
 	$_SESSION['controlador']->ponerConexionMysql($db);
 }
 
-if (isset($_POST['accion']))  $_SESSION["controlador"]->evaluarPost($_POST);
+
+if (isset($_POST['accion'])) $_SESSION["controlador"]->evaluarPost($_POST);
+
+
 
 ?>
 

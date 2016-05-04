@@ -16,7 +16,7 @@
 error_reporting(E_ALL);
 
 // constantes de programa
-define('DEBUG','0');
+define('DEBUG','1');
 
 //$mysqlServidor =   "dedalocommx1.ipagemysql.com";
 //$mysqlUser =  "javier";

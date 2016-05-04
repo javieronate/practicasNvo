@@ -10,8 +10,7 @@
  * @author  Javier Oñate Mendía (Dédalo)
  */
 
-//$this->fx->ensenarArreglo($this->empresa,'empresa');
-//$this->fx->ensenarArreglo($this->arrListaPracticas,'arrListaPracticas');
+$jom2='';
 ?>
 
 <div id="empresas">
@@ -51,6 +50,7 @@
 			de tu empresa es
 		</div>
 		<div class="">
+			<?php //TODO: hacer algoritmo de calculo de gráfica de estado de la empresa y su representación ?>
 			<img src="imagenes/temp/grafEmpresa.png" width="270px" align="center"/>
 		</div>
 
@@ -86,6 +86,7 @@
 			de otras empresas similares
 		</div>
 		<div class="">
+			<?php //TODO: hacer algoritmo de calculo de gráfica de estado de empresas similares y su representación ?>
 			<img src="imagenes/temp/grafOtrasEmpresas.png" width="270px" align="center"/>
 		</div>
 
@@ -144,16 +145,13 @@
 	<div id="saltoDeRenglon"></div>
 	<div class="">
 		<?php
-		//if($this->empresa->datos['infoCapturada']==0){
-			$this->fx->ponerBoton('empresa','irA','perfil','Editar perfil',NULL,NULL,NULL,'btn btn-primary',0);
-		//}
-		//if($this->empresa->datos['autoevaluacionHecha']==0){
+		$this->fx->ponerBoton('empresa','irA','perfil','Editar perfil',NULL,NULL,NULL,'btn btn-primary',0);
+		if($this->empresa->datos['autoevaluacionHecha']==0){
 			$this->fx->ponerBoton('empresa','irA','autoevaluacion','Realizar autoevaluación',NULL,NULL,NULL,'btn btn-primary',0);
-		//}
-		//if($this->empresa->datos['infoCapturada']==1 && $this->empresa->datos['autoevaluacionHecha']==1){
-			$this->fx->ponerBoton('empresa','irA','agregarPractica','Registrar una nueva práctica',NULL,NULL,NULL,'btn btn-primary',0);
-			$this->fx->ponerBoton('empresa','irA','evidencias','Agregar evidencia',NULL,NULL,NULL,'btn btn-primary',0);
-		//}
+		}
+		if($this->empresa->datos['infoCapturada']==1 && $this->empresa->datos['autoevaluacionHecha']==1){
+			$this->fx->ponerBoton('empresa','irA','admonPracticasEvidencias','Administración de prácticas y evidencias',NULL,NULL,NULL,'btn btn-primary',0);
+		}
 
 
 		$this->fx->ponerBoton('logout','','','Logout',NULL,NULL,NULL,'btn btn-primary',0);

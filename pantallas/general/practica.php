@@ -9,6 +9,8 @@
  *
  * @author  Javier Oñate Mendía (Dédalo)
  */
+
+$jom2='';
 ?>
 
 <script src="https://code.jquery.com/jquery-latest.min.js"></script>
@@ -127,8 +129,14 @@
 		</div>
 
 		<div class="empresaTitulo">
-			<?php $this->fx->ponerBoton('general','irACategoria',$this->arrDatosPaginaPractica['categoriaId'],'Regresar',NULL,NULL,NULL,'btn btn-primary',0); ?>
-			<?php $this->fx->ponerBoton('empresa','irA','inicio','Regresar',NULL,NULL,NULL,'btn btn-primary',0); ?>
+			<?php
+
+			if(isset($this->empresa->id) && $this->empresa->id > 0){
+				$this->fx->ponerBoton('empresa','irA','inicio','Regresar',NULL,NULL,NULL,'btn btn-primary',0);
+			}else{
+				$this->fx->ponerBoton('general','irACategoria',$this->arrDatosPaginaPractica['categoriaId'],'Regresar',NULL,NULL,NULL,'btn btn-primary',0);
+			}
+			?>
 		</div>
 	</div>
 
