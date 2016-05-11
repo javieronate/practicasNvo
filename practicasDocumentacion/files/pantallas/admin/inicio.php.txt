@@ -25,11 +25,15 @@
  */
 
 $jom2='';
+// TODO: Función que represente el desempeño de cada práctica en una gráfica
+// TODO: Función que represente el desempeño sustentable de todas las prácticas en una gráfica
+// TODO: Función que represente estadísticas básicas de todas las prácticas en una gráfica
+// TODO: Función que represente en un mapa las localizaciones de las empresas
 ?>
 
 <div id="empresas">
 	<div class="titulo">
-		Bienvenido Administrador
+		Bienvenido <?php echo ($this->admon->datos['nombre']);   ?>
 	</div>
 	<div class="subtitulo">
 		La adopción de buenas prácticas del ecoturismo
@@ -75,6 +79,7 @@ $jom2='';
 	<div class="espacioArriba"></div>
 	<div class="espacioArriba"></div>
 </div>
+
 <?php $this->fx->ponerBoton('admin','irA','manejoMentor','Mentores',NULL,NULL,NULL,'btn btn-primary',0);?>
 <?php $this->fx->ponerBoton('logout','','','Logout',NULL,NULL,NULL,'btn btn-primary',0);?>
 

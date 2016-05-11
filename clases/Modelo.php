@@ -266,7 +266,7 @@ class Modelo
 			$this->anotarUltimoLoginEmpresa($arrTmp['id']);
 		}else{
 			// buscar si es usuario de personal
-			$sql = "select count(*)as cuantos from bp_personal where usuario ='".$usuario."' and clave='".$clave."'";
+			$sql = "select count(*) as cuantos from bp_personal where usuario ='".$usuario."' and clave='".$clave."'";
 			$resultado = $this->db->query($sql);
 			$datos = $resultado->fetch_assoc();
 			if($datos['cuantos']==1) {
@@ -278,6 +278,7 @@ class Modelo
 				$arrTmp['nombre'] = $datos2['nombre'];
 				$arrTmp['email'] = $datos2['email'];
 				$arrTmp['esSuperAdmin'] = $datos2['esSuperAdmin'];
+				$arrTmp['ultimoLogin'] = $datos2['ultimoLogin'];
 				$this->agregarRegistroLog(NULL,$arrTmp['id'],MENSAJE_LOGIN_PERSONAL,3);
 				$this->anotarUltimoLoginPersona($arrTmp['id']);
 			}else{
@@ -323,8 +324,8 @@ class Modelo
 	 */
 	function anotarUltimoLoginPersona($idPersona)
 	{
-		$hoy=date('Ymd');
-		$sql="update bp_personal set ultimoLogin='".$hoy."' where id=$idPersona";
+		//$hoy=date('Y-m-d');
+		$sql="update bp_personal set ultimoLogin='".HOY."' where id=$idPersona";
 		$this->db->query($sql);
 	}
 
@@ -473,7 +474,7 @@ class Modelo
 			$this->db->query($sql);
 
 			// update empresas para poner que ya hizo la evaluación
-			$sql1="update bp_empresas set autoevaluacionHecha=1, fechaAutoevaluacion='".$hoy."'";
+			$sql1="update bp_empresas set autoevaluacionHecha=1, fechaAutoevaluacion='".$hoy."' where id=$empresaId";
 			$this->db->query($sql1);
 
 			// agregar buenas practicas que se marcaron como si
@@ -570,7 +571,6 @@ class Modelo
 	if(strlen($arrDatosEmpresa['clave'])==0) $correcto=0;
 
 	if($correcto==1) {
-		$hoy=date('Ymd');
 		$sql="update bp_empresas set
 		nombreEmpresa='".$arrDatosEmpresa['nombreEmpresa']."',
 		calle='".$arrDatosEmpresa['calle']."',
@@ -587,11 +587,9 @@ class Modelo
 		sitioWeb='".$arrDatosEmpresa['sitioWeb']."',
 		usuario='".$arrDatosEmpresa['usuario']."',
 		clave='".$arrDatosEmpresa['clave']."',
-		fechaActualizacion='".$hoy."',
-		infoCapturada=1";
+		fechaActualizacion='".HOY."',
+		infoCapturada=1 where  id=".$arrDatosEmpresa['id'];
 		$this->db->query($sql);
-
-
 		// TODO: Grabar ubicación. Revisar como es el campo ubicación
 		// TODO: Actualizar arreglo empresa->datos con los nuevos datos grabados
 
@@ -695,12 +693,299 @@ class Modelo
 	 */
 	function agregarEvidencia($idTipoEvento, $empresa_buenaPracticaId, $criterioId, $nombreEvidencia, $tipoEvidencia, $estatusCriterio, $mensaje, $prioridad)
 	{
-		$hoy=date('Ymd');
 		$sql="insert into bp_empresa_buenaPractica_eventos (idTipoDeEvento,empresa_buenaPracticaId,criterioId,fecha,nombreEvidencia,tipoEvidencia,estatusCriterio,mensaje,prioridad)
-			values($idTipoEvento,$empresa_buenaPracticaId,$criterioId,'".$hoy."','".$nombreEvidencia."',$tipoEvidencia,$estatusCriterio,'".$mensaje."',$prioridad)";
-		echo "$sql<br>";
+			values($idTipoEvento,$empresa_buenaPracticaId,$criterioId,'".HOY."','".$nombreEvidencia."',$tipoEvidencia,$estatusCriterio,'".$mensaje."',$prioridad)";
 		$resultado=$this->db->query($sql);
 
 	}
+
+	// funciones del mentor
+
+
+	/**
+	 *
+	 * Busca en tabla bp_empresas y hace arreglo de empresas asesoradas por el $mentorId proporcionado.
+	 * Se usa en sección mentor
+	 *
+	 * @param $mentorId
+	 *
+	 * @return array
+	 */
+	function hacerArregloEmpresasDeMentor($mentorId)
+	{
+		// TODO: eficientizar sql en uno solo.
+		$arrTmp=array();
+		$sql="select id,nombreEmpresa,telefono,correos,mentorId,contactoNombre from bp_empresas where mentorId=$mentorId";
+		$resultado=$this->db->query($sql);
+		while ($fila = $resultado->fetch_assoc()) {
+			$arrTmp[]=$fila;
+		}
+		for($x=0;$x<count($arrTmp);$x++){
+			$arrTmpPracticas=array();
+			$sqlPracticas="select
+				bp_empresa_buenaPractica.id as empresaBuenaPracticaId,
+				bp_empresa_buenaPractica.empresaId,
+				bp_empresa_buenaPractica.buenasPracticasId as buenapracticaId,
+				bp_empresa_buenaPractica.estatus as estatusId,
+				bp_empresa_buenaPractica.fechaIncio,
+				bp_empresa_buenaPractica.fechaAprobacion,
+				bp_buenasPracticas.tituloCorto as nombrePractica,
+				bp_catStatus.nombre as nombreEstatus
+				from
+				bp_empresa_buenaPractica
+				left join bp_buenasPracticas on bp_buenasPracticas.id=bp_empresa_buenaPractica.buenasPracticasId
+				left join bp_catStatus on bp_catStatus.id=bp_empresa_buenaPractica.estatus
+				where empresaId=".$arrTmp[$x]['id'];
+			$resultadoPracticas=$this->db->query($sqlPracticas);
+			while ($filaPracticas = $resultadoPracticas->fetch_assoc()) {
+				$arrTmpPracticas[]=$filaPracticas;
+			}
+			$arrTmp[$x]['practicas']=$arrTmpPracticas;
+		}
+
+		for($x=0;$x<count($arrTmp);$x++){
+			for($y=0;$y<count($arrTmp[$x]['practicas']);$y++){
+				$arrTmpCriterios=array();
+				$sqlCriterios="select id,nombre,puntos,orientacionMentor from bp_criterios where buenaPracticaId=".$arrTmp[$x]['practicas'][$y]['buenapracticaId'];
+				$resultadoCriterios=$this->db->query($sqlCriterios);
+				while ($filaCriterios = $resultadoCriterios->fetch_assoc()) {
+					$arrTmpCriterios[]=$filaCriterios;
+				}
+				$arrTmp[$x]['practicas'][$y]['criterios']=$arrTmpCriterios;
+			}
+		}
+
+		for($x=0;$x<count($arrTmp);$x++) {
+			for ($y = 0; $y < count($arrTmp[$x]['practicas']); $y++) {
+				for($z=0;$z<count($arrTmp[$x]['practicas'][$y]['criterios']);$z++){
+					$arrTmpEvidencias=array();
+					$sqlEvidencias="select bp_empresa_buenaPractica_eventos.id as empresaBuenapracticaEventosId,
+						bp_empresa_buenaPractica_eventos.idTipoDeEvento,
+						bp_empresa_buenaPractica_eventos.fecha,
+						bp_empresa_buenaPractica_eventos.nombreEvidencia,
+						bp_empresa_buenaPractica_eventos.idEventoAprobado,
+						bp_empresa_buenaPractica_eventos.tipoEvidencia,
+						bp_empresa_buenaPractica_eventos.estatusCriterio,
+						bp_empresa_buenaPractica_eventos.mensaje,
+						bp_catTipoEvento.nombre as nombreTipoEvento,
+						bp_catTipoEvidencia.nombre as nombreTipoEvidencia,
+						bp_catStatus.nombre as nombreEstatusCriterio,
+						0 as aprovada,
+						0 as rechazada,
+						'' as fechaAprovacionRechazo
+						from bp_empresa_buenaPractica_eventos
+						left join bp_catTipoEvento on bp_catTipoEvento.id=bp_empresa_buenaPractica_eventos.idTipoDeEvento
+						left join bp_catTipoEvidencia on bp_catTipoEvidencia.id=bp_empresa_buenaPractica_eventos.tipoEvidencia
+						left join bp_catStatus on bp_catStatus.id=bp_empresa_buenaPractica_eventos.estatusCriterio
+						where empresa_buenaPracticaId=".$arrTmp[$x]['practicas'][$y]['empresaBuenaPracticaId']." &&
+						bp_empresa_buenaPractica_eventos.criterioId=".$arrTmp[$x]['practicas'][$y]['criterios'][$z]['id']." &&
+						bp_empresa_buenaPractica_eventos.idTipoDeEvento=2
+						order by bp_empresa_buenaPractica_eventos.idTipoDeEvento, bp_empresa_buenaPractica_eventos.estatusCriterio,bp_empresa_buenaPractica_eventos.fecha
+					";
+					$resultadoEvidencias=$this->db->query($sqlEvidencias);
+					while ($filaEvidencias = $resultadoEvidencias->fetch_assoc()) {
+						$arrTmpEvidencias[]=$filaEvidencias;
+					}
+					$arrTmp[$x]['practicas'][$y]['criterios'][$z]['evidencias']=$arrTmpEvidencias;
+				}
+
+			}
+		}
+
+		for($x=0;$x<count($arrTmp);$x++) {
+			for ($y = 0; $y < count($arrTmp[$x]['practicas']); $y++) {
+				$sqlCambioStatus="select bp_empresa_buenaPractica_eventos.id as empresaBuenapracticaEventosId,
+				bp_empresa_buenaPractica_eventos.idTipoDeEvento,
+				bp_empresa_buenaPractica_eventos.fecha,
+				bp_empresa_buenaPractica_eventos.idEventoAprobado
+				from bp_empresa_buenaPractica_eventos
+				where empresa_buenaPracticaId=".$arrTmp[$x]['practicas'][$y]['empresaBuenaPracticaId']." &&
+				bp_empresa_buenaPractica_eventos.idTipoDeEvento>2 and bp_empresa_buenaPractica_eventos.idTipoDeEvento<5";
+				$resultadoCambioStatus=$this->db->query($sqlCambioStatus);
+				while ($filaCambioStatus = $resultadoCambioStatus->fetch_assoc()) {
+					for($z=0;$z<count($arrTmp[$x]['practicas'][$y]['criterios']);$z++){
+						for($q=0;$q<count($arrTmp[$x]['practicas'][$y]['criterios'][$z]['evidencias']);$q++){
+							if($arrTmp[$x]['practicas'][$y]['criterios'][$z]['evidencias'][$q]['empresaBuenapracticaEventosId']==$filaCambioStatus['idEventoAprobado']){
+								if($filaCambioStatus['idTipoDeEvento']==3){
+									$arrTmp[$x]['practicas'][$y]['criterios'][$z]['evidencias'][$q]['rechazada']=1;
+									$arrTmp[$x]['practicas'][$y]['criterios'][$z]['evidencias'][$q]['fechaAprovacionRechazo']=$filaCambioStatus['fecha'];
+									$arrTmp[$x]['practicas'][$y]['criterios'][$z]['evidencias'][$q]['nombreEstatusCriterio']="Rechazada";
+								}else if($filaCambioStatus['idTipoDeEvento']==4){
+									$arrTmp[$x]['practicas'][$y]['criterios'][$z]['evidencias'][$q]['aprovada']=1;
+									$arrTmp[$x]['practicas'][$y]['criterios'][$z]['evidencias'][$q]['fechaAprovacionRechazo']=$filaCambioStatus['fecha'];
+									$arrTmp[$x]['practicas'][$y]['criterios'][$z]['evidencias'][$q]['nombreEstatusCriterio']="Aprobada";
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return ($arrTmp);
+	}
+
+	/**
+	 *
+	 * Inserta registro en bp_empresa_buenaPractica_eventos con los datos de aprovación de la evidencia
+	 *
+	 * @param $item
+	 * @param $arrEmpresaSeleccionada
+	 */
+	function aprobarEvidencia($item, $arrEmpresaSeleccionada)
+	{
+		$cachos=explode(';',$item);
+		$practicaItem=$cachos['0'];
+		$criteriosItem=$cachos['1'];
+		$evidenciasIitem=$cachos['2'];
+		$empresaBuenapracticaEventosId=$arrEmpresaSeleccionada['practicas'][$practicaItem]['criterios'][$criteriosItem]['evidencias'][$evidenciasIitem]['empresaBuenapracticaEventosId'];
+		$empresaBuenapracticaId=$arrEmpresaSeleccionada['practicas'][$practicaItem]['empresaBuenaPracticaId'];
+		$criterioId=$arrEmpresaSeleccionada['practicas'][$practicaItem]['criterios'][$criteriosItem]['id'];
+
+		// insertar registro de aprobacion en bp_empresa_buenaPractica_eventos
+		$sql="insert into bp_empresa_buenaPractica_eventos (idTipoDeEvento,empresa_buenaPracticaId,criterioId,fecha,estatusCriterio,mensaje,prioridad,idEventoAprobado)
+			values('4',$empresaBuenapracticaId,$criterioId,'".HOY."','3','Aprobación de evidencia','3',$empresaBuenapracticaEventosId)";
+		$this->db->query($sql);
+	}
+
+	/**
+	 *
+	 * Inserta registro en bp_empresa_buenaPractica_eventos con los datos de rechazo de la evidencia
+	 *
+	 * @param $item
+	 * @param $arrEmpresaSeleccionada
+	 */
+	function rechazarEvidencia($item, $arrEmpresaSeleccionada)
+	{
+		$cachos=explode(';',$item);
+		$practicaItem=$cachos['0'];
+		$criteriosItem=$cachos['1'];
+		$evidenciasIitem=$cachos['2'];
+		$empresaBuenapracticaEventosId=$arrEmpresaSeleccionada['practicas'][$practicaItem]['criterios'][$criteriosItem]['evidencias'][$evidenciasIitem]['empresaBuenapracticaEventosId'];
+		$empresaBuenapracticaId=$arrEmpresaSeleccionada['practicas'][$practicaItem]['empresaBuenaPracticaId'];
+		$criterioId=$arrEmpresaSeleccionada['practicas'][$practicaItem]['criterios'][$criteriosItem]['id'];
+
+		// insertar registro de aprobacion en bp_empresa_buenaPractica_eventos
+		$sql="insert into bp_empresa_buenaPractica_eventos (idTipoDeEvento,empresa_buenaPracticaId,criterioId,fecha,estatusCriterio,mensaje,prioridad,idEventoAprobado)
+			values('3',$empresaBuenapracticaId,$criterioId,'".HOY."','3','Rechazo de evidencia','3',$empresaBuenapracticaEventosId)";
+		$this->db->query($sql);
+	}
+
+	/**
+	 *
+	 * Revisa que para cada criterio de la practica exista un registro de autorizacion de evidencia
+	 * Si se cumple inserta un registro en bp_empresa_buenaPractica_eventos con los datos de autorización de la práctica
+	 * y graba en bp_empresa_buenaPractica la fecha de aprovación y el cambio de estatus a Aprobada
+	 *
+	 * @param $item
+	 * @param $arrEmpresaSeleccionada
+	 */
+	function validarCompletudDeCriteriosDePractica($item, $arrEmpresaSeleccionada)
+	{
+		$cachos=explode(';',$item);
+		$practicaItem=$cachos['0'];
+		$empresaBuenapracticaId=$arrEmpresaSeleccionada['practicas'][$practicaItem]['empresaBuenaPracticaId'];
+		$idPractica=$arrEmpresaSeleccionada['practicas'][$practicaItem]['buenapracticaId'];
+
+		// revisar cuantos criterios hay para la practica
+		$sql="select count(*) as cuantosTerminados from bp_criterios,bp_empresa_buenaPractica_eventos
+			where bp_empresa_buenaPractica_eventos.criterioId=bp_criterios.id and
+			bp_criterios.buenaPracticaId=$idPractica and bp_empresa_buenaPractica_eventos.idTipoDeEvento=4";
+		$resultado=$this->db->query($sql);
+		$fila = $resultado->fetch_assoc();
+		if($fila['cuantosTerminados'] == count($arrEmpresaSeleccionada['practicas'][$practicaItem]['criterios'])){
+			// insertar registro de aprobacion en bp_empresa_buenaPractica_eventos
+			$sql="insert into bp_empresa_buenaPractica_eventos (idTipoDeEvento,empresa_buenaPracticaId,fecha,estatusBuenaPractica,mensaje,prioridad)
+			values('5',$empresaBuenapracticaId,'".HOY."','3','Aprobación de práctica','3')";
+			$this->db->query($sql);
+			$sql2="update bp_empresa_buenaPractica set estatus=3,fechaAprobacion='".HOY."' where id=".$empresaBuenapracticaId;
+			$this->db->query($sql2);
+		}
+	}
+
+
+
+
+	// funciones de admon
+
+	/**
+	 *
+	 * Busca en tabla bp_personal y hace un arreglo de todos los registros de personal
+	 * Se usa en admon.
+	 *
+	 * @return array
+	 */
+	function hacerArregloPersonal()
+	{
+		$arrTmp=array();
+		$sql="Select * from bp_personal order by esSuperAdmin DESC ";
+		$resultado=$this->db->query($sql);
+		while($fila=$resultado->fetch_assoc()){
+			$arrTmp[]=$fila;
+		}
+		return ($arrTmp);
+	}
+
+	/**
+	 *
+	 * Valida la corrección de los datos de una persona.
+	 * Si son correctos y el registro es de una nueva persona agrega un registro a la tabla bp_personal.
+	 * Si son correctos y el registro es de una persona existente hace el update del registro en la tabla bp_personal
+	 *
+	 * @param $arrDatosPersona
+	 *
+	 * @return int
+	 */
+	function validarDatosPersona($arrDatosPersona)
+	{
+		// TODO: Definir correctamente las validaciones por hacer
+		// TODO: Implementar grabado y validado de clave según modelo de Michael
+		$correcto=1;
+		if(strlen($arrDatosPersona['nombre'])==0) $correcto=0;
+		if(strlen($arrDatosPersona['usuario'])==0) $correcto=0;
+		if(strlen($arrDatosPersona['clave'])==0) $correcto=0;
+		if(strlen($arrDatosPersona['email'])==0) $correcto=0;
+		//if(strlen($arrDatosPersona['nota'])==0) $correcto=0;
+		if($arrDatosPersona['esSuperAdmin']>1 && $arrDatosPersona['esSuperAdmin']<0) $correcto=0;
+		if($arrDatosPersona['correoNotificacionCadaXHoras']<1) $correcto=0;
+
+		if($correcto){
+			if($arrDatosPersona['id']=='nuevo') {
+				$sql = "INSERT INTO bp_personal SET
+					nombre='".$arrDatosPersona['nombre']."',
+					usuario='".$arrDatosPersona['usuario']."',
+					clave='".$arrDatosPersona['clave']."',
+					email='".$arrDatosPersona['email']."',
+					fechaCreado='".HOY."',
+					fechaClaveUpdate='".HOY."',
+					nota='".$arrDatosPersona['nota']."',
+					esSuperAdmin='".$arrDatosPersona['esSuperAdmin']."',
+					correoNotificacionCadaXHoras='".$arrDatosPersona['correoNotificacionCadaXHoras']."'";
+			} else {
+
+				$sql="select usuario,clave from bp_personal where id=".$arrDatosPersona['id'];
+				$resultado=$this->db->query($sql);
+				$linea=$resultado->fetch_assoc();
+
+				$variableFechaClaveUpdate=($linea['usuario']!=$arrDatosPersona['usuario'] || $linea['clave']!=$arrDatosPersona['clave']) ?
+					"fechaClaveUpdate='".HOY."'," : "";
+
+				//if($linea['usuario']!=$arrDatosPersona['usuario'] || $linea['clave']!=$arrDatosPersona['clave'])
+
+				$sql = "update bp_personal SET
+					nombre='".$arrDatosPersona['nombre']."',
+					usuario='".$arrDatosPersona['usuario']."',
+					clave='".$arrDatosPersona['clave']."',
+					email='".$arrDatosPersona['email']."',
+					$variableFechaClaveUpdate
+					nota='".$arrDatosPersona['nota']."',
+					esSuperAdmin='".$arrDatosPersona['esSuperAdmin']."',
+					correoNotificacionCadaXHoras='".$arrDatosPersona['correoNotificacionCadaXHoras']."' where id=".$arrDatosPersona['id'];
+			}
+			$this->db->query($sql);
+		}
+		return ($correcto);
+	}
+
+
 
 }

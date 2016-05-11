@@ -15,28 +15,32 @@ $jom2='';
 
 <div id="empresas">
 	<div class="titulo">
-		Bienvenido Mentor
+		Bienvenido <?php echo ($this->mentor->datos['nombre']); ?>
 	</div>
-	<div class="subtitulo">
+	<div class="tituloDesempeno">
 		Pagina principal de cada mentor
 	</div>
 	<div class="espacioArriba"></div>
 
-	<div class="tituloDesempeno">
-		Lista de empresas supervisadas por el mentor:
+
+	<div id="ColIzquierda30">
+
+		<div class="tituloDesempeno">
+			Empresas supervisadas:
+		</div>
+
+		<?php for($x=0;$x<count($this->mentor->arrEmpresasSupervisadas);$x++) {?>
+			<div id="textoLateralIzq">
+				<?php $this->fx->ponerBoton('mentor', 'irAEmpresa', $this->mentor->arrEmpresasSupervisadas[$x]['id'], $this->mentor->arrEmpresasSupervisadas[$x]['nombreEmpresa'], NULL, NULL, NULL, 'btn', 0);?>
+			</div>
+		<?php } ?>
 	</div>
 
-	<div class="texto">
-		En esta pagina se muestra el estado general de las empresas supervisadas por el mentor,
-		y se indica si hay alguna evidencia nueva que autorizar.<br>
+	<div id="ColDerecha70">
+		Lista de eventos nuevos desde el uptimo login del mentor
 	</div>
 
-	<div id="listaBotones">
-		<?php $this->fx->ponerBoton('mentor','irAEmpresa','1','Turismo Del Golfo',NULL,NULL,NULL,'btn',0); ?>
-	</div>
-	<div id="listaBotones">
-		<?php $this->fx->ponerBoton('mentor','irAEmpresa','2','Avistadores de ballenas',NULL,NULL,NULL,'btn',0); ?>
-	</div>
+
 	<div id="saltoDeRenglon"></div>
 	<div class="espacioArriba"></div>
 	<div class="espacioArriba"></div>

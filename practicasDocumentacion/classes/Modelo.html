@@ -106,12 +106,12 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="../reports/errors.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Errors <span class="label label-info pull-right">0</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="../reports/markers.html">
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">7</span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <i class="icon-list-alt"></i>&#160;Markers <span class="label label-info pull-right">14</span>
                                 </a>
                             </li>
                             <li>
@@ -136,17 +136,19 @@
                                 <div class="accordion" style="margin-bottom: 0">
         <div class="accordion-group">
             <div class="accordion-heading">
-                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-62598676"></a>
+                                    <a class="accordion-toggle " data-toggle="collapse" data-target="#namespace-1450100685"></a>
                                 <a href="../namespaces/default.html" style="margin-left: 30px; padding-left: 0">\</a>
             </div>
-            <div id="namespace-62598676" class="accordion-body collapse in">
+            <div id="namespace-1450100685" class="accordion-body collapse in">
                 <div class="accordion-inner">
 
                     
                     <ul>
-                                                                                                    <li class="class"><a href="../classes/Controlador.html">Controlador</a></li>
+                                                                                                    <li class="class"><a href="../classes/Admon.html">Admon</a></li>
+                                                    <li class="class"><a href="../classes/Controlador.html">Controlador</a></li>
                                                     <li class="class"><a href="../classes/Empresa.html">Empresa</a></li>
                                                     <li class="class"><a href="../classes/FxFormularios.html">FxFormularios</a></li>
+                                                    <li class="class"><a href="../classes/Mentor.html">Mentor</a></li>
                                                     <li class="class"><a href="../classes/Modelo.html">Modelo</a></li>
                                             </ul>
                 </div>
@@ -210,6 +212,12 @@ También desde aquí se hacen las peticiones a la base de datos</p>
                                                                     <a href="../classes/Modelo.html#method_hacerArregloPracticas" class="">hacerArregloPracticas()</a><br />
                                                                     <a href="../classes/Modelo.html#method_hacerArregloCriteriosYEvidencias" class="">hacerArregloCriteriosYEvidencias()</a><br />
                                                                     <a href="../classes/Modelo.html#method_agregarEvidencia" class="">agregarEvidencia()</a><br />
+                                                                    <a href="../classes/Modelo.html#method_hacerArregloEmpresasDeMentor" class="">hacerArregloEmpresasDeMentor()</a><br />
+                                                                    <a href="../classes/Modelo.html#method_aprobarEvidencia" class="">aprobarEvidencia()</a><br />
+                                                                    <a href="../classes/Modelo.html#method_rechazarEvidencia" class="">rechazarEvidencia()</a><br />
+                                                                    <a href="../classes/Modelo.html#method_validarCompletudDeCriteriosDePractica" class="">validarCompletudDeCriteriosDePractica()</a><br />
+                                                                    <a href="../classes/Modelo.html#method_hacerArregloPersonal" class="">hacerArregloPersonal()</a><br />
+                                                                    <a href="../classes/Modelo.html#method_validarDatosPersona" class="">validarDatosPersona()</a><br />
                                                             </section>
                             <section class="span4">
                                                                     <a href="../classes/Modelo.html#property_db" class="">$db</a><br />
@@ -1214,6 +1222,227 @@ para incluir datos sobre histórico de evidencias</em></p>
         </aside>
     </div>
 
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_hacerArregloEmpresasDeMentor" name="method_hacerArregloEmpresasDeMentor" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">hacerArregloEmpresasDeMentor()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">hacerArregloEmpresasDeMentor(  <span class="argument">$mentorId</span>) : array</pre>
+                <p><em>Busca en tabla bp_empresas y hace arreglo de empresas asesoradas por el $mentorId proporcionado.</em></p>
+                <p>Se usa en sección mentor</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$mentorId </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_aprobarEvidencia" name="method_aprobarEvidencia" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">aprobarEvidencia()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">aprobarEvidencia(  <span class="argument">$item</span>,   <span class="argument">$arrEmpresaSeleccionada</span>) </pre>
+                <p><em>Inserta registro en bp_empresa_buenaPractica_eventos con los datos de aprovación de la evidencia</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$item </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td></td>
+                                <td>$arrEmpresaSeleccionada </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_rechazarEvidencia" name="method_rechazarEvidencia" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">rechazarEvidencia()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">rechazarEvidencia(  <span class="argument">$item</span>,   <span class="argument">$arrEmpresaSeleccionada</span>) </pre>
+                <p><em>Inserta registro en bp_empresa_buenaPractica_eventos con los datos de rechazo de la evidencia</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$item </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td></td>
+                                <td>$arrEmpresaSeleccionada </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_validarCompletudDeCriteriosDePractica" name="method_validarCompletudDeCriteriosDePractica" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">validarCompletudDeCriteriosDePractica()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">validarCompletudDeCriteriosDePractica(  <span class="argument">$item</span>,   <span class="argument">$arrEmpresaSeleccionada</span>) </pre>
+                <p><em>Revisa que para cada criterio de la practica exista un registro de autorizacion de evidencia
+Si se cumple inserta un registro en bp_empresa_buenaPractica_eventos con los datos de autorización de la práctica
+y graba en bp_empresa_buenaPractica la fecha de aprovación y el cambio de estatus a Aprobada</em></p>
+                
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$item </td>
+                                <td></td>
+                            </tr>
+                                                    <tr>
+                                <td></td>
+                                <td>$arrEmpresaSeleccionada </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_hacerArregloPersonal" name="method_hacerArregloPersonal" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">hacerArregloPersonal()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">hacerArregloPersonal() : array</pre>
+                <p><em>Busca en tabla bp_personal y hace un arreglo de todos los registros de personal
+Se usa en admon.</em></p>
+                
+
+                
+                
+                                    <h4>Returns</h4>
+                    array
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
+                                    <div class="row-fluid">
+        <div class="span8 content class">
+            <a id="method_validarDatosPersona" name="method_validarDatosPersona" class="anchor"></a>
+            <article class="method">
+                <h3 class="public ">validarDatosPersona()</h3>
+                <a href="#source-view" role="button" class="pull-right btn" data-toggle="modal" style="font-size: 1.1em; padding: 9px 14px"><i class="icon-code"></i></a>
+                <pre class="signature" style="margin-right: 54px;">validarDatosPersona(  <span class="argument">$arrDatosPersona</span>) : integer</pre>
+                <p><em>Valida la corrección de los datos de una persona.</em></p>
+                <p>Si son correctos y el registro es de una nueva persona agrega un registro a la tabla bp_personal.
+Si son correctos y el registro es de una persona existente hace el update del registro en la tabla bp_personal</p>
+
+                                    <h4>Parameters</h4>
+                    <table class="table table-condensed table-hover">
+                                                    <tr>
+                                <td></td>
+                                <td>$arrDatosPersona </td>
+                                <td></td>
+                            </tr>
+                                            </table>
+                
+                
+                                    <h4>Returns</h4>
+                    integer
+                                    				
+                            </article>
+        </div>
+        <aside class="span4 detailsbar">
+            <h1><i class="icon-arrow-down"></i></h1>
+                                                            <dl>
+                                                                            </dl>
+            <h2>Tags</h2>
+            <table class="table table-condensed">
+                                    <tr><td colspan="2"><em>None found</em></td></tr>
+                            </table>
+        </aside>
+    </div>
+
                                                                     </div>
     </section>
 
@@ -1267,35 +1496,35 @@ para incluir datos sobre histórico de evidencias</em></p>
 Warning: date_default_timezone_get(): It is not safe to rely on the system's timezone settings. You are *required* to use the date.timezone setting or the date_default_timezone_set() function. In case you used any of those methods and you are still getting this warning, you most likely misspelled the timezone identifier. We selected the timezone 'UTC' for now, but please set date.timezone to select your timezone. in /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Extension/Core.php on line 89
 
 Call Stack:
-    0.0002     227792   1. {main}() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/bin/phpdoc:0
-    0.1109   11365944   2. phpDocumentor\Application->run() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/bin/phpdoc:24
-    0.1129   11623136   3. Symfony\Component\Console\Application->run() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Application.php:183
-    0.1131   11624072   4. Symfony\Component\Console\Application->doRun() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/symfony/console/Symfony/Component/Console/Application.php:126
-    0.1133   11624992   5. Symfony\Component\Console\Application->doRunCommand() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/symfony/console/Symfony/Component/Console/Application.php:195
-    0.1133   11625464   6. Symfony\Component\Console\Command\Command->run() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/symfony/console/Symfony/Component/Console/Application.php:874
-    0.1138   11631592   7. phpDocumentor\Command\Project\RunCommand->execute() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:253
-    1.2405   21509224   8. Symfony\Component\Console\Command\Command->run() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Command/Project/RunCommand.php:275
-    1.2408   21512688   9. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:253
-    1.3091   21876192  10. phpDocumentor\Console\Output\Output->writeTimedLog() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
-    1.3092   21876288  11. call_user_func_array:{/usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Console/Output/Output.php:59}() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Console/Output/Output.php:59
-    1.3092   21876864  12. phpDocumentor\Transformer\Transformer->execute() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Console/Output/Output.php:59
-    1.3103   21898440  13. phpDocumentor\Transformer\Transformer->transformProject() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Transformer/Transformer.php:141
-    1.4005   24756536  14. phpDocumentor\Transformer\Transformer->applyTransformationToProject() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Transformer/Transformer.php:275
-    1.4008   24756792  15. phpDocumentor\Plugin\Twig\Writer\Twig->transform() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Transformer/Transformer.php:312
-    1.5445   25656736  16. Twig_Environment->render() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
-    1.5450   25670432  17. Twig_Template->render() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Environment.php:293
-    1.5450   25687056  18. Twig_Template->display() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Template.php:274
-    1.5450   25688536  19. Twig_Template->displayWithErrorHandling() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Template.php:263
-    1.5450   25688536  20. __TwigTemplate_3b33c164b4240781047f66f3813b3811833fdddcd8323f526bd2aab34324f7e8->doDisplay() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Template.php:289
-    1.5450   25689064  21. Twig_Template->display() /private/var/folders/85/tk8vxkfn3knfd97jgz0_d0bh0000gn/T/phpdoc-twig-cache/3b/33/c164b4240781047f66f3813b3811833fdddcd8323f526bd2aab34324f7e8.php:34
-    1.5450   25690256  22. Twig_Template->displayWithErrorHandling() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Template.php:263
-    1.5450   25690256  23. __TwigTemplate_a18ce82ae14c7f50e1198215c321336ec6a7a50a6bab16ab5174ee5b3ea3e6de->doDisplay() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Template.php:289
-    1.6117   25876080  24. twig_date_format_filter() /private/var/folders/85/tk8vxkfn3knfd97jgz0_d0bh0000gn/T/phpdoc-twig-cache/a1/8c/e82ae14c7f50e1198215c321336ec6a7a50a6bab16ab5174ee5b3ea3e6de.php:383
-    1.6117   25876128  25. twig_date_converter() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Extension/Core.php:465
-    1.6117   25876128  26. Twig_Extension_Core->getTimezone() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Extension/Core.php:512
-    1.6117   25876312  27. date_default_timezone_get() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Extension/Core.php:89
+    0.0002     227400   1. {main}() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/bin/phpdoc:0
+    0.1193   11365768   2. phpDocumentor\Application->run() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/bin/phpdoc:24
+    0.1213   11622768   3. Symfony\Component\Console\Application->run() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Application.php:183
+    0.1215   11623704   4. Symfony\Component\Console\Application->doRun() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/symfony/console/Symfony/Component/Console/Application.php:126
+    0.1216   11624624   5. Symfony\Component\Console\Application->doRunCommand() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/symfony/console/Symfony/Component/Console/Application.php:195
+    0.1217   11625096   6. Symfony\Component\Console\Command\Command->run() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/symfony/console/Symfony/Component/Console/Application.php:874
+    0.1221   11631128   7. phpDocumentor\Command\Project\RunCommand->execute() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:253
+    1.5692   22002416   8. Symfony\Component\Console\Command\Command->run() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Command/Project/RunCommand.php:275
+    1.5696   22005880   9. phpDocumentor\Transformer\Command\Project\TransformCommand->execute() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/symfony/console/Symfony/Component/Console/Command/Command.php:253
+    1.6444   22401472  10. phpDocumentor\Console\Output\Output->writeTimedLog() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Transformer/Command/Project/TransformCommand.php:206
+    1.6445   22401568  11. call_user_func_array:{/usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Console/Output/Output.php:59}() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Console/Output/Output.php:59
+    1.6445   22402144  12. phpDocumentor\Transformer\Transformer->execute() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Console/Output/Output.php:59
+    1.6457   22423848  13. phpDocumentor\Transformer\Transformer->transformProject() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Transformer/Transformer.php:141
+    1.7270   25282784  14. phpDocumentor\Transformer\Transformer->applyTransformationToProject() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Transformer/Transformer.php:275
+    1.7272   25283040  15. phpDocumentor\Plugin\Twig\Writer\Twig->transform() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Transformer/Transformer.php:312
+    1.9507   26421560  16. Twig_Environment->render() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/src/phpDocumentor/Plugin/Twig/Writer/Twig.php:116
+    1.9511   26435256  17. Twig_Template->render() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Environment.php:293
+    1.9511   26451880  18. Twig_Template->display() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Template.php:274
+    1.9512   26453360  19. Twig_Template->displayWithErrorHandling() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Template.php:263
+    1.9512   26453360  20. __TwigTemplate_3b33c164b4240781047f66f3813b3811833fdddcd8323f526bd2aab34324f7e8->doDisplay() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Template.php:289
+    1.9512   26453888  21. Twig_Template->display() /private/var/folders/85/tk8vxkfn3knfd97jgz0_d0bh0000gn/T/phpdoc-twig-cache/3b/33/c164b4240781047f66f3813b3811833fdddcd8323f526bd2aab34324f7e8.php:34
+    1.9512   26455080  22. Twig_Template->displayWithErrorHandling() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Template.php:263
+    1.9512   26455080  23. __TwigTemplate_a18ce82ae14c7f50e1198215c321336ec6a7a50a6bab16ab5174ee5b3ea3e6de->doDisplay() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Template.php:289
+    2.0284   26657768  24. twig_date_format_filter() /private/var/folders/85/tk8vxkfn3knfd97jgz0_d0bh0000gn/T/phpdoc-twig-cache/a1/8c/e82ae14c7f50e1198215c321336ec6a7a50a6bab16ab5174ee5b3ea3e6de.php:383
+    2.0284   26657816  25. twig_date_converter() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Extension/Core.php:465
+    2.0284   26657816  26. Twig_Extension_Core->getTimezone() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Extension/Core.php:512
+    2.0284   26658000  27. date_default_timezone_get() /usr/local/Cellar/phpDocumentor-2.8.5/phpDocumentor-2.8.5/vendor/twig/twig/lib/Twig/Extension/Core.php:89
 
-May 3rd, 2016 at 23:54.
+May 10th, 2016 at 23:45.
                 </section>
             </section>
         </section>

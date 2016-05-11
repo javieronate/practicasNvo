@@ -30,15 +30,18 @@
 
 include_once ("Modelo.php");
 include_once ("Empresa.php");
+include_once ("Mentor.php");
+include_once ("Admon.php");
 include_once ("FxFormularios.php");
+//include_once ("Pantallas.php");
 
 /**
  *
- * Controlador del módulo de Reportes
+ * Controlador de Buenas Prácticas
  *
  * Clase controller del modelo MVC (Model - Vew - Controller)
  *
- * @package Reporteador
+ * @package BuenasPracticas
  * @author  Javier Oñate Mendía (Dédalo)
  *
  */
@@ -53,6 +56,8 @@ class Controlador
 	 * Almacena objeto de tipo fx, que es un helper para elementos de formularios
 	 */
     var $fx;
+
+	//var $pantallas;
 
 	/**
 	 * Almacena variable que indica en que zona del sitio se encuentra el usuario
@@ -88,9 +93,14 @@ class Controlador
 	var $empresa;
 
 	/**
-	 * Variable que guarda un objeto Personal cuando el log in es de una persona
+	 * Variable que guarda un objeto Mentor cuando el log in es de rol mentor
 	 */
-	var $personal=array();
+	var $mentor;
+
+	/**
+	 * Variable que guarda un objeto Administrador cuando el log in es de rol administrador
+	 */
+	var $admon;
 
 	/**
 	 * Variable que guarda el texto de mensaje a reproducir al usuario
@@ -123,6 +133,22 @@ class Controlador
 	 */
 	var $arrDatosEmpresaTmp=array();
 
+	// tal vez no es necesaria
+	/**
+	 * Variable que guarda el id de la persona seleccionada. Se usa en la sección de admon.
+	 */
+	//var $personaSeleccionadaId;
+
+	/**
+	 * Variable que guarda un arreglo temporal de los datos de la person durante el llenado de datos en seccion admon.
+	 */
+	var $arrDatosPersonaTmp=array();
+
+	/**
+	 * Variable que guarda un arreglo con la situación de las practicas, criterios y evidencias de la empresa seleccionada.
+	 */
+	var $arrEmpresaSeleccionada;
+
 	/**
 	 *
 	 *  Constructor del Controlador que:
@@ -134,6 +160,7 @@ class Controlador
     {
         $this->modelo = new Modelo();
         $this->fx=new FxFormularios();
+	    //$this->pantallas=new Pantallas();
     }
 
 	/**
@@ -177,7 +204,6 @@ class Controlador
 	 */
 	function evaluarPost($post)
     {
-
 	    // TODO: Hacer función de limpieza de arreglos
         switch ($post['accion']){
 	        case 'general':
@@ -186,26 +212,36 @@ class Controlador
 	        case 'login':
 		        $usuario=$this->modelo->validarLogin($post['usuario'],$post['clave']);
 				if($usuario['rol']=='fallo') {
-					$this->empresa=array();
-					$this->personal=array();
+					$this->empresa=null;
+					$this->mentor=null;
+					$this->admon=null;
 					$this->mensaje="No se encontro el usuario. Vuelva a intentar";
 					$this->pantalla='pantallas/general/login.php';
 				} else if ($usuario['rol']=='empresa'){
-					$this->personal=array();
+					$this->mentor=null;
+					$this->admon=null;
 					$this->empresa=new Empresa($usuario);
 					$this->hacerArreglosDeSeccionEmpresa();
 					$this->pantalla='pantallas/empresa/inicio.php';
 				}else if($usuario['rol']=='administrador'){
-					$this->personal=$usuario;
+					$this->empresa=null;
+					$this->mentor=null;
+					$this->admon= new Admon($usuario);
+					$this->hacerArreglosDeSeccionAdmon($post);
 					$this->pantalla='pantallas/admin/inicio.php';
 				}else if($usuario['rol']=='mentor'){
-					$this->personal=$usuario;
+					$this->admon=null;
+					$this->empresa=null;
+					$this->mentor=new Mentor($usuario);
+					$this->hacerArreglosDeSeccionMentor();
 					$this->pantalla='pantallas/mentor/inicio.php';
 				}
 				break;
 	        case 'logout':
-		        $this->empresa=array();
-		        //$this->usuario=array();
+		        $this->empresa=null;
+		        $this->mentor=null;
+		        $this->admon=null;
+				$this->limpiarArreglos();
 		        $this->pantalla='pantallas/general/login.php';
 		        break;
 	        case 'empresa':
@@ -246,7 +282,7 @@ class Controlador
 						if(count($this->arrDatosEmpresaTmp)==0) {
 							$this->arrDatosEmpresaTmp = $this->empresa->datos;
 						}else{
-							$this->actualizarDatosTmp($post);
+							$this->actualizarDatosPerfilTmp($post);
 						}
 						$this->pantalla='pantallas/empresa/perfil.php';
 						break;
@@ -271,7 +307,7 @@ class Controlador
 				}
 				break;
 			case 'perfilGrabar':
-				$this->actualizarDatosTmp($post);
+				$this->actualizarDatosPerfilTmp($post);
 				$correcto=$this->modelo->validarPerfil($this->arrDatosEmpresaTmp);
 				if($correcto==1) {
 					$this->empresa->datos['infoCapturada']=1;
@@ -281,7 +317,7 @@ class Controlador
 				}
 				break;
 			case 'cambiarEstado':
-				$this->actualizarDatosTmp($post);
+				$this->actualizarDatosPerfilTmp($post);
 				$this->arrDatosEmpresaTmp['municipio']='Municipio';
 				break;
 			case 'agregarEvidencia':
@@ -314,7 +350,33 @@ class Controlador
 				}
 				break;
 			case 'irAEmpresa':
+				echo $post['item']."<br>";
+				$this->arrEmpresaSeleccionada=$this->buscarEmpresaSeleccionada($post['item']);
 				$this->pantalla='pantallas/mentor/detalleEmpresa.php';
+				break;
+			case 'aprobarEvidencia':
+				$this->modelo->aprobarEvidencia($post['item'],$this->arrEmpresaSeleccionada);
+				$empresaSeleccionadaId=$this->arrEmpresaSeleccionada['id'];
+
+				// verificar si se completo la practica
+				$this->modelo->validarCompletudDeCriteriosDePractica($post['item'],$this->arrEmpresaSeleccionada);
+
+				// actualizar arreglo de empresas
+				$this->mentor->arrEmpresasSupervisadas=$this->modelo->hacerArregloEmpresasDeMentor($this->mentor->id);
+
+				// actualizar arreglo de empresa seleccionada
+				$this->arrEmpresaSeleccionada=$this->buscarEmpresaSeleccionada($empresaSeleccionadaId);
+
+				break;
+			case 'rechazarEvidencia':
+				$this->modelo->rechazarEvidencia($post['item'],$this->arrEmpresaSeleccionada);
+				$empresaSeleccionadaId=$this->arrEmpresaSeleccionada['id'];
+
+				// actualizar arreglo de empresas
+				$this->mentor->arrEmpresasSupervisadas=$this->modelo->hacerArregloEmpresasDeMentor($this->mentor->id);
+
+				// actualizar arreglo de empresa seleccionada
+				$this->arrEmpresaSeleccionada=$this->buscarEmpresaSeleccionada($empresaSeleccionadaId);
 				break;
 		}
 	}
@@ -339,6 +401,19 @@ class Controlador
 						$this->pantalla='pantallas/admin/manejoMentor.php';
 						break;
 				}
+				break;
+			case 'seleccionarPersona':
+				$this->arrDatosPersonaTmp = $this->buscarDatosPersona($post['item']);
+				break;
+			case 'agregarPersona':
+				$this->arrDatosPersonaTmp = $this->llenarArrDatosPersonaTmpVacio();
+				break;
+			case 'grabarNuevo':
+			case 'editarPersona':
+				$this->actualizarDatosPersonaTmp($post);
+				$correcto=$this->modelo->validarDatosPersona($this->arrDatosPersonaTmp);
+				if($correcto==1) $this->admon->arrPersonal=$this->modelo->hacerArregloPersonal();
+				break;
 		}
 	}
 
@@ -386,6 +461,16 @@ class Controlador
 
 	/**
 	 *
+	 * Función que limpia los arreglos en logout
+	 *
+	 */
+	function limpiarArreglos()
+	{
+		$this->arrDatosEmpresaTmp=array();
+	}
+
+	/**
+	 *
 	 *  Función que construye los arreglos de practicas y practicas terminadas usados en la zona de empresa
 	 *  Llama a la función que construye el arreglo de practicas en proceso 'hacerArregloPracticasEnProceso'
 	 *
@@ -401,6 +486,28 @@ class Controlador
 
 		// hacer arreglo de las practicas en proceso de la empresa
 		$this->hacerArregloPracticasEnProceso();
+	}
+
+	/**
+	 *
+	 *  Función que construye los arreglos necesarios para paginas de mentor
+	 *
+	 */
+	function hacerArreglosDeSeccionMentor()
+	{
+		// hacer arreglo de las empresas supervisadas por el mentor
+		$this->mentor->arrEmpresasSupervisadas=$this->modelo->hacerArregloEmpresasDeMentor($this->mentor->id);
+	}
+
+	/**
+	 *
+	 *  Función que construye los arreglos necesarios para paginas de admon
+	 *
+	 * @param $post
+	 */
+	function hacerArreglosDeSeccionAdmon($post)
+	{
+		$this->admon->arrPersonal=$this->modelo->hacerArregloPersonal();
 	}
 
 	/**
@@ -450,7 +557,7 @@ class Controlador
 	 *
 	 * @param $post
 	 */
-	function actualizarDatosTmp($post)
+	function actualizarDatosPerfilTmp($post)
 	{
 		if(isset($post['nombreEmpresa']))  $this->arrDatosEmpresaTmp['nombreEmpresa'] = $post['nombreEmpresa'];
 		if(isset($post['calle']))  $this->arrDatosEmpresaTmp['calle'] = $post['calle'];
@@ -561,6 +668,91 @@ class Controlador
 		}else{
 			echo "error al indicar el criterio exacto<br>";
 		}
+	}
+
+	/**
+	 *
+	 * Busca en el arreglo de todas las personas almacenado en la instancia admon y
+	 * devuelve un arreglo con los datos de la persona encontrada
+	 *
+	 * @param $personaId
+	 *
+	 * @return array
+	 */
+	function buscarDatosPersona($personaId)
+	{
+		$arrTmp=array();
+		for($x=0;$x<count($this->admon->arrPersonal);$x++){
+			if($this->admon->arrPersonal[$x]['id']==$personaId) {
+				$arrTmp=$this->admon->arrPersonal[$x];
+			}
+		}
+
+		return($arrTmp);
+	}
+
+	/**
+	 *
+	 * Llena el arreglo temporal arrDatosPersonaTmp con datos vacios. Se usa en admon
+	 *
+	 * @return array
+	 */
+	function llenarArrDatosPersonaTmpVacio()
+	{
+		$arrTmp=array(
+			'id' => 'nuevo',
+			'nombre' => '',
+			'usuario' => '',
+			'clave' => '',
+			'email' => '',
+			'fechaCreado' => '',
+			'fechaClaveUpdate' => '',
+			'nota' => '',
+			'esSuperAdmin' => 0,
+			'correoNotificacionCadaXHoras' => 4,
+			'correoUltimoEnviado' => '',
+			'ultimoLogin' => '');
+		return($arrTmp);
+	}
+
+
+	/**
+	 *
+	 * Actualiza el arreglo de arrDatosPersonaTmp de acuerdo a laos valores recibidos del post.
+	 * Se usa en sección de admon
+	 *
+	 * @param $post
+	 */
+	function actualizarDatosPersonaTmp($post)
+	{
+		if(isset($post['nombrePersona']))  $this->arrDatosPersonaTmp['nombre'] = $post['nombrePersona'];
+		if(isset($post['usuarioPersona']))  $this->arrDatosPersonaTmp['usuario'] = $post['usuarioPersona'];
+		if(isset($post['clavePersona']))  $this->arrDatosPersonaTmp['clave'] = $post['clavePersona'];
+		if(isset($post['correoPersona']))  $this->arrDatosPersonaTmp['email'] = $post['correoPersona'];
+		if(isset($post['Nota']))  $this->arrDatosPersonaTmp['nota'] = $post['Nota'];
+		if(isset($post['esSuperAdmin']))  $this->arrDatosPersonaTmp['esSuperAdmin'] = $post['esSuperAdmin'];
+		if(isset($post['notificarPorCorreoCadaHorasPersona']))  $this->arrDatosPersonaTmp['correoNotificacionCadaXHoras'] = $post['notificarPorCorreoCadaHorasPersona'];
+	}
+
+
+	/**
+	 *
+	 * Recorre el arreglo mentor->arrEmpresasSupervisadas y
+	 * copia la que tiene el id recibido al arreglo $this->arrEmpresaSeleccionada
+	 * que se usa en la seccion de detalles de la situación de practicas de la empresa
+	 * en la zona del mentor.
+	 *
+	 * @param $empresaId
+	 *
+	 * @return array
+	 */
+	function buscarEmpresaSeleccionada($empresaId)
+	{
+		$arrTmp=array();
+		for($x=0;$x<count($this->mentor->arrEmpresasSupervisadas);$x++){
+			if($this->mentor->arrEmpresasSupervisadas[$x]['id']==$empresaId) $arrTmp=$this->mentor->arrEmpresasSupervisadas[$x];
+		}
+		return($arrTmp);
 	}
 
 	/**

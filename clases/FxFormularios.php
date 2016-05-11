@@ -196,6 +196,57 @@ class FxFormularios
 	}
 
 	/**
+	 *
+	 * Función para insertar un menú de varios renglones y una sola opción
+	 *
+	 * @param $nombre
+	 * @param $titulo
+	 * @param $arreglo
+	 * @param $valorCategoria
+	 * @param $valor
+	 * @param null $accion
+	 * @param null $subaccion
+	 * @param null $item
+	 * @param null $clase
+	 * @param null $enviarFormulario
+	 * @param $multiple
+	 * @param int $renglones
+	 */
+	function ponerMenuRenglones($nombre,$titulo,$arreglo,$valorCategoria,$valor,$accion=null,$subaccion=null,$item=null,$clase=null,$enviarFormulario=null,$multiple,$renglones=8)
+	{
+		//$valoresSeleccionados=array();
+		//for ($z=0;$z<count($valor);$z++){
+		//	$valoresSeleccionados[]=$valor[$z]['centroId'];
+		//}
+
+		$accionTxt = ($accion!=null) ? "document.".NOMBRE_FORMULARIO.".accion.value='".$accion."';" : "";
+		$subAccionTxt = ($subaccion!=null) ? "document.".NOMBRE_FORMULARIO.".subaccion.value='".$subaccion."';" : "";
+		$itemTxt = ($item!=null) ? "document.".NOMBRE_FORMULARIO.".item.value='".$item."';" : "";
+		$submitTxt="document.".NOMBRE_FORMULARIO.".submit();\"";
+		$claseTxt=($clase!=null) ? " class='".$clase."' " :'' ;
+		$esMultiple=($multiple!=null) ? "multiple='multiple'" : "";
+		$onChangeTxt=($enviarFormulario!=null) ? "onChange=\"javascript:$accionTxt$subAccionTxt$itemTxt$submitTxt" : '';
+		$cuantosRenglones=($multiple!=null) ? "size='".$renglones."'" : '';
+		$tituloTxt=($titulo !=null) ? "<option value=\"0\" >$titulo</option>" : '';
+
+
+		echo "<select name='".$nombre."[]' id='".$nombre."' $cuantosRenglones $esMultiple $onChangeTxt $claseTxt>";
+
+		echo "$tituloTxt";
+
+		for($x=0;$x<count($arreglo);$x++){
+			if ($valorCategoria==null) {
+				$seleccionTxt = ($arreglo[$x]['id']==$valor) ? " selected " : '';
+				echo "<option value=\"".$arreglo[$x]['id']."\" $seleccionTxt>".utf8_encode($arreglo[$x]['nombre'])."</option>";
+			}else if ($valorCategoria!=null and $valorCategoria==$arreglo[$x]['categoria']){
+				$seleccionTxt = ($arreglo[$x]['id']==$valor) ? " selected " : '';
+				echo "<option value=\"".$arreglo[$x]['id']."\" $seleccionTxt>".$arreglo[$x]['nombre']."</option>";
+			}
+		}
+		echo "</select>";
+	}
+
+	/**
  	 *
 	 * Función para insertar un área de texto
 	 *
@@ -275,12 +326,12 @@ class FxFormularios
 	 * @param $fecha
 	 * @return string
 	 */
-	function transformarFechaMDY($fecha)
+	function transformarFechaDMY($fecha)
 	{
-		$ano=substr($fecha,2,2);
+		$ano=substr($fecha,0,4);
 		$mes=substr($fecha,5,2);
 		$dia=substr($fecha,8,2);
-		$nuevaFecha="$mes-$dia-$ano";
+		$nuevaFecha="$dia-$mes-$ano";
 		return ($nuevaFecha);
 	}
 
