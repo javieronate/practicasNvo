@@ -414,6 +414,9 @@ class Controlador
 				$correcto=$this->modelo->validarDatosPersona($this->arrDatosPersonaTmp);
 				if($correcto==1) $this->admon->arrPersonal=$this->modelo->hacerArregloPersonal();
 				break;
+			case 'llenarDatos':
+				$this->modelo->llenarDatosFicticios();
+				break;
 		}
 	}
 
@@ -508,6 +511,7 @@ class Controlador
 	function hacerArreglosDeSeccionAdmon($post)
 	{
 		$this->admon->arrPersonal=$this->modelo->hacerArregloPersonal();
+		$this->admon->geoJSON=$this->modelo->hacerGeoJSONparaMapa();
 	}
 
 	/**
@@ -568,7 +572,8 @@ class Controlador
 		if(isset($post['ciudad']))  $this->arrDatosEmpresaTmp['ciudad'] = $post['ciudad'];
 		if(isset($post['estado']))  $this->arrDatosEmpresaTmp['estado'] = $post['estado'];
 		if(isset($post['municipio']))  $this->arrDatosEmpresaTmp['municipio'] = $post['municipio'];
-		if(isset($post['ubicacion']))  $this->arrDatosEmpresaTmp['ubicacion'] = $post['ubicacion'];
+		if(isset($post['latitud']))  $this->arrDatosEmpresaTmp['latitud'] = $post['latitud'];
+		if(isset($post['longitud']))  $this->arrDatosEmpresaTmp['longitud'] = $post['longitud'];
 		if(isset($post['contactoNombre']))  $this->arrDatosEmpresaTmp['contactoNombre'] = $post['contactoNombre'];
 		if(isset($post['telefono']))  $this->arrDatosEmpresaTmp['telefono'] = $post['telefono'];
 		if(isset($post['correos']))  $this->arrDatosEmpresaTmp['correos'] = $post['correos'];
@@ -607,11 +612,12 @@ class Controlador
 				}
 			}
 		}
+		// TODO: completar la lista de archivos permitidos considerar zip
 		if(strlen($folderEmpresa)>0 && strlen($folderPractica)>0 && strlen($folderCriterio)>0) {
 			$directorioDestino = ROOT_FOLDER_EVIDENCIAS."$folderEmpresa/$folderPractica/$folderCriterio/";
 			$archivoDestino = $directorioDestino.basename($_FILES["nombresArchivos"]["name"]);
 			$partes_ruta = pathinfo($archivoDestino);
-			switch($partes_ruta['extension']){
+			switch(strtolower($partes_ruta['extension'])){
 				case 'txt':
 				case 'doc':
 				case 'docx':

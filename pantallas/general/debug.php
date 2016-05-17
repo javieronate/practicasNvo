@@ -10,12 +10,15 @@
  * @author Javier Oñate Mendía (Dédalo)
  *
  */
-$this->fx->ensenarArreglo($this->arrEmpresaSeleccionada,'arrEmpresaSeleccionada');
-
-$this->fx->ensenarArreglo($this->mentor,'mentor');
-
-//$this->fx->ensenarArreglo($this->arrDatosEmpresaTmp,'arrDatosEmpresaTmp');
-$this->fx->ensenarArreglo($_POST,'post');
+echo "geoJson<br>";
+echo ($this->admon->geoJSON);
+echo "<br>";
 $this->fx->ensenarArreglo($this->arrDatosEmpresaTmp,'arrDatosEmpresaTmp');
 $this->fx->ensenarArreglo($this->empresa,'empresa');
+$this->fx->ensenarArreglo($_POST,'post');
+
+
+//$this->fx->ensenarArreglo($this->arrDatosEmpresaTmp,'arrDatosEmpresaTmp');
+//$this->fx->ensenarArreglo($this->arrDatosEmpresaTmp,'arrDatosEmpresaTmp');
+//$this->fx->ensenarArreglo($this->empresa,'empresa');
 //$this->fx->ensenarArreglo($this->arrPreguntasAutoevaluacion,'arrPreguntasAutoevaluacion');

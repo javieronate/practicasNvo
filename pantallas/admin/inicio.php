@@ -31,6 +31,7 @@ $jom2='';
 // TODO: Función que represente en un mapa las localizaciones de las empresas
 ?>
 
+
 <div id="empresas">
 	<div class="titulo">
 		Bienvenido <?php echo ($this->admon->datos['nombre']);   ?>
@@ -60,8 +61,9 @@ $jom2='';
 			Donde y quienes:
 		</div>
 
-		<div class="texto">
-			Aqui va una imeagen de satelite con marcas de las empresas participantes
+		<div id="map">
+
+
 		</div>
 	</div>
 	<!--<div id="EmpresaColCentroArriba">-->
@@ -82,4 +84,5 @@ $jom2='';
 
 <?php $this->fx->ponerBoton('admin','irA','manejoMentor','Mentores',NULL,NULL,NULL,'btn btn-primary',0);?>
 <?php $this->fx->ponerBoton('logout','','','Logout',NULL,NULL,NULL,'btn btn-primary',0);?>
+<?php $this->fx->ponerBoton('admin','llenarDatos','','Llenar datos',NULL,NULL,NULL,'btn btn-primary',0);?>
 

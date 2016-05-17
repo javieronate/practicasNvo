@@ -51,6 +51,12 @@ class Admon
 	 */
 	var $arrPersonal=array();
 
+	/**
+	 *
+	 *  Variable que almacena un geoJson para desplegar en mapa las localizaciones de las empresas
+	 *
+	 */
+	var $geoJSON;
 
 	/**
 	 * constructor de clase Admon.

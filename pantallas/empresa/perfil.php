@@ -107,7 +107,7 @@ $jom2='';
 				Municipio
 			</td>
 			<td colspan="1" class="formularioEtiqueta">
-				Ubicación
+				Latitud / Longitud
 			</td>
 		</tr>
 		<tr>
@@ -122,7 +122,8 @@ $jom2='';
 				?>
 			</td>
 			<td colspan="1" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','ubicacion',30,255,$this->arrDatosEmpresaTmp['ubicacion'],'formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','latitud',15,15,$this->arrDatosEmpresaTmp['latitud'],'formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('input','longitud',15,15,$this->arrDatosEmpresaTmp['longitud'],'formularioCampo','nombreEmpresa');?>
 			</td>
 		</tr>
 

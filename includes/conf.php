@@ -10,8 +10,9 @@
  * @author  Javier Oñate Mendía (Dédalo)
  */
 
-
-
+// extender el maximo de tiempo de ejecución
+//ini_set('max_execution_time', 300);
+set_time_limit(0);
 // error_reporting(E_ERROR);
 error_reporting(E_ALL);
 

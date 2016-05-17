@@ -1,6 +1,44 @@
 @CHARSET "UTF-8";
 
+/*  mapa */
 
+#map {
+	width: 430px;
+	height: 306px;
+	background-color: #1f6377;
+}
+
+.empresaMapa{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	border-bottom-width: 3px;
+	border-bottom-style: inset;
+	border-bottom-color: #942a25;
+	line-height: 18px;
+	font-variant: normal;
+	font-size: 18px;
+	color: #666;
+}
+
+.contactoMapa{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 16px;
+	font-variant: normal ;
+	font-size: 14px;
+	color: #999;
+}
+.textoMapa{
+	font-family: Arial, sans-serif;
+	font-weight: 100;
+	font-style: normal;
+	line-height: 12px;
+	font-variant: normal ;
+	font-size: 10px;
+	color: #333;
+}
 /* Estilos de mentor pagina de empresa */
 
 #textoPractica{
@@ -243,7 +281,7 @@
 }
 
 #EmpresaColIzquierda{
-	width: 295px;
+	width: 430px;
 	float: left;
 	/*background-color: darkcyan;*/
 	/*height: 500px;*/
@@ -251,7 +289,7 @@
 
 #EmpresaColDerecha{
 	float: right;
-	width: 295px;
+	width: 430px;
 	/*background-color: gray;*/
 	/*height: 500px;*/
 }
