@@ -33,12 +33,16 @@ $valor="";
 		<div id="textoLateralIzq">
 			<?php
 				for($x=0;$x<count($this->admon->arrPersonal);$x++) {
-					$this->fx->ponerBoton('admin', 'seleccionarPersona', $this->admon->arrPersonal[$x]['id'], $this->admon->arrPersonal[$x]['nombre'], NULL, NULL, NULL, 'btn', 1);
+					echo "<div id='itemIzquierda'>";
+					$this->fx->ponerBoton('admin', 'seleccionarPersona', $this->admon->arrPersonal[$x]['id'], $this->admon->arrPersonal[$x]['nombre'], NULL, NULL, NULL, 'botonAzul', 1);
+					echo "</div>";
 				}
 			?>
 		</div>
 		<div id="textoLateralIzq">
-			<?php $this->fx->ponerBoton('admin', 'agregarPersona', 'nuevo', 'Nuevo', NULL, NULL, NULL, 'btn', 1); ?>
+			<div id='itemIzquierda'>
+				<?php $this->fx->ponerBoton('admin', 'agregarPersona', 'nuevo', 'Nuevo', NULL, NULL, NULL, 'btn', 1); ?>
+			</div>
 		</div>
 		<?php
 		//ponerMenuMultiple($nombre,$titulo,$arreglo,$valorCategoria,$valor,$accion=null,$subaccion=null,$item=null,$clase=null,$enviarFormulario=null,$multiple,$renglones=8);

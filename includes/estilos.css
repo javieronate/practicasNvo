@@ -1,5 +1,39 @@
 @CHARSET "UTF-8";
 
+/* botones */
+
+.botonAzul{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 18px;
+	color: #003bb3;
+}
+
+.botonAzulAngosto{
+	width: 100px;
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 18px;
+	color: #003bb3;
+
+}
+
+#itemIzquierda{
+	/*background-image: url('../imagenes/generales/fondoMenuIzq.jpg');*/
+	height: 30px;
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 30px;
+	color: #003bb3;
+	border-bottom-width: 1px;
+	border-bottom-style: inset;
+	border-bottom-color: #981f32;
+
+}
+
 /*  mapa */
 
 #map {
@@ -53,18 +87,58 @@
 	margin-top: 10px;
 }
 
+#taxtoListaMentorStauts{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: italic;
+	line-height: 12px;
+	font-variant: normal;
+	font-size: 10px;
+	color: #1f6377;
+}
+
+#textoOrientacionMentor{
+	font-family:      Arial, sans-serif;
+	font-weight:      normal;
+	font-style:       normal;
+	line-height:      14px;
+	font-variant:     normal;
+	font-size:        12px;
+	color:            #666;
+	margin-left:      80px;
+	margin-top:       0px;
+	/*border-bottom-width: 1px;*/
+	/*border-bottom-style: inset;*/
+	/*border-bottom-color: #333;*/
+}
+
+#textoComentarioEmpresa{
+	font-family:      Arial, sans-serif;
+	font-weight:      normal;
+	font-style:       italic;
+	line-height:      14px;
+	font-variant:     normal;
+	font-size:        12px;
+	color:            #666;
+	margin-left:      100px;
+	/*border-bottom-width: 1px;*/
+	/*border-bottom-style: inset;*/
+	/*border-bottom-color: #333;*/
+}
+
 #textoCriterio{
 	font-family:      Arial, sans-serif;
 	font-weight:      normal;
 	font-style:       normal;
-	line-height:      16px;
+	line-height:      18px;
 	font-variant:     normal;
-	font-size:        14px;
+	font-size:        16px;
 	color:            #666;
 	margin-left:      50px;
-	margin-top:       5px;
+	margin-top:       15px;
 	border-top-width: 1px;
 	border-top-style: inset;
+	border-top-color: #333;
 }
 
 #textoDatos{
@@ -127,6 +201,55 @@
 	font-size: 10px;
 	color: #999;
 	margin-left: 90px;
+}
+
+#nombreStatus{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: italic;
+	line-height: 12px;
+	font-variant: normal;
+	font-size: 10px;
+	color: #1f6377;
+}
+
+#tipoEvento{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: italic;
+	line-height: 12px;
+	font-variant: normal;
+	font-size: 10px;
+	color: #df8505;
+}
+
+#nombreFecha{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: italic;
+	line-height: 12px;
+	font-variant: normal;
+	font-size: 10px;
+	color: darkmagenta;
+}
+
+#mentorListaFecha{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: italic;
+	line-height: 12px;
+	font-variant: normal;
+	font-size: 10px;
+	color: darkmagenta;
+}
+#mentorListaEstatus{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: italic;
+	line-height: 12px;
+	font-variant: normal;
+	font-size: 10px;
+	color: #df8505;
 }
 
 .upload{
@@ -280,8 +403,22 @@
 	border-top: 1px inset;
 }
 
-#EmpresaColIzquierda{
+#adminColIzquierda{
 	width: 430px;
+	float: left;
+	background-color: darkcyan;
+	/*height: 500px;*/
+}
+
+#adminColDerecha{
+	float: right;
+	width: 430px;
+	background-color: gray;
+	/*height: 500px;*/
+}
+
+#EmpresaColIzquierda{
+	width: 295px;
 	float: left;
 	/*background-color: darkcyan;*/
 	/*height: 500px;*/
@@ -289,7 +426,7 @@
 
 #EmpresaColDerecha{
 	float: right;
-	width: 430px;
+	width: 295px;
 	/*background-color: gray;*/
 	/*height: 500px;*/
 }
@@ -304,6 +441,7 @@
 }
 
 #saltoDeRenglon{
+	/*background-color: gold;*/
 	clear:both;
 }
 
@@ -463,6 +601,7 @@
 	font-size: 10px;
 	color: #666;
 	margin-right: 5px;
+	margin-left: 10px;
 }
 
 .textoLateralDer{
@@ -552,7 +691,8 @@
 
 #ColDerecha70{
 	width: 65%;
-	float: left;
+	float: right;
+
 	/*background-color: #981f32;*/
 }
 

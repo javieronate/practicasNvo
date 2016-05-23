@@ -40,7 +40,7 @@ $jom2='';
 		La adopción de buenas prácticas del ecoturismo
 	</div>
 	<div class="espacioArriba"></div>
-	<div id="EmpresaColIzquierda" >
+	<div id="adminColIzquierda" >
 		<div class="tituloDesempeno">
 			El desempeño sustentable de las empresas participantes es:
 		</div>
@@ -69,7 +69,7 @@ $jom2='';
 	<!--<div id="EmpresaColCentroArriba">-->
 	<!--	centro-->
 	<!--</div>-->
-	<div id="EmpresaColDerecha" >
+	<div id="adminColDerecha" >
 		<div class="tituloDesempeno">
 			El estado de las prácticas es::<br>
 		</div>

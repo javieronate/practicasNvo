@@ -123,7 +123,15 @@ $jom2='';
 		<div class="tituloLateralDer">
 			Imprimir
 		</div>
-
+		<div class="textoLateralDer">
+			<?php
+			for($x=0;$x<count($this->arrDatosPaginaPractica['impresos']);$x++){
+				echo "<a href='".FOLDER_IMPRESOS_PRACTICAS.$this->arrDatosPaginaPractica['impresos'][$x]['archivo']."' target='_blank'>";
+				echo ($this->arrDatosPaginaPractica['impresos'][$x]['archivo']);
+				echo "</a>";
+			}
+			?>
+		</div>
 		<div class="espacioArriba">
 			&nbsp;
 		</div>
@@ -147,7 +155,6 @@ $jom2='';
 
 </div>
 
-<?php //$this->fx->ensenarArreglo($this->arrDatosPaginaCategoria,"arrDatosPaginaCategoria");?>
 
 <!--funcion para cambiar las pestañas-->
 <script>

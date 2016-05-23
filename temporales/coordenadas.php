@@ -112,12 +112,15 @@ $coordenadas=array(
 	'27.704124 -113.285522',
 	'28.735076 -114.301758');
 
-print "<pre>";
-	echo "<br>coordenadas  <BR>";
-	print_r($coordenadas);
-print "</pre>";
 
 
-//$db = new mysqli('localhost', 'jom','lehendakari', 'buenasPracticas');
-//$db->query("SET NAMES utf8");
 
+$db = new mysqli('localhost', 'USUARIO','CLAVE', 'buenasPracticas');
+$db->query("SET NAMES utf8");
+
+for($x=0;$x<count($coordenadas);$x++){
+	$coordenadasTexto="GeomFromText('POINT(".$coordenadas[$x].")')";
+	$sql="update bp_empresas set ubicacion=".$coordenadasTexto." where id=$x";
+	$db->query($sql);
+	$x++;
+}

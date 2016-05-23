@@ -41,6 +41,12 @@ if (!isset($_SESSION['controlador'])) {
 
 if (isset($_POST['accion'])) $_SESSION["controlador"]->evaluarPost($_POST);
 
+if(isset($_POST['accion']) && $_POST['accion']=='mentor' && $_POST['subaccion']=='abrirEvidencia' ){
+	$bodyEtiqueta="<body link=\"#FFFFFF\" vlink=\"#FFFFFF\" alink=\"#FFFFFF\" onload=\"javascript: window.open('".$_POST['item']."','_blank','AtentaNota','width=300,height=200')\">";
+}else{
+	$bodyEtiqueta="<body link='White' vlink='White' alink='White' bgcolor='#FFFFFF'>";
+}
+
 
 
 ?>
@@ -129,7 +135,9 @@ if (isset($_POST['accion'])) $_SESSION["controlador"]->evaluarPost($_POST);
 	<?php } ?>
 </head>
 
-<body link='White' vlink='White' alink='White' bgcolor='#FFFFFF'>
+
+<?php echo "$bodyEtiqueta";  ?>
+<!--<body link='White' vlink='White' alink='White' bgcolor='#FFFFFF'>-->
 	<div id="Contenido">
 		<form action ="index.php" method="post" name ="<?php echo (NOMBRE_FORMULARIO);?>" target="_self" enctype="multipart/form-data">
 			<input type="hidden" name ="accion" value ="">

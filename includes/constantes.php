@@ -18,6 +18,7 @@
 define('NOMBRE_FORMULARIO','reporteador');
 define('FOLDER_IMAGENES_CATEGORIAS','imagenes/categorias/');
 define('FOLDER_IMAGENES_PRACTICAS','imagenes/practicas/');
+define('FOLDER_IMPRESOS_PRACTICAS','impresos/');
 define('ROOT_FOLDER_EVIDENCIAS','evidencias/');
 
 define('TAMANO_MAX_EVIDENCIA','2000000');

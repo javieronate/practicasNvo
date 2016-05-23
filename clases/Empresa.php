@@ -56,9 +56,14 @@ class Empresa
 	 *  Variable que almacena arreglo con las prácticas en proceso de la empresa
 	 *
 	 */
-
 	var $arrPracticasEnProceso=array();
 
+	/**
+	 *
+	 *  Variable que almacena el id del criterio seleccionado para agregar evidencia
+	 *
+	 */
+	VAR $criterioIdSeleccionado='';
 
 	/**
 	 * constructor de clase Empresa.

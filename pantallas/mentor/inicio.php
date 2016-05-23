@@ -14,30 +14,12 @@ $jom2='';
 ?>
 
 <div id="empresas">
-	<div class="titulo">
-		Bienvenido <?php echo ($this->mentor->datos['nombre']); ?>
-	</div>
-	<div class="tituloDesempeno">
-		Pagina principal de cada mentor
-	</div>
-	<div class="espacioArriba"></div>
+	<?php include ('inicioGral.php');?>
 
 
-	<div id="ColIzquierda30">
-
-		<div class="tituloDesempeno">
-			Empresas supervisadas:
-		</div>
-
-		<?php for($x=0;$x<count($this->mentor->arrEmpresasSupervisadas);$x++) {?>
-			<div id="textoLateralIzq">
-				<?php $this->fx->ponerBoton('mentor', 'irAEmpresa', $this->mentor->arrEmpresasSupervisadas[$x]['id'], $this->mentor->arrEmpresasSupervisadas[$x]['nombreEmpresa'], NULL, NULL, NULL, 'btn', 0);?>
-			</div>
-		<?php } ?>
-	</div>
 
 	<div id="ColDerecha70">
-		Lista de eventos nuevos desde el uptimo login del mentor
+		Lista de eventos nuevos desde el ultimo login del mentor
 	</div>
 
 

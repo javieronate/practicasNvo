@@ -77,11 +77,12 @@ class FxFormularios
 	 * @param $clase
 	 * @param $borde
 	 */
-	function ponerBoton($accion,$subaccion,$item,$etiqueta,$imagen,$anchoImagen,$altoImagen,$clase,$borde)
+	function ponerBoton($accion,$subaccion,$item,$etiqueta,$imagen,$anchoImagen,$altoImagen,$clase,$borde,$subitem=null)
 	{
 		$accionTxt = ($accion!='') ? "document.".NOMBRE_FORMULARIO.".accion.value='".$accion."';" : "";
 		$subAccionTxt = ($subaccion!='') ? "document.".NOMBRE_FORMULARIO.".subaccion.value='".$subaccion."';" : "";
 		$itemTxt = ($item!='') ? "document.".NOMBRE_FORMULARIO.".item.value='".$item."';" : "";
+		$subItemTxt=($subitem!=null) ? "document.".NOMBRE_FORMULARIO.".subItem.value='".$subitem."';" : "";
 		$submitTxt="document.".NOMBRE_FORMULARIO.".submit();\"";
 		if($imagen!=''){
 			$anchoTxt=($anchoImagen!='') ? " width='".$anchoImagen."' " : "";
@@ -90,12 +91,12 @@ class FxFormularios
 			$bordeTxt=($borde!='') ? " border='".$borde."' " : "";
 			$etiquetaTxt=($etiqueta!='') ? " alt='".$etiqueta."' " : "";
 			$etiquetaDef="<img src='"."$imagen' $anchoTxt$altoTxt$claseTxt$bordeTxt$etiquetaTxt>";
-			echo "<a href=\"javascript:$accionTxt$subAccionTxt$itemTxt$submitTxt>";
+			echo "<a href=\"javascript:$accionTxt$subAccionTxt$itemTxt$subItemTxt$submitTxt>";
 			echo("$etiquetaDef");
 			echo "</a>";
 		}else{
 			$claseTxt=($clase!='') ? " class='".$clase."' " : "";
-			echo "<a href=\"javascript:$accionTxt$subAccionTxt$itemTxt$submitTxt$claseTxt>";
+			echo "<a href=\"javascript:$accionTxt$subAccionTxt$itemTxt$subItemTxt$submitTxt$claseTxt>";
 			echo "$etiqueta";
 			echo("</a>");
 		}
@@ -320,6 +321,33 @@ class FxFormularios
 	}
 
 	/**
+	 *
+	 * Genera un string pseudoaleatorio del largo especificado
+	 *
+	 * @param $largo
+	 *
+	 * @return string
+	 */
+	function hacerAlfanumericoAleatorio($largo)
+	{
+		$caracteres = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+		$texto = '';
+		for ($x = 0; $x < $largo; $x++) {
+			$texto .= $caracteres[rand(0, strlen($caracteres) - 1)];
+		}
+		return($texto);
+	}
+
+
+	function convertirAASCII( $texto )
+	{
+        return strtr(utf8_decode($texto),
+        utf8_decode(
+        'ŠŒŽšœžŸ¥µÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýÿ& '),
+        'SOZsozYYuAAAAAAACEEEEIIIIDNOOOOOOUUUUYsaaaaaaaceeeeiiiionoooooouuuuyy__');
+	}
+
+	/**
   	 *
 	 * Función para cambiar formato de fecha de (año-mes-dia) a (dia-mes-año)
 	 *
@@ -404,7 +432,7 @@ class FxFormularios
 		echo "<select name='menuPracticaPendiente' id='menuPracticaPendiente'  >";
 		echo "<option value='".$titulo."' >$titulo</option>";
 		for($x=0;$x<count($arreglo);$x++){
-			echo "<option value='".$arreglo[$x]['idCategoria']."' ><div class='tituloSeccion'>".$arreglo[$x]['nombreCategoria']."</div></option>";
+			echo "<option value='noSeleccionable' ><div class='tituloSeccion'>".$arreglo[$x]['nombreCategoria']."</div></option>";
 			for($y=0;$y<count($arreglo[$x]['practicas']);$y++){
 				if($arreglo[$x]['practicas'][$y]['idEstatus'] == '') {
 					echo "<option value='".$arreglo[$x]['practicas'][$y]['idPractica']."'><div class='tituloSeccion'>"."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;".$arreglo[$x]['practicas'][$y]['nombrePractica']."</div></option>";

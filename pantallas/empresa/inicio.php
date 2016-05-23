@@ -98,11 +98,12 @@ $jom2='';
 		<div class="espacioArriba"></div>
 		<?php
 		for($x=0;$x,$x<count($this->empresa->arrPracticasEnProceso);$x++){
+			$fechaBien=$this->fx->transformarFechaDMY($this->empresa->arrPracticasEnProceso[$x]['fechaIncio']);
 			echo "<div class='practicaDesempeno textoEnProceso'>";
 			echo ($this->empresa->arrPracticasEnProceso[$x]['nombrePractica']);
 			echo "</div>";
 			echo "<div class='fechaDesempeno'>";
-			echo ("Fecha inicio: ".$this->empresa->arrPracticasEnProceso[$x]['fechaIncio']);
+			echo ("Fecha inicio: ".$fechaBien);
 			echo "</div>";
 			echo "<div class='lineaDelgada'></div>";
 		}
@@ -126,7 +127,7 @@ $jom2='';
 					<?php
 					for($y=0;$y<count($this->arrListaPracticas[$x]['practicas']);$y++) {
 						if ($this->arrListaPracticas[$x]['practicas'][$y]['idEmpresaBuenaPractica'] >0) {
-							$claseAUsar=($this->arrListaPracticas[$x]['practicas'][$y]['idEstatus']==3)? "seccionPracticaAprobada" : "seccionPracticaEnProceso";
+							$claseAUsar=($this->arrListaPracticas[$x]['practicas'][$y]['idEstatus']==4)? "seccionPracticaAprobada" : "seccionPracticaEnProceso";
 							echo "<div class='".$claseAUsar."'>";
 							echo ($this->arrListaPracticas[$x]['practicas'][$y]['nombrePractica']);
 							echo "</div>";

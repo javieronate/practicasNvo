@@ -215,7 +215,7 @@ class Controlador
 					$this->empresa=null;
 					$this->mentor=null;
 					$this->admon=null;
-					$this->mensaje="No se encontro el usuario. Vuelva a intentar";
+					$this->mensaje="No se encontró el usuario. Vuelva a intentar";
 					$this->pantalla='pantallas/general/login.php';
 				} else if ($usuario['rol']=='empresa'){
 					$this->mentor=null;
@@ -325,8 +325,16 @@ class Controlador
 				break;
 			case 'agregarPractica':
 				$hoy=date('Y-m-d');
-				$this->modelo->agregarPracticaAEmpresa($this->empresa->id,$post['menuPracticaPendiente'],'2',HOY,'1','Agregada por el usuario','3');
-				$this->hacerArregloPracticasEnProceso();
+				if($post['menuPracticaPendiente']!="noSeleccionable" && $post['menuPracticaPendiente']!="Elija practica") {
+					$this->modelo->agregarPracticaAEmpresa($this->empresa->id, $post['menuPracticaPendiente'], '2');
+					$this->hacerArreglosDeSeccionEmpresa();
+				}
+				break;
+			case 'seleccionarCriterio':
+				$this->empresa->criterioIdSeleccionado=$post['item'];
+				break;
+			case 'quitarCriterio':
+				$this->empresa->criterioIdSeleccionado='';
 				break;
 		}
 	}
@@ -354,24 +362,37 @@ class Controlador
 				$this->arrEmpresaSeleccionada=$this->buscarEmpresaSeleccionada($post['item']);
 				$this->pantalla='pantallas/mentor/detalleEmpresa.php';
 				break;
+			case 'agregarEmpresa':
+				$this->pantalla='pantallas/mentor/nuevaEmpresa.php';
+				break;
+			case 'grabarNuevaEmpresa':
+				$this->modelo->agregarEmpresa($post,$this->mentor->id);
+				// actualizar arreglo de empresas
+				$this->mentor->arrEmpresasSupervisadas=$this->modelo->hacerArregloEmpresasDeMentor($this->mentor->id);
+				break;
 			case 'aprobarEvidencia':
-				$this->modelo->aprobarEvidencia($post['item'],$this->arrEmpresaSeleccionada);
+				$this->modelo->aprobarCriterio($post,$this->arrEmpresaSeleccionada);
 				$empresaSeleccionadaId=$this->arrEmpresaSeleccionada['id'];
-
 				// verificar si se completo la practica
 				$this->modelo->validarCompletudDeCriteriosDePractica($post['item'],$this->arrEmpresaSeleccionada);
+				// actualizar arreglo de empresas
+				$this->mentor->arrEmpresasSupervisadas=$this->modelo->hacerArregloEmpresasDeMentor($this->mentor->id);
+				// actualizar arreglo de empresa seleccionada
+				$this->arrEmpresaSeleccionada=$this->buscarEmpresaSeleccionada($empresaSeleccionadaId);
+				break;
+			case 'rechazarEvidencia':
+				$this->modelo->rechazarCriterio($post,$this->arrEmpresaSeleccionada);
+				$empresaSeleccionadaId=$this->arrEmpresaSeleccionada['id'];
 
 				// actualizar arreglo de empresas
 				$this->mentor->arrEmpresasSupervisadas=$this->modelo->hacerArregloEmpresasDeMentor($this->mentor->id);
 
 				// actualizar arreglo de empresa seleccionada
 				$this->arrEmpresaSeleccionada=$this->buscarEmpresaSeleccionada($empresaSeleccionadaId);
-
 				break;
-			case 'rechazarEvidencia':
-				$this->modelo->rechazarEvidencia($post['item'],$this->arrEmpresaSeleccionada);
+			case 'abrirEvidencia':
 				$empresaSeleccionadaId=$this->arrEmpresaSeleccionada['id'];
-
+				$this->modelo->anotarAperturaEvidencia($this->arrEmpresaSeleccionada,$post['subItem']);
 				// actualizar arreglo de empresas
 				$this->mentor->arrEmpresasSupervisadas=$this->modelo->hacerArregloEmpresasDeMentor($this->mentor->id);
 
@@ -484,11 +505,12 @@ class Controlador
 		$this->arrListaPracticas= $this->modelo->hacerArregloBuenasPracticas($this->empresa->id);
 
 		// hacer arreglo de las practicas terminadas por la empresa
-		$arrPracticasTerminadas=$this->modelo->hacerArregloPracticas($this->empresa->id,3);
+		$arrPracticasTerminadas=$this->modelo->hacerArregloPracticas($this->empresa->id,4);
 		$this->empresa->arrPracticasTerminadas=$arrPracticasTerminadas;
 
 		// hacer arreglo de las practicas en proceso de la empresa
 		$this->hacerArregloPracticasEnProceso();
+
 	}
 
 	/**
@@ -528,8 +550,10 @@ class Controlador
 
 		// hacer arreglo de criterios por práctica en proceso y de eventos de cumplimiento por cada criterio
 		for($x=0;$x<count($this->empresa->arrPracticasEnProceso);$x++){
-			$this->empresa->arrPracticasEnProceso[$x]['criterios']=$this->modelo->hacerArregloCriteriosYEvidencias($this->empresa->id,
-				$this->empresa->arrPracticasEnProceso[$x]['buenasPracticasId'],$this->empresa->arrPracticasEnProceso[$x]['id']);
+			$this->empresa->arrPracticasEnProceso[$x]['criterios']=$this->modelo->hacerArregloCriteriosYEvidencias(
+				$this->empresa->id,
+				$this->empresa->arrPracticasEnProceso[$x]['buenasPracticasId'],
+				$this->empresa->arrPracticasEnProceso[$x]['id']);
 		}
 
 	}
@@ -587,7 +611,7 @@ class Controlador
 	 * Evalúa datos recibidos del post.
 	 * Genera folders de empresa, practica y criterio para guardar evidencia
 	 * Graba evidencia en folder
-	 * Llama a función del modelo 'agregarEvidencia' que actualiza tabla bp_empresa_buenaPractica_eventos
+	 * Llama a función del modelo 'agregarEvidencia' que actualiza tabla bp_empresa_buenaPractica_criterios
 	 * Llama afunción 'hacerArregloPracticasEnProceso' que actualiza arreglos de la sección de empresa
 	 *
 	 * @param $post
@@ -596,28 +620,27 @@ class Controlador
 	{
 		// Verificar si se indico adecuadamente el criterio
 		// Verificar si existe el directorio de empresa/practica/criterio
-		$folderEmpresa=str_replace(' ','_',$this->empresa->datos['nombreEmpresa']);
-		$folderPractica='';
-		$folderCriterio='';
-		$empresa_buenaPracticaId='';
-		$criterioId='';
 
-		for($x=0;$x<count($this->empresa->arrPracticasEnProceso);$x++){
-			for($y=0;$y<count($this->empresa->arrPracticasEnProceso[$x]['criterios']);$y++){
-				if($this->empresa->arrPracticasEnProceso[$x]['criterios'][$y]['criterioId']==$post['menuPracticaCriterio']){
-					$folderPractica="Practica_".$this->empresa->arrPracticasEnProceso[$x]['buenasPracticasId'];
-					$folderCriterio="Criterio_".$this->empresa->arrPracticasEnProceso[$x]['criterios'][$y]['criterioId'];
-					$empresa_buenaPracticaId=$this->empresa->arrPracticasEnProceso[$x]['id'];
-					$criterioId=$this->empresa->arrPracticasEnProceso[$x]['criterios'][$y]['criterioId'];
-				}
-			}
-		}
+		$cachos=explode(":",$this->empresa->criterioIdSeleccionado);
+		$folderEmpresa=$this->fx->convertirAASCII($this->empresa->datos['nombreEmpresa']);
+		$folderPractica="Practica_".$this->empresa->arrPracticasEnProceso[$cachos['0']]['buenasPracticasId'];
+		$folderCriterio="Criterio_".$this->empresa->arrPracticasEnProceso[$cachos['0']]['criterios'][$cachos['1']]['criterioId'];
+		$empresa_buenaPracticaId=$this->empresa->arrPracticasEnProceso[$cachos['0']]['id'];
+		$criterioId=$this->empresa->arrPracticasEnProceso[$cachos['0']]['criterios'][$cachos['1']]['criterioId'];
+		$empresaPracticaCriterioId=$this->empresa->arrPracticasEnProceso[$cachos['0']]['criterios'][$cachos['1']]['id'];
+		$buenaPracticaId=$this->empresa->arrPracticasEnProceso[$cachos['0']]['buenasPracticasId'];
+
 		// TODO: completar la lista de archivos permitidos considerar zip
 		if(strlen($folderEmpresa)>0 && strlen($folderPractica)>0 && strlen($folderCriterio)>0) {
+
 			$directorioDestino = ROOT_FOLDER_EVIDENCIAS."$folderEmpresa/$folderPractica/$folderCriterio/";
-			$archivoDestino = $directorioDestino.basename($_FILES["nombresArchivos"]["name"]);
-			$partes_ruta = pathinfo($archivoDestino);
-			switch(strtolower($partes_ruta['extension'])){
+			$nombreOriginal=pathinfo($_FILES["nombresArchivos"]["name"]);
+			$nombreParaDespliegue=$nombreOriginal['basename'];
+			$nombreExtension=$nombreOriginal['extension'];
+			$nombreArchivo=$this->fx->hacerAlfanumericoAleatorio(12);
+			$rutaCompletaArchivoDestino = $directorioDestino.$nombreArchivo.".".$nombreExtension;
+
+			switch(strtolower($nombreExtension)){
 				case 'txt':
 				case 'doc':
 				case 'docx':
@@ -641,7 +664,7 @@ class Controlador
 
 			$tamano=filesize($_FILES["nombresArchivos"]["tmp_name"]);
 			if($tipoEvidencia>0 && $tamano<TAMANO_MAX_EVIDENCIA) {
-				// si no existe crearlo
+				// Revisar si existe directorio. Si no existe crearlo
 				$directorioCreado = 0;
 				if (!file_exists($directorioDestino)) {
 					if (mkdir($directorioDestino, 0777, true)) {
@@ -650,26 +673,29 @@ class Controlador
 				} else {
 					$directorioCreado = 1;
 				}
+
 				if ($directorioCreado == 1) {
 					$existe = 1;
 					$indice = 1;
 					while ($existe == 1) {
-						if (!file_exists($archivoDestino)) {
-							move_uploaded_file($_FILES["nombresArchivos"]["tmp_name"], $archivoDestino);
-							$this->modelo->agregarEvidencia('2',$empresa_buenaPracticaId,$criterioId,$archivoDestino,$tipoEvidencia,'2',$post['comentarios'],'3');
+						if (!file_exists($rutaCompletaArchivoDestino)) {
+							move_uploaded_file($_FILES["nombresArchivos"]["tmp_name"], $rutaCompletaArchivoDestino);
+							$this->modelo->agregarEvidencia('2', $empresa_buenaPracticaId,$empresaPracticaCriterioId, $buenaPracticaId, $criterioId, $rutaCompletaArchivoDestino,
+														$nombreParaDespliegue, $tipoEvidencia, '2',$post['comentarios'], '3');
 							$this->hacerArregloPracticasEnProceso();
 							$existe = 0;
 						} else {
-							$nuevoNombre = $partes_ruta['filename']."_".$indice.".".$partes_ruta['extension'];
-							$archivoDestino = $directorioDestino.$nuevoNombre;
+							$nuevoNombre = $nombreArchivo."_".$indice.".".$nombreExtension;
+							$rutaCompletaArchivoDestino = $directorioDestino.$nuevoNombre;
 							$indice++;
 						}
 					}
 				}else{
 					echo "error al crear el directorio<br>";
 				}
-			}else{
-				echo "error de tipo de archivo o tamaño<br>";
+			}else {
+			echo "error de tipo de archivo o tamaño<br>";
+
 			}
 		}else{
 			echo "error al indicar el criterio exacto<br>";
@@ -721,7 +747,6 @@ class Controlador
 		return($arrTmp);
 	}
 
-
 	/**
 	 *
 	 * Actualiza el arreglo de arrDatosPersonaTmp de acuerdo a laos valores recibidos del post.
@@ -739,7 +764,6 @@ class Controlador
 		if(isset($post['esSuperAdmin']))  $this->arrDatosPersonaTmp['esSuperAdmin'] = $post['esSuperAdmin'];
 		if(isset($post['notificarPorCorreoCadaHorasPersona']))  $this->arrDatosPersonaTmp['correoNotificacionCadaXHoras'] = $post['notificarPorCorreoCadaHorasPersona'];
 	}
-
 
 	/**
 	 *
