@@ -838,7 +838,6 @@ class Modelo
 		$idEvidencia=$arrEmpresa['practicas'][$cachos['0']]['criterios'][$cachos['1']]['evidencias'][$cachos['2']]['id'];
 
 		$sql="update bp_evidencias set fechaVisualizacion='".HOY."', evidenciaStatus=3 where id=$idEvidencia";
-		echo "$sql<br>";
 		$this->db->query($sql);
 	}
 

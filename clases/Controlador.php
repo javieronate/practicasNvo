@@ -358,7 +358,6 @@ class Controlador
 				}
 				break;
 			case 'irAEmpresa':
-				echo $post['item']."<br>";
 				$this->arrEmpresaSeleccionada=$this->buscarEmpresaSeleccionada($post['item']);
 				$this->pantalla='pantallas/mentor/detalleEmpresa.php';
 				break;

@@ -406,14 +406,14 @@
 #adminColIzquierda{
 	width: 430px;
 	float: left;
-	background-color: darkcyan;
+	/*background-color: darkcyan;*/
 	/*height: 500px;*/
 }
 
 #adminColDerecha{
 	float: right;
 	width: 430px;
-	background-color: gray;
+	/*background-color: gray;*/
 	/*height: 500px;*/
 }
 
