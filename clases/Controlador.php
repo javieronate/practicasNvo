@@ -62,7 +62,7 @@ class Controlador
 	/**
 	 * Almacena variable que indica en que zona del sitio se encuentra el usuario
 	 */
-	var $zona = 'general';
+	var $logueado = 'no';
 
 	/**
 	 * Almacena variable que indica la pantalla a mostrar
@@ -215,32 +215,44 @@ class Controlador
 					$this->empresa=null;
 					$this->mentor=null;
 					$this->admon=null;
+					$this->logueado='no';
 					$this->mensaje="No se encontró el usuario. Vuelva a intentar";
 					$this->pantalla='pantallas/general/login.php';
 				} else if ($usuario['rol']=='empresa'){
 					$this->mentor=null;
 					$this->admon=null;
 					$this->empresa=new Empresa($usuario);
+					$this->logueado='empresa';
 					$this->hacerArreglosDeSeccionEmpresa();
 					$this->pantalla='pantallas/empresa/inicio.php';
-				}else if($usuario['rol']=='administrador'){
-					$this->empresa=null;
-					$this->mentor=null;
-					$this->admon= new Admon($usuario);
-					$this->hacerArreglosDeSeccionAdmon($post);
-					$this->pantalla='pantallas/admin/inicio.php';
 				}else if($usuario['rol']=='mentor'){
 					$this->admon=null;
 					$this->empresa=null;
 					$this->mentor=new Mentor($usuario);
+					$this->logueado='mentor';
 					$this->hacerArreglosDeSeccionMentor();
 					$this->pantalla='pantallas/mentor/inicio.php';
+				}else if($usuario['rol']=='adminRegional'){
+					$this->empresa=null;
+					$this->mentor=null;
+					$this->admon= new Admon($usuario);
+					$this->logueado='si';
+					$this->hacerArreglosDeSeccionAdmonRegional($post);
+					$this->pantalla='pantallas/admin/inicio.php';
+				}else if($usuario['rol']=='superAdmin'){
+					$this->empresa=null;
+					$this->mentor=null;
+					$this->admon= new Admon($usuario);
+					$this->logueado='si';
+					$this->hacerArreglosDeSeccionAdmon($post);
+					$this->pantalla='pantallas/admin/inicio.php';
 				}
 				break;
 	        case 'logout':
 		        $this->empresa=null;
 		        $this->mentor=null;
 		        $this->admon=null;
+		        $this->logueado='no';
 				$this->limpiarArreglos();
 		        $this->pantalla='pantallas/general/login.php';
 		        break;
@@ -297,7 +309,7 @@ class Controlador
 				break;
 			case 'autoevaluacionGrabar':
 				$this->actualizarRespuestasAutoevaluacion($post);
-				$correcto=$this->modelo->validarAutoevaluacion($this->arrPreguntasAutoevaluacion,$this->empresa->id);
+				$correcto=$this->modelo->validarAutoevaluacion($this->arrPreguntasAutoevaluacion,$this->empresa->id,$this->empresa->datos['nombreEmpresa'],$this->empresa->datos['mentorId']);
 				if($correcto==1){
 					$hoy=date('Y-m-d');
 					$this->hacerArreglosDeSeccionEmpresa();
@@ -326,7 +338,7 @@ class Controlador
 			case 'agregarPractica':
 				$hoy=date('Y-m-d');
 				if($post['menuPracticaPendiente']!="noSeleccionable" && $post['menuPracticaPendiente']!="Elija practica") {
-					$this->modelo->agregarPracticaAEmpresa($this->empresa->id, $post['menuPracticaPendiente'], '2');
+					$this->modelo->agregarPracticaAEmpresa($this->empresa->id, $post['menuPracticaPendiente'], '2',$this->empresa->datos['nombreEmpresa'],$this->empresa->datos['mentorId']);
 					$this->hacerArreglosDeSeccionEmpresa();
 				}
 				break;
@@ -453,15 +465,6 @@ class Controlador
 		switch($post['subaccion']){
 			case 'irA':
 				switch ($post['item']){
-					case 'innovacion':
-						$this->pantalla='pantallas/general/innovacion.php';
-						break;
-					case 'redesTurismo':
-						$this->pantalla='pantallas/general/redesTurismo.php';
-						break;
-					case 'capacitacion':
-						$this->pantalla='pantallas/general/capacitacion.php';
-						break;
 					case 'login':
 						$this->pantalla='pantallas/general/login.php';
 						break;
@@ -529,9 +532,9 @@ class Controlador
 	 *
 	 * @param $post
 	 */
-	function hacerArreglosDeSeccionAdmon($post)
+	function hacerArreglosDeSeccionAdmonRegional($post)
 	{
-		$this->admon->arrPersonal=$this->modelo->hacerArregloPersonal();
+		$this->admon->arrPersonal=$this->modelo->hacerArregloPersonal($this->admon);
 		$this->admon->geoJSON=$this->modelo->hacerGeoJSONparaMapa();
 	}
 
@@ -681,6 +684,14 @@ class Controlador
 							move_uploaded_file($_FILES["nombresArchivos"]["tmp_name"], $rutaCompletaArchivoDestino);
 							$this->modelo->agregarEvidencia('2', $empresa_buenaPracticaId,$empresaPracticaCriterioId, $buenaPracticaId, $criterioId, $rutaCompletaArchivoDestino,
 														$nombreParaDespliegue, $tipoEvidencia, '2',$post['comentarios'], '3');
+							$mensaje="La empresa ".$this->empresa->datos['nombreEmpresa'].
+								" ha añadido la evidencia \"$nombreParaDespliegue\" al criterio \"".
+								$this->empresa->arrPracticasEnProceso[$cachos['0']]['criterios'][$cachos['1']]['nombre']
+								."\" de la práctica \"".
+								$this->empresa->arrPracticasEnProceso[$cachos['0']]['nombrePractica']."\"";
+							;
+							$this->modelo->agregarRegistroLog($this->empresa->id, $this->empresa->datos['mentorId'], $mensaje, 3);
+
 							$this->hacerArregloPracticasEnProceso();
 							$existe = 0;
 						} else {

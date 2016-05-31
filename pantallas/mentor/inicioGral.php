@@ -31,7 +31,4 @@ $jom2="";
 			<?php $this->fx->ponerBoton('mentor', 'irAEmpresa', $this->mentor->arrEmpresasSupervisadas[$x]['id'], $this->mentor->arrEmpresasSupervisadas[$x]['nombreEmpresa'], NULL, NULL, NULL, 'botonAzul', 0);?>
 		</div>
 	<?php } ?>
-	<div id="itemIzquierda">
-		<?php $this->fx->ponerBoton('mentor','agregarEmpresa','nueva', 'Agregar empresa', NULL, NULL, NULL, 'botonAzul', 0);?>
-	</div>
 </div>

@@ -67,7 +67,7 @@ $jom2='';
 				Ejemplos del cumplimiento de esta práctica
 			</div>
 			<div class="texto">
-				Falta ligar a lista de items
+				<?php echo ($this->arrDatosPaginaPractica['ejemplosCumplimiento']);?>
 			</div>
 		</div>
 
@@ -104,7 +104,7 @@ $jom2='';
 			Aprender más
 		</div>
 		<div class="textoLateralDer">
-			aqui va lista de aprender mas
+			<?php echo ($this->arrDatosPaginaPractica['aprenderMas']);?>
 		</div>
 
 		<div class="espacioArriba">
@@ -140,9 +140,9 @@ $jom2='';
 			<?php
 
 			if(isset($this->empresa->id) && $this->empresa->id > 0){
-				$this->fx->ponerBoton('empresa','irA','inicio','Regresar',NULL,NULL,NULL,'btn btn-primary',0);
+				//$this->fx->ponerBoton('empresa','irA','inicio','Regresar',NULL,NULL,NULL,'btn btn-primary',0);
 			}else{
-				$this->fx->ponerBoton('general','irACategoria',$this->arrDatosPaginaPractica['categoriaId'],'Regresar',NULL,NULL,NULL,'btn btn-primary',0);
+				//$this->fx->ponerBoton('general','irACategoria',$this->arrDatosPaginaPractica['categoriaId'],'Regresar',NULL,NULL,NULL,'btn btn-primary',0);
 			}
 			?>
 		</div>

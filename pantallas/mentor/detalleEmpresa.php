@@ -27,7 +27,7 @@ $jom2='';
 					$fechaInicio=$this->fx->transformarFechaDMY($this->arrEmpresaSeleccionada['practicas'][$x]['fechaIncio']);
 					$fechaAprobacion=$this->fx->transformarFechaDMY($this->arrEmpresaSeleccionada['practicas'][$x]['fechaAprobacion']);?>
 					<div id='textoPractica'>
-						<?php echo ($this->arrEmpresaSeleccionada['practicas'][$x]['buenapracticaId']." - ".$this->arrEmpresaSeleccionada['practicas'][$x]['nombrePractica']);?>
+						<?php echo ($this->arrEmpresaSeleccionada['practicas'][$x]['buenapracticaId']." - ".$this->arrEmpresaSeleccionada['practicas'][$x]['nombrePractica']."<span id='textoFecha'>   (Puntos:".$this->arrEmpresaSeleccionada['practicas'][$x]['puntos'].")</span>");?>
 					</div>
 					<div id='textoDatos'>
 						Inicio: <?php echo "$fechaInicio - Aprobación: $fechaAprobacion";?>
@@ -65,7 +65,7 @@ $jom2='';
 						$itemBoton = "$x;$y";
 						$nombreComentarios="comentariosMentor".$itemBoton;
 						// nombre de criterio
-						echo("<div id='textoCriterio'>".$this->arrEmpresaSeleccionada['practicas'][$x]['criterios'][$y]['criterioNombre']." <span id='textoFecha'> (Puntos: ".$this->arrEmpresaSeleccionada['practicas'][$x]['criterios'][$y]['criterioPuntos'].")</span>");
+						echo("<div id='textoCriterio'>".$this->arrEmpresaSeleccionada['practicas'][$x]['criterios'][$y]['criterioNombre']);
 						echo "<span id='taxtoListaMentorStauts'>";
 						echo ("   ".$this->arrEmpresaSeleccionada['practicas'][$x]['criterios'][$y]['nombreStatus']);
 						echo "</span>";
@@ -107,6 +107,3 @@ $jom2='';
 			<div class="espacioArriba"></div>
 			<div class="espacioArriba"></div>
 		</div>
-
-<?php $this->fx->ponerBoton('mentor','irA','inicio','Inicio',NULL,NULL,NULL,'btn btn-primary',0);?>
-<?php $this->fx->ponerBoton('logout','','','Logout',NULL,NULL,NULL,'btn btn-primary',0);?>

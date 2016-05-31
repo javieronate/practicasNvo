@@ -27,8 +27,7 @@ $jom2='';
 	<div class="espacioArriba"></div>
 	<div class="espacioArriba"></div>
 </div>
-<?php $this->fx->ponerBoton('mentor','irA','inicio','Inicio',NULL,NULL,NULL,'btn btn-primary',0);?>
-<?php $this->fx->ponerBoton('logout','','','Logout',NULL,NULL,NULL,'btn btn-primary',0);?>
+
 
 
 

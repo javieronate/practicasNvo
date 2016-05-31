@@ -14,8 +14,9 @@
 //echo ($this->admon->geoJSON);
 //echo "<br>";
 $this->fx->ensenarArreglo($_POST,'post');
-$this->fx->ensenarArreglo($this->arrDatosPaginaPractica,'arrDatosPaginaPractica');
-$this->fx->ensenarArreglo($this->empresa->arrPracticasEnProceso,'arrPracticasEnProceso');
+
+//$this->fx->ensenarArreglo($this->arrEmpresaSeleccionada,'arrEmpresaSeleccionada');
+$this->fx->ensenarArreglo($this->admon,'admonRegional');
 
 
 

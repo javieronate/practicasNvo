@@ -144,19 +144,8 @@ $jom2='';
 			</div>
 	</div>
 	<div id="saltoDeRenglon"></div>
-	<div class="">
-		<?php
-		$this->fx->ponerBoton('empresa','irA','perfil','Editar perfil',NULL,NULL,NULL,'btn btn-primary',0);
-		if($this->empresa->datos['autoevaluacionHecha']==0){
-			$this->fx->ponerBoton('empresa','irA','autoevaluacion','Realizar autoevaluación',NULL,NULL,NULL,'btn btn-primary',0);
-		}
-		if($this->empresa->datos['infoCapturada']==1 && $this->empresa->datos['autoevaluacionHecha']==1){
-			$this->fx->ponerBoton('empresa','irA','admonPracticasEvidencias','Administración de prácticas y evidencias',NULL,NULL,NULL,'btn btn-primary',0);
-		}
-
-
-		$this->fx->ponerBoton('logout','','','Logout',NULL,NULL,NULL,'btn btn-primary',0);
-		?>
-	</div>
+	<!--<div class="">-->
+	<!--	-->
+	<!--</div>-->
 </div>
 

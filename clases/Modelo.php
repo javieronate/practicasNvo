@@ -274,7 +274,7 @@ class Modelo
 			$arrTmp['ultimoLogin'] = $datos2['ultimoLogin'];
 			$arrTmp['usuario'] = $datos2['usuario'];
 			$arrTmp['clave'] = $datos2['clave'];
-			$this->agregarRegistroLog($arrTmp['id'],NULL,MENSAJE_LOGIN_EMPRESA,3);
+			$this->agregarRegistroLog($arrTmp['id'],null,MENSAJE_LOGIN_EMPRESA,4);
 			$this->anotarUltimoLoginEmpresa($arrTmp['id']);
 		}else{
 			// buscar si es usuario de personal
@@ -282,16 +282,32 @@ class Modelo
 			$resultado = $this->db->query($sql);
 			$datos = $resultado->fetch_assoc();
 			if($datos['cuantos']==1) {
-				$sql2 = "select * from bp_personal where usuario ='" . $usuario . "' and clave='" . $clave . "'";
+				$sql2 = "select bp_personal.*,bp_catNiveles.nombre as nombreNivel from bp_personal
+						left join bp_catNiveles on bp_catNiveles.id=bp_personal.nivelId
+						where usuario ='" . $usuario . "' and clave='" . $clave . "'";
 				$resultado2 = $this->db->query($sql2);
 				$datos2 = $resultado2->fetch_assoc();
-				$arrTmp['rol'] =  $datos2['esSuperAdmin']==1 ? 'administrador' :'mentor';
+
+				switch($datos2['nivelId']){
+					case '1':
+						$rol='superAdmin';
+						break;
+					case '2':
+						$rol='adminRegional';
+						break;
+					case '3':
+						$rol='mentor';
+						break;
+				}
+				$arrTmp['nombreNivel'] = $datos2['nombreNivel'];
+				$arrTmp['rol'] = $rol;
 				$arrTmp['id'] = $datos2['id'];
 				$arrTmp['nombre'] = $datos2['nombre'];
 				$arrTmp['email'] = $datos2['email'];
-				$arrTmp['esSuperAdmin'] = $datos2['esSuperAdmin'];
+				$arrTmp['nivelId'] = $datos2['nivelId'];
+				$arrTmp['superiorId'] = $datos2['superiorId'];
 				$arrTmp['ultimoLogin'] = $datos2['ultimoLogin'];
-				$this->agregarRegistroLog(NULL,$arrTmp['id'],MENSAJE_LOGIN_PERSONAL,3);
+				$this->agregarRegistroLog(null,$arrTmp['id'],MENSAJE_LOGIN_PERSONAL,4);
 				$this->anotarUltimoLoginPersona($arrTmp['id']);
 			}else{
 				$arrTmp['rol'] = "fallo";
@@ -311,7 +327,14 @@ class Modelo
 	 */
 	function agregarRegistroLog($idEmpresa, $idPersonal, $mensaje, $prioridad)
 	{
-		$sql=($idPersonal==NULL)? "insert into bp_logActividades(idEmpresa,mensaje,prioridad) values ($idEmpresa,'".$mensaje."',$prioridad)" : "insert into bp_logActividades(idPersonal,mensaje,prioridad) values ($idPersonal,'".$mensaje."',$prioridad)";
+
+		if($idEmpresa==null){
+			$sql="insert into bp_logActividades SET idPersonal='".$idPersonal."',mensaje='".$mensaje."',prioridad='".$prioridad."'";
+		}else if ($idPersonal==null){
+			$sql="insert into bp_logActividades SET idEmpresa='".$idEmpresa."',mensaje='".$mensaje."',prioridad='".$prioridad."'";
+		}else{
+			$sql="insert into bp_logActividades SET idEmpresa='".$idEmpresa."',idPersonal='".$idPersonal."',mensaje='".$mensaje."',prioridad='".$prioridad."'";
+		}
 		$this->db->query($sql);
 	}
 
@@ -454,6 +477,7 @@ class Modelo
 		return($arrTmp);
 	}
 
+
 	/**
 	 *
 	 * Función que valida las respuestas de la autoevaluación.
@@ -461,13 +485,16 @@ class Modelo
 	 * Actualiza los campos autoevaluacionHecha y fechaAutoevaluacion la tabla bp_empresas
 	 * Llama a la función agregarPracticaAEmpresa para incluir las practicas marcadas
 	 * como si en el cuestionario como practicas en proceso
-	 *
+
 	 * @param $arrPreguntas
 	 * @param $empresaId
+	 * @param $nombreEmpresa
+	 * @param $mentorId
 	 *
 	 * @return int
+	 *
 	 */
-	function validarAutoevaluacion($arrPreguntas, $empresaId)
+	function validarAutoevaluacion($arrPreguntas, $empresaId, $nombreEmpresa,$mentorId)
 	{
 		$correcto=1;
 		for($x=0;$x<count($arrPreguntas);$x++){
@@ -489,14 +516,15 @@ class Modelo
 			$this->db->query($sql1);
 
 			// agregar buenas practicas que se marcaron como si
-			$mensaje="Agregada automaticamente como resultado de la autoevaluación";
+			//$mensaje="Agregada automaticamente como resultado de la autoevaluación";
 			for($x=0;$x<count($arrPreguntas);$x++){
 				if($arrPreguntas[$x]['valor']=='1')
-					$this->agregarPracticaAEmpresa($empresaId, $arrPreguntas[$x]['idBuenaPractica'], '2');
+					$this->agregarPracticaAEmpresa($empresaId, $arrPreguntas[$x]['idBuenaPractica'], '2',$nombreEmpresa,$mentorId);
 			}
 		}
 		return($correcto);
 	}
+
 
 	/**
 	 *
@@ -506,8 +534,11 @@ class Modelo
 	 * @param $empresaId
 	 * @param $practicaId
 	 * @param $statusId
+	 * @param $nombreEmpresa
+	 * @param $mentorId
+	 *
 	 */
-	function agregarPracticaAEmpresa($empresaId, $practicaId, $statusId)
+	function agregarPracticaAEmpresa($empresaId, $practicaId, $statusId, $nombreEmpresa,$mentorId=null)
 	{
 		// buscar si la practica esta dada de alta y vigente
 		$sql0 = "select count(*) as cuantos from bp_empresa_buenaPractica where empresaId=$empresaId && buenasPracticasId=$practicaId && estatus!=6";
@@ -531,6 +562,12 @@ class Modelo
 					fechaEvaluacion=NULL";
 				$this->db->query($sql2);
 			}
+			$sql2="select tituloCorto from bp_buenasPracticas where id=$practicaId";
+			$resultado2=$this->db->query($sql2);
+			$linea2=$resultado2->fetch_assoc();
+
+			$mensaje= "La empresa ".$nombreEmpresa." ha agregado la práctica \"".$linea2['tituloCorto']."\"";
+			$this->agregarRegistroLog($empresaId, $mentorId, $mensaje, 3);
 		}
 	}
 
@@ -847,14 +884,20 @@ class Modelo
 		$cachos=explode(';',$post['item']);
 		$practicaItem=$cachos['0'];
 		$criteriosItem=$cachos['1'];
-		//$empresaBuenapracticaId=$arrEmpresaSeleccionada['practicas'][$practicaItem]['empresaBuenaPracticaId'];
 		$criterioId=$arrEmpresaSeleccionada['practicas'][$practicaItem]['criterios'][$criteriosItem]['id'];
 		$nombreComentario="comentariosMentor".$post['item'];
 		$sql="update bp_empresa_buenaPractica_criterios set  estatusCriterio=4, comentariosMentor='".$post[$nombreComentario]."', fechaEvaluacion='".HOY."' where  id=$criterioId";
 		$this->db->query($sql);
 		$sql="update bp_evidencias set evidenciaStatus=4,fechaEvaluacion='".HOY."' where empresaPracticaCriteriosId=$criterioId and evidenciaStatus<4";
-		//evidenciaStatus  fechaEvaluacion  where empresaPracticaCriteriosId
 		$this->db->query($sql);
+		$mensaje="Se ha aprobado el criterio \"".
+			$arrEmpresaSeleccionada['practicas'][$practicaItem]['criterios'][$criteriosItem]['criterioNombre'].
+			"\" de la práctica \"".$arrEmpresaSeleccionada['practicas'][$practicaItem]['nombrePractica']."\"";
+
+		$this->agregarRegistroLog($arrEmpresaSeleccionada['id'], $arrEmpresaSeleccionada['mentorId'], $mensaje, 3);
+
+
+
 	}
 
 	/**
@@ -882,6 +925,12 @@ class Modelo
 		$this->db->query($sql);
 		$sql="update bp_evidencias set evidenciaStatus=5,fechaEvaluacion='".HOY."' where empresaPracticaCriteriosId=$criterioId";
 		$this->db->query($sql);
+
+		$mensaje="Se ha rechazado el criterio \"".
+			$arrEmpresaSeleccionada['practicas'][$practicaItem]['criterios'][$criteriosItem]['criterioNombre'].
+			"\" de la práctica \"".$arrEmpresaSeleccionada['practicas'][$practicaItem]['nombrePractica']."\"";
+
+		$this->agregarRegistroLog($arrEmpresaSeleccionada['id'], $arrEmpresaSeleccionada['mentorId'], $mensaje, 3);
 	}
 
 	/**
@@ -939,12 +988,14 @@ class Modelo
 	 * Busca en tabla bp_personal y hace un arreglo de todos los registros de personal
 	 * Se usa en admon.
 	 *
+	 * @param $admon
+	 *
 	 * @return array
 	 */
-	function hacerArregloPersonal()
+	function hacerArregloPersonal($admon)
 	{
 		$arrTmp=array();
-		$sql="Select * from bp_personal order by esSuperAdmin DESC ";
+		$sql="Select * from bp_personal where superiorId=".$admon->id;
 		$resultado=$this->db->query($sql);
 		while($fila=$resultado->fetch_assoc()){
 			$arrTmp[]=$fila;

@@ -209,4 +209,3 @@ $jom2='';
 
 	<div class="espacioArriba"></div>
 <?php $this->fx->ponerBoton('empresa','perfilGrabar','','Grabar',NULL,NULL,NULL,'btn btn-primary',0); ?>
-<?php $this->fx->ponerBoton('empresa','irA','inicio','Inicio',NULL,NULL,NULL,'btn btn-primary',0); ?>

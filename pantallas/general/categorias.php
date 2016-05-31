@@ -57,7 +57,7 @@ $jom2='';
 
 	    <div id="ColCentroAbajo">
 		    <div class="espacioArriba">
-		        <?php $this->fx->ponerBoton('general','irA','innovacion','Innovación',NULL,NULL,NULL,'',0);?>
+		        <?php //$this->fx->ponerBoton('general','irA','innovacion','Innovación',NULL,NULL,NULL,'',0);?>
 		    </div>
 	    </div>
 

@@ -12,14 +12,16 @@
 
 $jom2='';
 ?>
-
+<div class="tituloPagina">
+	Prácticas de sustentabilidad de ecoturismo
+</div>
 <div id="login">
 	<div id="#login-bg">
 		<div id="caja">
 			<div id="usuario">Usuario: <?php $this->fx->ponerInput('input','usuario','30','30','','inputNormal');?></div>
 			<div id="usuario">Clave:&nbsp;&nbsp;&nbsp; <?php $this->fx->ponerInput('input','clave','30','30','','inputNormal');?></div>
 			<div id="boton"><?php $this->fx->ponerBoton('login','','','Entrar',NULL,NULL,NULL,'btn btn-primary',0);?>&nbsp;&nbsp;&nbsp;
-			<?php $this->fx->ponerBoton('general','irA','inicio','Regresar',NULL,NULL,NULL,'btn btn-primary',0);?></div>
+				<?php $this->fx->ponerBoton('general','irA','inicio','Regresar',NULL,NULL,NULL,'btn btn-primary',0);?></div>
 
 			<?php if(strlen($this->mensaje)>0){?>
 				<div class="textoError">
@@ -33,3 +35,13 @@ $jom2='';
 		</div>
 	</div>
 </div>
+
+
+
+
+
+
+
+
+
+

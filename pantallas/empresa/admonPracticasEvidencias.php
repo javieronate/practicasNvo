@@ -44,7 +44,6 @@ $jom2='';
 					<div class="nombreEventosAdmon">
 						<?php
 							$fecha=$this->fx->transformarFechaDMY($this->empresa->arrPracticasEnProceso[$x]['criterios'][$y]['evidencias'][$z]['fechaAltaEvidencia']);
-							// TODO: poner formato fecha y separar id de diseño con varias etiquetas
 							echo ("<span id='nombreStatus'>".$this->empresa->arrPracticasEnProceso[$x]['criterios'][$y]['evidencias'][$z]['nombreEstatus']."</span> - <span id='tipoEvento'>".
 							$this->empresa->arrPracticasEnProceso[$x]['criterios'][$y]['evidencias'][$z]['nombreTipoEvento']."</span> - <span id='nombreFecha'>".$fecha."</span>");
 						?>
@@ -102,8 +101,5 @@ $jom2='';
 			</div>
 		<?php } ?>
 		</div>
-	</div>
-	<div id="saltoDeRenglon">
-		<?php $this->fx->ponerBoton('empresa','irA','inicio','Inicio',NULL,NULL,NULL,'btn btn-primary',0);?>
 	</div>
 </div>

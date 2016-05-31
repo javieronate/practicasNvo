@@ -930,3 +930,14 @@
 .tab-panels .panel.active {
 	display:block;
 }
+
+.campoTextoLlenarPracticas{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	/*line-height: 28px;*/
+	font-variant: normal;
+	font-size: 12px;
+	color: #666;
+	margin-bottom: 20px;
+}

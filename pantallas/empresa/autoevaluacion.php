@@ -43,6 +43,4 @@ Autoevaluación "<?php echo ($this->empresa->datos['nombreEmpresa']); ?>"
 
 </div>
 
-
-<?php $this->fx->ponerBoton('empresa','irA','inicio','Inicio',NULL,NULL,NULL,'btn btn-primary',0); ?>
 <?php $this->fx->ponerBoton('empresa','autoevaluacionGrabar','','Grabar',NULL,NULL,NULL,'btn btn-primary',0); ?>
