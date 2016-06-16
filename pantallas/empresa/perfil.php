@@ -107,7 +107,7 @@ $jom2='';
 				Municipio
 			</td>
 			<td colspan="1" class="formularioEtiqueta">
-				Latitud / Longitud
+				Latitud / Longitud <br>en DD (grados decimales)
 			</td>
 		</tr>
 		<tr>
@@ -194,7 +194,47 @@ $jom2='';
 				<?php $this->fx->ponerInput('input','usuario',30,255,$this->arrDatosEmpresaTmp['usuario'],'formularioCampo','nombreEmpresa');?>
 			</td>
 			<td colspan="2" class="formularioCampo">
-				<?php $this->fx->ponerInput('input','clave',30,255,$this->arrDatosEmpresaTmp['clave'],'formularioCampo','nombreEmpresa');?>
+				<?php $this->fx->ponerInput('password','clave',30,255,$this->arrDatosEmpresaTmp['clave'],'formularioCampo','nombreEmpresa');?>
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan="3" class="espacioArriba">
+				&nbsp;
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="formularioEtiqueta">
+				<?php $this->fx->ponerBoton('empresa','perfilGrabar','','Grabar',NULL,NULL,NULL,'btn btn-primary',0); ?>
+			</td>
+		</tr>
+
+
+
+		<tr>
+			<td colspan="3" class="espacioArriba">
+				&nbsp;
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="formularioEtiqueta">
+				Foto de empresa (tamaño maximo 500 MB)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="formularioCampo">
+				<?php $this->fx->ponerInput('file','fotoEmpresa',100,255,'','upload'); ?>
+			</td>
+
+		</tr>
+		<tr>
+			<td colspan="3" class="espacioArriba">
+				&nbsp;
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" class="formularioEtiqueta">
+				<?php $this->fx->ponerBoton('empresa','fotoGrabar','','Grabar fotografía',NULL,NULL,NULL,'btn btn-primary',0); ?>
 			</td>
 		</tr>
 	</table>
@@ -207,5 +247,4 @@ $jom2='';
 
 </div>
 
-	<div class="espacioArriba"></div>
-<?php $this->fx->ponerBoton('empresa','perfilGrabar','','Grabar',NULL,NULL,NULL,'btn btn-primary',0); ?>
+

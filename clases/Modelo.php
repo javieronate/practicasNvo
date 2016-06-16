@@ -43,7 +43,6 @@ class Modelo
 	 */
 	var $arrCategorias=array();
 
-
     /**
      *
      *  Constructor del Modelo
@@ -202,17 +201,24 @@ class Modelo
 		return($arrTmp);
 	}
 
+	/**
+	 *
+	 * Construye un arreglo de los impresos asociados a la practica
+	 *
+	 * @param $idPractica
+	 *
+	 * @return array
+	 */
 	function buscarImpresosDePractica($idPractica)
 	{
 		$arrTmp=array();
-		$sql="select id, archivo from bp_impresos where practicaId=$idPractica order by archivo";
+		$sql="select id, nombre,archivo from bp_impresos where practicaId=$idPractica order by archivo";
 		$resultado=$this->db->query($sql);
 		while($renglon = $resultado->fetch_assoc()) {
-			$arrTmp[]=array('id'=>$renglon['id'],'archivo'=>$renglon['archivo']);
+			$arrTmp[]=array('id'=>$renglon['id'],'nombre'=>$renglon['nombre'],'archivo'=>$renglon['archivo']);
 		}
 		return($arrTmp);
 	}
-
 
 	/**
 	 *
@@ -232,15 +238,25 @@ class Modelo
 	 */
 	function validarLogin($usuario, $clave){
 
-		// TODO: Agregar sistema de cifrado de Michael
 		$arrTmp=array();
 
 		// buscar si es usuario de empresa
-		$sql = "select count(*)as cuantos from bp_empresas where usuario ='".$usuario."' and clave='".$clave."'";
+
+		// Salt starting with $2a$. The two digit cost parameter: 09. 22 characters
+		if (CRYPT_BLOWFISH == 1)
+		{
+			$pw_hash = crypt($clave,SALT);
+		}
+		else
+		{
+			echo "Blowfish DES not supported.\n<br>";
+		}
+
+		$sql = "select count(*)as cuantos from bp_empresas where usuario ='".$usuario."' and (clave='".$clave."' OR clave='".$pw_hash."' )";
 		$resultado = $this->db->query($sql);
 		$datos = $resultado->fetch_assoc();
 		if($datos['cuantos']==1) {
-			$sql2 = "select *, X(ubicacion) as latitud, Y(ubicacion) as longitud from bp_empresas where usuario ='" . $usuario . "' and clave='" . $clave . "'";
+			$sql2 = "select *, X(ubicacion) as latitud, Y(ubicacion) as longitud from bp_empresas where usuario ='" . $usuario . "' and (clave='".$clave."' OR clave='".$pw_hash."' )";
 			$resultado2 = $this->db->query($sql2);
 			$datos2 = $resultado2->fetch_assoc();
 			$arrTmp['rol'] = 'empresa';
@@ -274,17 +290,18 @@ class Modelo
 			$arrTmp['ultimoLogin'] = $datos2['ultimoLogin'];
 			$arrTmp['usuario'] = $datos2['usuario'];
 			$arrTmp['clave'] = $datos2['clave'];
+			$arrTmp['foto'] = $datos2['foto'];
 			$this->agregarRegistroLog($arrTmp['id'],null,MENSAJE_LOGIN_EMPRESA,4);
 			$this->anotarUltimoLoginEmpresa($arrTmp['id']);
 		}else{
 			// buscar si es usuario de personal
-			$sql = "select count(*) as cuantos from bp_personal where usuario ='".$usuario."' and clave='".$clave."'";
+			$sql = "select count(*) as cuantos from bp_personal where usuario ='".$usuario."' and (clave='".$clave."' OR clave='".$pw_hash."' )";
 			$resultado = $this->db->query($sql);
 			$datos = $resultado->fetch_assoc();
 			if($datos['cuantos']==1) {
 				$sql2 = "select bp_personal.*,bp_catNiveles.nombre as nombreNivel from bp_personal
 						left join bp_catNiveles on bp_catNiveles.id=bp_personal.nivelId
-						where usuario ='" . $usuario . "' and clave='" . $clave . "'";
+						where usuario ='" . $usuario . "'  and (clave='".$clave."' OR clave='".$pw_hash."' )";
 				$resultado2 = $this->db->query($sql2);
 				$datos2 = $resultado2->fetch_assoc();
 
@@ -304,6 +321,7 @@ class Modelo
 				$arrTmp['id'] = $datos2['id'];
 				$arrTmp['nombre'] = $datos2['nombre'];
 				$arrTmp['email'] = $datos2['email'];
+				$arrTmp['region'] = $datos2['region'];
 				$arrTmp['nivelId'] = $datos2['nivelId'];
 				$arrTmp['superiorId'] = $datos2['superiorId'];
 				$arrTmp['ultimoLogin'] = $datos2['ultimoLogin'];
@@ -459,6 +477,181 @@ class Modelo
 
 	/**
 	 *
+	 * Evalua el tipo de modificación que se genero y envia un correo a la persona involucrada
+	 *
+	 * @param      $modalidad
+	 * @param      $correos
+	 * @param      $nombreContacto
+	 * @param      $nombreEmpresa
+	 * @param      $usuario
+	 * @param      $clave
+	 * @param      $nombreDelMentor
+	 * @param      $correoDelMentor
+	 * @param null $region
+	 *
+	 * @return bool
+	 */
+	function enviarCorreoAlta($modalidad, $correos, $nombreContacto, $nombreEmpresa, $usuario, $clave, $nombreDelMentor, $correoDelMentor, $region=null)
+	{
+		switch($modalidad){
+			case 'altaEmpresa':
+				$asunto="Aviso de alta de empresa en Biomar - Prácticas de sustentabilidad";
+
+				// mensaje
+				$mensaje = '<html><head><title>Aviso de alta de empresa en Biomar - Prácticas de sustentabilidad</title></head>';
+				$mensaje.='<body>';
+				$mensaje.="<h2>$nombreEmpresa</h2>";
+				$mensaje.="<h3>Estimado Sr. / Sra. $nombreContacto</h3>";
+				$mensaje.="<p>Por este conducto nos complace darle la bienvenida al Sistema Prácticas de sustentabilidad de Biomar.</p>";
+				$mensaje.="<p>La dirección del sitio es http://biomar.org/turismo/index.php</p>";
+				$mensaje.="<p>Usuario: $usuario</p>";
+				$mensaje.="<p>Clave: $clave</p>";
+				$mensaje.="<p>Para cualquier aclaración puede enviar un correo a $nombreDelMentor en la dirección $correoDelMentor</p>";
+				$mensaje.="<p>Atentamente</p>";
+				$mensaje.="<<p>Biomar</p>";
+				$mensaje.="</body></html>";
+				// Para enviar un correo HTML, debe establecerse la cabecera Content-type
+				$cabeceras  = 'MIME-Version: 1.0' . "\r\n";
+				$cabeceras .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+				// Cabeceras adicionales
+				$cabeceras .= "To: <$correos>" . "\r\n";
+				$cabeceras .= "From:  Biomar <$correoDelMentor>". "\r\n";
+				break;
+			case 'editarEmpresa':
+				$asunto="Aviso de modificación de datos de empresa en Biomar - Prácticas de sustentabilidad";
+
+				// mensaje
+				$mensaje = '<html><head><title>Aviso de modificación de datos de empresa en Biomar - Prácticas de sustentabilidad</title></head>';
+				$mensaje.='<body>';
+				$mensaje.="<h2>$nombreEmpresa</h2>";
+				$mensaje.="<h3>Estimado Sr. / Sra. $nombreContacto</h3>";
+				$mensaje.="<p>Por este conducto nos complace darle la bienvenida al Sistema Prácticas de sustentabilidad de Biomar.</p>";
+				$mensaje.="<p>La dirección del sitio es http://biomar.org/turismo/index.php</p>";
+				$mensaje.="<p>Usuario: $usuario</p>";
+				$mensaje.="<p>Clave: $clave</p>";
+				$mensaje.="<p>Para cualquier aclaración puede enviar un correo a $nombreDelMentor en la dirección $correoDelMentor</p>";
+				$mensaje.="<p>Atentamente</p>";
+				$mensaje.="<<p>Biomar</p>";
+				$mensaje.="</body></html>";
+				// Para enviar un correo HTML, debe establecerse la cabecera Content-type
+				$cabeceras  = 'MIME-Version: 1.0' . "\r\n";
+				$cabeceras .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+				// Cabeceras adicionales
+				$cabeceras .= "To: <$correos>" . "\r\n";
+				$cabeceras .= "From:  Biomar <$correoDelMentor>". "\r\n";
+				break;
+			case 'agregarMentor':
+				$asunto="Aviso de alta de Mentor en Biomar - Prácticas de sustentabilidad";
+				$mensaje = '<html><head><title>Aviso de alta de Mentor en Biomar - Prácticas de sustentabilidad</title></head>';
+				$mensaje.='<body>';
+				//$mensaje.="<h2>$nombreEmpresa</h2>";
+				$mensaje.="<h3>Estimado Sr. / Sra. $nombreContacto</h3>";
+				$mensaje.="<p>Por este conducto nos complace darle la bienvenida al Sistema Prácticas de sustentabilidad de Biomar como Mentor de la región \"$region\".</p>";
+				$mensaje.="<p>La dirección del sitio es http://biomar.org/turismo/index.php</p>";
+				$mensaje.="<p>Usuario: $usuario</p>";
+				$mensaje.="<p>Clave: $clave</p>";
+				$mensaje.="<p>Para cualquier aclaración puede enviar un correo a $nombreDelMentor en la dirección $correoDelMentor</p>";
+				$mensaje.="<p>Atentamente</p>";
+				$mensaje.="<p>Biomar</p>";
+				$mensaje.="</body></html>";
+				// Para enviar un correo HTML, debe establecerse la cabecera Content-type
+				$cabeceras  = 'MIME-Version: 1.0' . "\r\n";
+				$cabeceras .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+				// Cabeceras adicionales
+				$cabeceras .= "To: <$correos>" . "\r\n";
+				$cabeceras .= "From:  Biomar <$correoDelMentor>". "\r\n";
+				break;
+			case 'actualizarMentor':
+				$asunto="Aviso de actualización de datos";
+				$mensaje = '<html><head><title>Aviso de actualización de datos</title></head>';
+				$mensaje.="<body>";
+				$mensaje.="<h3>Estimado Sr. / Sra. $nombreContacto</h3>";
+				$mensaje.="<p>Por este conducto le informamos que sus datos para ingresar en Biomar - Prácticas de sustentabilidad han cambiado</p>";
+				$mensaje.="<p>Usuario: $usuario</p>";
+				$mensaje.="<p>Clave: $clave</p>";
+				$mensaje.="<p>Para cualquier aclaración puede enviar un correo a $nombreDelMentor en la dirección $correoDelMentor</p>";
+				$mensaje.="<p>Atentamente</p>";
+				$mensaje.="<p>Biomar</p>";
+				$mensaje.="</body></html>";
+				// Para enviar un correo HTML, debe establecerse la cabecera Content-type
+				$cabeceras  = 'MIME-Version: 1.0' . "\r\n";
+				$cabeceras .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+				// Cabeceras adicionales
+				$cabeceras .= "To: <$correos>" . "\r\n";
+				$cabeceras .= "From:  Biomar <$correoDelMentor>". "\r\n";
+				break;
+			case 'agregarAdmonRegional':
+				$asunto="Aviso de alta de Director de ANP en Biomar - Prácticas de sustentabilidad";
+				$mensaje = '<html><head><title>Aviso de alta de Director de ANP en Biomar - Prácticas de sustentabilidad</title></head>';
+				$mensaje.='<body>';
+				//$mensaje.="<h2>$nombreEmpresa</h2>";
+				$mensaje.="<h3>Estimado Sr. / Sra. $nombreContacto</h3>";
+				$mensaje.="<p>Por este conducto nos complace darle la bienvenida al Sistema Prácticas de sustentabilidad de Biomar como Director de ANP de la región \"$region\".</p>";
+				$mensaje.="<p>La dirección del sitio es http://biomar.org/turismo/index.php</p>";
+				$mensaje.="<p>Usuario: $usuario</p>";
+				$mensaje.="<p>Clave: $clave</p>";
+				$mensaje.="<p>Para cualquier aclaración puede enviar un correo a $nombreDelMentor en la dirección $correoDelMentor</p>";
+				$mensaje.="<p>Atentamente</p>";
+				$mensaje.="<p>Biomar</p>";
+				$mensaje.="</body></html>";
+				// Para enviar un correo HTML, debe establecerse la cabecera Content-type
+				$cabeceras  = 'MIME-Version: 1.0' . "\r\n";
+				$cabeceras .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+				// Cabeceras adicionales
+				$cabeceras .= "To: <$correos>" . "\r\n";
+				$cabeceras .= "From:  Biomar <$correoDelMentor>". "\r\n";
+				break;
+			case 'actualizarAdmonRegional':
+				$asunto="Aviso de actualización de datos";
+				$mensaje = '<html><head><title>actualización de datos</title></head>';
+				$mensaje.="<body>";
+				$mensaje.="<h3>Estimado Sr. / Sra. $nombreContacto</h3>";
+				$mensaje.="<p>Por este conducto le informamos que sus datos para ingresar en Biomar - Prácticas de sustentabilidad han cambiado</p>";
+				$mensaje.="<p>Usuario: $usuario</p>";
+				$mensaje.="<p>Clave: $clave</p>";
+				$mensaje.="<p>Para cualquier aclaración puede enviar un correo a $nombreDelMentor en la dirección $correoDelMentor</p>";
+				$mensaje.="<p>Atentamente</p>";
+				$mensaje.="<p>Biomar</p>";
+				$mensaje.="</body></html>";
+				// Para enviar un correo HTML, debe establecerse la cabecera Content-type
+				$cabeceras  = 'MIME-Version: 1.0' . "\r\n";
+				$cabeceras .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+				// Cabeceras adicionales
+				$cabeceras .= "To: <$correos>" . "\r\n";
+				$cabeceras .= "From:  Biomar <$correoDelMentor>". "\r\n";
+				break;
+		}
+		// Enviarlo
+		$enviado=mail($correos, $asunto, $mensaje, $cabeceras);
+		return ($enviado);
+	}
+
+	/**
+	 *
+	 * Revisa si el hash grabado en la tabla es igual al contenido del campo clave
+	 * para definir si se graba o no la clave en actualizaciones
+	 *
+	 * @param $tabla
+	 * @param $clave
+	 * @param $id
+	 *
+	 * @return int
+	 */
+	function verificarModificacionDeClave($tabla, $clave, $id)
+	{
+		$sql="select clave from $tabla where id=$id";
+		$resultado=$this->db->query($sql);
+		$linea=$resultado->fetch_assoc();
+		if($linea['clave']==$clave) {
+			$cambiada=0;
+		}else if ($linea['clave']!=$clave){
+			$cambiada=1;
+		}
+		return ($cambiada);
+	}
+
+	/**
+	 *
 	 * Construye un arreglo con las preguntas de la autoevaluación.
 	 * Se usa en la pagina de autoevaluacion de la empresa
 	 *
@@ -476,7 +669,6 @@ class Modelo
 		}
 		return($arrTmp);
 	}
-
 
 	/**
 	 *
@@ -524,7 +716,6 @@ class Modelo
 		}
 		return($correcto);
 	}
-
 
 	/**
 	 *
@@ -617,46 +808,62 @@ class Modelo
 	 * @return int
 	 */
 	function validarPerfil($arrDatosEmpresa)
-{
-	$correcto=1;
-	if(strlen($arrDatosEmpresa['nombreEmpresa'])==0) $correcto=0;
-	if(strlen($arrDatosEmpresa['estado'])==0) $correcto=0;
-	if(strlen($arrDatosEmpresa['municipio'])==0) $correcto=0;
-	if(strlen($arrDatosEmpresa['contactoNombre'])==0) $correcto=0;
-	if(strlen($arrDatosEmpresa['telefono'])==0) $correcto=0;
-	if(strlen($arrDatosEmpresa['correos'])==0) $correcto=0;
-	if(strlen($arrDatosEmpresa['usuario'])==0) $correcto=0;
-	if(strlen($arrDatosEmpresa['clave'])==0) $correcto=0;
-	if(strlen($arrDatosEmpresa['latitud'])==0) $correcto=0;
-	if(strlen($arrDatosEmpresa['longitud'])==0) $correcto=0;
-	if($correcto==1) {
-		$coordenadas="GeomFromText('POINT(".$arrDatosEmpresa['latitud']." ".$arrDatosEmpresa['longitud'].")')";
-		$sql="update bp_empresas set
-		nombreEmpresa='".$arrDatosEmpresa['nombreEmpresa']."',
-		calle='".$arrDatosEmpresa['calle']."',
-		noExt='".$arrDatosEmpresa['noExt']."',
-		noInt='".$arrDatosEmpresa['noInt']."',
-		colonia='".$arrDatosEmpresa['colonia']."',
-		cp='".$arrDatosEmpresa['cp']."',
-		ciudad='".$arrDatosEmpresa['ciudad']."',
-		ciudad='".$arrDatosEmpresa['ciudad']."',
-		ubicacion=".$coordenadas.",
-		estado='".$arrDatosEmpresa['estado']."',
-		municipio='".$arrDatosEmpresa['municipio']."',
-		contactoNombre='".$arrDatosEmpresa['contactoNombre']."',
-		telefono='".$arrDatosEmpresa['telefono']."',
-		correos='".$arrDatosEmpresa['correos']."',
-		sitioWeb='".$arrDatosEmpresa['sitioWeb']."',
-		usuario='".$arrDatosEmpresa['usuario']."',
-		clave='".$arrDatosEmpresa['clave']."',
-		fechaActualizacion='".HOY."',
-		infoCapturada=1 where  id=".$arrDatosEmpresa['id'];
-		$this->db->query($sql);
-		// TODO: Actualizar arreglo empresa->datos con los nuevos datos grabados
+	{
+		$correcto=1;
+		if(strlen($arrDatosEmpresa['nombreEmpresa'])==0) $correcto=0;
+		if(strlen($arrDatosEmpresa['estado'])==0) $correcto=0;
+		if(strlen($arrDatosEmpresa['municipio'])==0) $correcto=0;
+		if(strlen($arrDatosEmpresa['contactoNombre'])==0) $correcto=0;
+		if(strlen($arrDatosEmpresa['telefono'])==0) $correcto=0;
+		if(strlen($arrDatosEmpresa['correos'])==0) $correcto=0;
+		if(strlen($arrDatosEmpresa['usuario'])==0) $correcto=0;
+		if(strlen($arrDatosEmpresa['clave'])==0) $correcto=0;
+		if(strlen($arrDatosEmpresa['latitud'])==0) $correcto=0;
+		if(strlen($arrDatosEmpresa['longitud'])==0) $correcto=0;
 
+		if($correcto==1) {
+
+			$claveModificada=$this->verificarModificacionDeClave('bp_empresas',$arrDatosEmpresa['clave'],$arrDatosEmpresa['id']);
+			$lineaClave=($claveModificada==1)? "clave='".crypt($arrDatosEmpresa['clave'],SALT)."'," : "";
+			$coordenadas="GeomFromText('POINT(".$arrDatosEmpresa['latitud']." ".$arrDatosEmpresa['longitud'].")')";
+			$sql="update bp_empresas set
+			nombreEmpresa='".$arrDatosEmpresa['nombreEmpresa']."',
+			calle='".$arrDatosEmpresa['calle']."',
+			noExt='".$arrDatosEmpresa['noExt']."',
+			noInt='".$arrDatosEmpresa['noInt']."',
+			colonia='".$arrDatosEmpresa['colonia']."',
+			cp='".$arrDatosEmpresa['cp']."',
+			ciudad='".$arrDatosEmpresa['ciudad']."',
+			ciudad='".$arrDatosEmpresa['ciudad']."',
+			ubicacion=".$coordenadas.",
+			estado='".$arrDatosEmpresa['estado']."',
+			municipio='".$arrDatosEmpresa['municipio']."',
+			contactoNombre='".$arrDatosEmpresa['contactoNombre']."',
+			telefono='".$arrDatosEmpresa['telefono']."',
+			correos='".$arrDatosEmpresa['correos']."',
+			sitioWeb='".$arrDatosEmpresa['sitioWeb']."',
+			usuario='".$arrDatosEmpresa['usuario']."',
+			$lineaClave
+			fechaActualizacion='".HOY."',
+			infoCapturada=1 where  id=".$arrDatosEmpresa['id'];
+			$this->db->query($sql);
+			//echo "$sql<br>";
+		}
+		return ($correcto);
 	}
-	return ($correcto);
-}
+
+	/**
+	 *
+	 * Graba el nombre aleatorio de la foto de la empresa en la tabla bp_empresas
+	 *
+	 * @param $id
+	 * @param $nombreFoto
+	 */
+	function grabarNombreFotoEmpresa($id, $nombreFoto)
+	{
+		$sql="update bp_empresas set foto='".$nombreFoto."' where id=".$id;
+		$this->db->query($sql);
+	}
 
 	/**
 	 *
@@ -713,7 +920,7 @@ class Modelo
 	function hacerArregloCriteriosYEvidencias($empresaId, $practicaId, $empresa_buenaPracticaId)
 	{
 		$arrTmp=array();
-		$sql="select bp_empresa_buenaPractica_criterios.*, bp_criterios.nombre, bp_criterios.descripcion, bp_criterios.puntos
+		$sql="select bp_empresa_buenaPractica_criterios.*, bp_criterios.nombre, bp_criterios.descripcion, bp_criterios.puntos,bp_criterios.orientacionMentor
 			from bp_empresa_buenaPractica_criterios left join bp_criterios on bp_criterios.id=bp_empresa_buenaPractica_criterios.criterioId
 			where bp_empresa_buenaPractica_criterios.empresa_buenaPracticaId= $empresa_buenaPracticaId order by bp_criterios.orden";
 		$resultado=$this->db->query($sql);
@@ -740,7 +947,6 @@ class Modelo
 		return($arrTmp);
 	}
 
-
 	/**
 	 *
 	 * Función que inserta un registro en bp_empresa_buenaPractica_criterios.
@@ -753,12 +959,11 @@ class Modelo
 	 * @param $nombreEvidencia
 	 * @param $nombreOriginal
 	 * @param $tipoEvidencia
-	 * @param $estatusCriterio
 	 * @param $mensaje
 	 * @param $prioridad
 	 */
 	function agregarEvidencia($idTipoEvento, $empresa_buenaPracticaId, $empresaPracticaCriteriosId, $buenaPracticaId, $criterioId, $nombreEvidencia, $nombreOriginal,
-	                          $tipoEvidencia, $estatusCriterio, $mensaje, $prioridad)
+	                          $tipoEvidencia, $mensaje, $prioridad)
 	{
 		$sql="insert into bp_evidencias set
 			idTipoDeEvento='".$idTipoEvento."',
@@ -777,8 +982,101 @@ class Modelo
 		$this->db->query($sql);
 	}
 
-	// funciones del mentor
+	/**
+	 *
+	 * Construye el arreglo con los datos para la gráfica de la página de inicio de empresas
+	 *
+	 * @param $id
+	 *
+	 * @return mixed
+	 */
+	function buscarDatosGraficasEmpresa($id)
+	{
+		$arrEmpresa=array();
+		$arrTotalesPosibles=array();
+		$sumaUnoTerminadas=0;
+		$sumaDosTerminadas=0;
+		$sumaTresTerminadas=0;
+		$sumaUnoEnProceso=0;
+		$sumaDosEnProceso=0;
+		$sumaTresEnProceso=0;
+		$sumaEmpresas=0;
 
+		$sql="select E.empresaId,
+			(select sum(B.puntosMaximos)
+			from bp_buenasPracticas B, bp_empresa_buenaPractica E2
+			where B.id=E2.buenasPracticasId and E2.estatus=4 and E2.empresaId=E.empresaId and B.tipoRequisitoId=1
+			group by E2.empresaId) as puntosUnoTerminadas,
+			(select sum(B.puntosMaximos)
+			from bp_buenasPracticas B, bp_empresa_buenaPractica E2
+			where B.id=E2.buenasPracticasId and E2.estatus=2 and E2.empresaId=E.empresaId and B.tipoRequisitoId=1
+			group by E2.empresaId) as puntosUnoEnProceso,
+			(select sum(B.puntosMaximos)
+			from bp_buenasPracticas B, bp_empresa_buenaPractica E2
+			where B.id=E2.buenasPracticasId and E2.estatus=4 and E2.empresaId=E.empresaId and B.tipoRequisitoId=2
+			group by E2.empresaId) as puntosDosTerminadas,
+			(select sum(B.puntosMaximos)
+			from bp_buenasPracticas B, bp_empresa_buenaPractica E2
+			where B.id=E2.buenasPracticasId and E2.estatus=2 and E2.empresaId=E.empresaId and B.tipoRequisitoId=2
+			group by E2.empresaId) as puntosDosEnProceso,
+			(select sum(B.puntosMaximos)
+			from bp_buenasPracticas B, bp_empresa_buenaPractica E2
+			where B.id=E2.buenasPracticasId and E2.estatus=4 and E2.empresaId=E.empresaId and B.tipoRequisitoId=3
+			group by E2.empresaId) as puntosTresTerminadas,
+			(select sum(B.puntosMaximos)
+			from bp_buenasPracticas B, bp_empresa_buenaPractica E2
+			where B.id=E2.buenasPracticasId and E2.estatus=2 and E2.empresaId=E.empresaId and B.tipoRequisitoId=3
+			group by E2.empresaId) as puntosTresEnProceso
+			from bp_empresa_buenaPractica E
+			group by E.empresaId";
+
+		$resultado=$this->db->query($sql);
+		while($linea=$resultado->fetch_assoc()){
+			if($linea['empresaId']==$id){
+				$arrEmpresa=$linea;
+			}else{
+				$sumaEmpresas++;
+				$sumaUnoTerminadas+=$linea['puntosUnoTerminadas'];
+				$sumaUnoEnProceso+=$linea['puntosUnoEnProceso'];
+				$sumaDosTerminadas+=$linea['puntosDosTerminadas'];
+				$sumaDosEnProceso+=$linea['puntosDosEnProceso'];
+				$sumaTresTerminadas+=$linea['puntosTresTerminadas'];
+				$sumaTresEnProceso+=$linea['puntosTresEnProceso'];
+			}
+		}
+		$promedioUnoTerminadas=$sumaUnoTerminadas/$sumaEmpresas;
+		$promedioUnoEnProceso=$sumaUnoEnProceso/$sumaEmpresas;
+		$promedioDosTerminadas=$sumaDosTerminadas/$sumaEmpresas;
+		$promedioDosEnProceso=$sumaDosEnProceso/$sumaEmpresas;
+		$promedioTresTerminadas=$sumaTresTerminadas/$sumaEmpresas;
+		$promedioTresEnProceso=$sumaTresEnProceso/$sumaEmpresas;
+
+		$arrTodasEmpresas=array('puntosUnoTerminadas'=>$promedioUnoTerminadas,
+		                'puntosUnoEnProceso'=>$promedioUnoEnProceso,
+		                'puntosDosTerminadas'=>$promedioDosTerminadas,
+		                'puntosDosEnProceso'=>$promedioDosEnProceso,
+		                'puntosTresTerminadas'=>$promedioTresTerminadas,
+		                'puntosTresEnProceso'=>$promedioTresEnProceso,);
+
+		$sql="select tipoRequisitoId,sum(puntosMaximos) as puntos
+			  from bp_buenasPracticas group by tipoRequisitoId order by tipoRequisitoId";
+		$resultado=$this->db->query($sql);
+		while($linea=$resultado->fetch_assoc()){
+			if($linea['tipoRequisitoId']==1){
+				$arrTotalesPosibles['uno']=$linea['puntos'];
+			}else if ($linea['tipoRequisitoId']==2){
+				$arrTotalesPosibles['dos']=$linea['puntos'];
+			}else{
+				$arrTotalesPosibles['tres']=$linea['puntos'];
+			}
+		}
+		$arrTmp['arrEmpresa']=$arrEmpresa;
+		$arrTmp['arrTodasEmpresas']=$arrTodasEmpresas;
+		$arrTmp['arrTotalesPosibles']=$arrTotalesPosibles;
+		return($arrTmp);
+	}
+
+	// funciones del mentor
 
 	/**
 	 *
@@ -791,12 +1089,11 @@ class Modelo
 	 */
 	function hacerArregloEmpresasDeMentor($mentorId)
 	{
-		// TODO: eficientizar sql en uno solo.
 		$arrTmp=array();
 
 
 		// llenar array con datos empresas
-		$sql="select id,nombreEmpresa,telefono,correos,mentorId,contactoNombre from bp_empresas where mentorId=$mentorId";
+		$sql="select id,nombreEmpresa,telefono,correos,mentorId,contactoNombre,usuario,clave from bp_empresas where mentorId=$mentorId";
 		$resultado=$this->db->query($sql);
 		while ($fila = $resultado->fetch_assoc()) {
 			$arrTmp[]=$fila;
@@ -869,16 +1166,31 @@ class Modelo
 		return ($arrTmp);
 	}
 
-	function anotarAperturaEvidencia($arrEmpresa,$subItem)
+	/**
+	 *
+	 * Graba el cambio de estatus de una evidencia a vista (3) y pone la fecha de visualización
+	 *
+	 * @param $arrEmpresa
+	 * @param $subItem
+	 */
+	function anotarAperturaEvidencia($arrEmpresa, $subItem)
 	{
 		$cachos=explode(';',$subItem);
-		$idEvidencia=$arrEmpresa['practicas'][$cachos['0']]['criterios'][$cachos['1']]['evidencias'][$cachos['2']]['id'];
-
-		$sql="update bp_evidencias set fechaVisualizacion='".HOY."', evidenciaStatus=3 where id=$idEvidencia";
-		$this->db->query($sql);
+		if($arrEmpresa['practicas'][$cachos['0']]['criterios'][$cachos['1']]['evidencias'][$cachos['2']]['evidenciaStatus']==2) {
+			$idEvidencia = $arrEmpresa['practicas'][$cachos['0']]['criterios'][$cachos['1']]['evidencias'][$cachos['2']]['id'];
+			$sql = "update bp_evidencias set fechaVisualizacion='".HOY."', evidenciaStatus=3 where id=$idEvidencia";
+			$this->db->query($sql);
+		}
 	}
 
-
+	/**
+	 *
+	 * Actualiza el estatus a 4 (aprobado) en las tablas bp_empresa_buenaPractica_criterios y bp_evidencias
+	 * Agrega un registro al log de acciones
+	 *
+	 * @param $post
+	 * @param $arrEmpresaSeleccionada
+	 */
 	function aprobarCriterio($post, $arrEmpresaSeleccionada)
 	{
 		$cachos=explode(';',$post['item']);
@@ -960,11 +1272,51 @@ class Modelo
 		}
 	}
 
-	function agregarEmpresa($post,$mentorId)
+	/**
+	 *
+	 * Graba los nuevos valores de usuario y clave en tabla bp_empresas
+	 *
+	 * @param $post
+	 * @param $arrEmpresa
+	 * @param $nombreDelMentor
+	 * @param $correoDelMentor
+	 */
+	function grabarNuevaClave($post, $arrEmpresa,$nombreDelMentor,$correoDelMentor)
+	{
+		$correcto=1;
+		if(strlen($post['usuario'])==0) $correcto=0;
+		if(strlen($post['clave'])==0) $correcto=0;
+		if($correcto==1){
+
+			$claveModificada=$this->verificarModificacionDeClave('bp_empresas',$post['clave'],$arrEmpresa['id']);
+			$lineaClave=($claveModificada==1)? "clave='".crypt($post['clave'],SALT)."'," : "";
+
+
+			$sql="update bp_empresas set
+				$lineaClave
+				usuario='".$post['usuario']."'
+				where id=".$arrEmpresa['id'];
+			$this->db->query($sql);
+			$enviado=$this->enviarCorreoAlta('editarEmpresa',$arrEmpresa['correos'],$arrEmpresa['contactoNombre'],
+				$arrEmpresa['nombreEmpresa'],$post['usuario'],$post['clave'],$nombreDelMentor,$correoDelMentor);
+		}
+	}
+
+	/**
+	 *
+	 * Agrega una nueva empresa a la tabla bp_empresas
+	 *
+	 * @param $post
+	 * @param $mentorId
+	 * @param $nombreDelMentor
+	 * @param $correoDelMentor
+	 */
+	function agregarEmpresa($post, $mentorId, $nombreDelMentor, $correoDelMentor)
 	{
 		$correcto=1;
 		if(strlen($post['nombreEmpresa'])==0) $correcto=0;
 		if(strlen($post['contactoNombre'])==0) $correcto=0;
+		if(strlen($post['correos'])==0) $correcto=0;
 		if(strlen($post['usuario'])==0) $correcto=0;
 		if(strlen($post['clave'])==0) $correcto=0;
 
@@ -972,14 +1324,134 @@ class Modelo
 			$sql="insert into bp_empresas SET
 				nombreEmpresa='".$post['nombreEmpresa']."',
 				contactoNombre='".$post['contactoNombre']."',
+				correos='".$post['correos']."',
 				usuario='".$post['usuario']."',
-				clave='".$post['clave']."',
+				clave='".crypt($post['clave'],SALT)."',
 				mentorId='".$mentorId."'";
 			$this->db->query($sql);
-
+			$enviado=$this->enviarCorreoAlta('altaEmpresa',$post['correos'],$post['contactoNombre'],$post['nombreEmpresa'],$post['usuario'],
+				$post['clave'],$nombreDelMentor,$correoDelMentor);
 		}
 	}
 
+	/**
+	 *
+	 * Construye un arreglo de los eventos de un mentor acaecidos desde su ultimo login
+	 *
+	 * @param $id
+	 * @param $ultimoLogin
+	 *
+	 * @return array
+	 */
+	function hacerArregloEventosNuevosDeMentor($id, $ultimoLogin)
+	{
+		$arrTmp=array();
+		$sql="select bp_logActividades.* from bp_logActividades where fecha>'".$ultimoLogin."'
+			and prioridad=3 and idEmpresa in(select id from bp_empresas where mentorId=$id)";
+		$resultado=$this->db->query($sql);
+		while($linea=$resultado->fetch_assoc()){
+			$arrTmp[]=$linea;
+		}
+		return($arrTmp);
+	}
+
+	/**
+	 *
+	 * Construye el arreglo con los datos para la gráfica de la página de inicio de mentor
+	 *
+	 * @param $id
+	 *
+	 * @return array
+	 */
+	function hacerArregloGraficaMentor($id)
+	{
+		$arrTmp=array();
+		$arrTotalesPosibles=array();
+		$arrDatosEmpresaMentor=array();
+		$sumaEmpresasMentor=0;
+		$sumaEmpresasOtras=0;
+
+		$sumaUnoTerminadas=0;
+		$sumaDosTerminadas=0;
+		$sumaTresTerminadas=0;
+
+		$sumaUnoTodas=0;
+		$sumaDosTodas=0;
+		$sumaTresTodas=0;
+
+		$sql0="select id from bp_empresas where mentorId=$id";
+		$resultado0=$this->db->query($sql0);
+		while($linea0=$resultado0->fetch_assoc()){
+			$arrDatosEmpresaMentor[]=$linea0['id'];
+		}
+		$sql="select E.empresaId,
+			(select sum(B.puntosMaximos)
+			from bp_buenasPracticas B, bp_empresa_buenaPractica E2
+			where B.id=E2.buenasPracticasId and E2.estatus=4 and E2.empresaId=E.empresaId and B.tipoRequisitoId=1
+			group by E2.empresaId) as puntosUnoTerminadas,
+			(select sum(B.puntosMaximos)
+			from bp_buenasPracticas B, bp_empresa_buenaPractica E2
+			where B.id=E2.buenasPracticasId and E2.estatus=4 and E2.empresaId=E.empresaId and B.tipoRequisitoId=2
+			group by E2.empresaId) as puntosDosTerminadas,
+			(select sum(B.puntosMaximos)
+			from bp_buenasPracticas B, bp_empresa_buenaPractica E2
+			where B.id=E2.buenasPracticasId and E2.estatus=4 and E2.empresaId=E.empresaId and B.tipoRequisitoId=3
+			group by E2.empresaId) as puntosTresTerminadas
+			from bp_empresa_buenaPractica E
+			group by E.empresaId";
+		$resultado=$this->db->query($sql);
+		while($linea=$resultado->fetch_assoc()){
+			if(in_array($linea['empresaId'], $arrDatosEmpresaMentor)){
+				$sumaEmpresasMentor++;
+				$sumaUnoTerminadas+=$linea['puntosUnoTerminadas'];
+				$sumaDosTerminadas+=$linea['puntosDosTerminadas'];
+				$sumaTresTerminadas+=$linea['puntosTresTerminadas'];
+			}else{
+				$sumaEmpresasOtras++;
+				$sumaUnoTodas+=$linea['puntosUnoTerminadas'];
+				$sumaDosTodas+=$linea['puntosDosTerminadas'];
+				$sumaTresTodas+=$linea['puntosTresTerminadas'];
+			}
+		}
+		if($sumaEmpresasMentor>0) {
+			$promedioUnoTerminadas = $sumaUnoTerminadas / $sumaEmpresasMentor;
+			$promedioDosTerminadas = $sumaDosTerminadas / $sumaEmpresasMentor;
+			$promedioTresTerminadas = $sumaTresTerminadas / $sumaEmpresasMentor;
+		}else{
+			$promedioUnoTerminadas = 0;
+			$promedioDosTerminadas = 0;
+			$promedioTresTerminadas = 0;
+		}
+		if($sumaEmpresasOtras>0) {
+			$promedioUnoTodas = $sumaUnoTodas / $sumaEmpresasOtras;
+			$promedioDosTodas = $sumaDosTodas / $sumaEmpresasOtras;
+			$promedioTresTodas = $sumaTresTodas / $sumaEmpresasOtras;
+		}else{
+			$promedioUnoTodas =0;
+			$promedioDosTodas =0;
+			$promedioTresTodas=0;
+		}
+
+		$sql="select tipoRequisitoId,sum(puntosMaximos) as puntos
+			  from bp_buenasPracticas group by tipoRequisitoId order by tipoRequisitoId";
+		$resultado=$this->db->query($sql);
+		while($linea=$resultado->fetch_assoc()){
+			if($linea['tipoRequisitoId']==1){
+				$arrTotalesPosibles['uno']=$linea['puntos'];
+			}else if ($linea['tipoRequisitoId']==2){
+				$arrTotalesPosibles['dos']=$linea['puntos'];
+			}else{
+				$arrTotalesPosibles['tres']=$linea['puntos'];
+			}
+		}
+
+		$arrTmp['arrMentor']=array('promedioUno'=>$promedioUnoTerminadas,'promedioDos'=>$promedioDosTerminadas,'promedioTres'=>$promedioTresTerminadas);
+		$arrTmp['arrTodas']=array('promedioUno'=>$promedioUnoTodas,'promedioDos'=>$promedioDosTodas,'promedioTres'=>$promedioTresTodas);
+		$arrTmp['arrTotalesPosibles']=$arrTotalesPosibles;
+
+		return($arrTmp);
+
+	}
 
 	// funciones de admon
 
@@ -995,11 +1467,245 @@ class Modelo
 	function hacerArregloPersonal($admon)
 	{
 		$arrTmp=array();
-		$sql="Select * from bp_personal where superiorId=".$admon->id;
+		$sql="select * from bp_personal where superiorId=".$admon->id;
+
 		$resultado=$this->db->query($sql);
 		while($fila=$resultado->fetch_assoc()){
 			$arrTmp[]=$fila;
 		}
+		return ($arrTmp);
+	}
+
+	/**
+	 *
+	 * Construye el arreglo con los datos para la gráfica de la página de inicio administrador
+	 *
+	 * @param $nivel
+	 * @param $idPersonal
+	 *
+	 * @return array
+	 */
+	function hacerArregloEstadisticasEmpresas($nivel, $idPersonal)
+	{
+
+		$arrTmp=array();
+		$arrTotalesPosibles=array();
+		$arrDatosEmpresaAdmin=array();
+		$sumaEmpresasAdmin=0;
+		$sumaEmpresasOtras=0;
+
+		$sumaUnoTerminadas=0;
+		$sumaDosTerminadas=0;
+		$sumaTresTerminadas=0;
+
+		$sumaUnoTodas=0;
+		$sumaDosTodas=0;
+		$sumaTresTodas=0;
+
+		if($nivel==2){
+			$txtMentoresId='';
+			$sql00="select id from bp_personal  where superiorId=$idPersonal";
+			$resultado00=$this->db->query($sql00);
+			while($linea00=$resultado00->fetch_assoc()){
+				if(strlen($txtMentoresId)>0) $txtMentoresId.=",";
+				$txtMentoresId.=$linea00['id'];
+			}
+			if(strlen($txtMentoresId)>0) {
+				$sql0 = "select id from bp_empresas where mentorId in ($txtMentoresId)";
+				$resultado0 = $this->db->query($sql0);
+				while ($linea0 = $resultado0->fetch_assoc()) {
+					$arrDatosEmpresaAdmin[] = $linea0['id'];
+				}
+			}else{
+				$arrDatosEmpresaAdmin=array();
+			}
+		}
+
+		$sql="select E.empresaId,
+			(select sum(B.puntosMaximos)
+			from bp_buenasPracticas B, bp_empresa_buenaPractica E2
+			where B.id=E2.buenasPracticasId and E2.estatus=4 and E2.empresaId=E.empresaId and B.tipoRequisitoId=1
+			group by E2.empresaId) as puntosUnoTerminadas,
+			(select sum(B.puntosMaximos)
+			from bp_buenasPracticas B, bp_empresa_buenaPractica E2
+			where B.id=E2.buenasPracticasId and E2.estatus=4 and E2.empresaId=E.empresaId and B.tipoRequisitoId=2
+			group by E2.empresaId) as puntosDosTerminadas,
+			(select sum(B.puntosMaximos)
+			from bp_buenasPracticas B, bp_empresa_buenaPractica E2
+			where B.id=E2.buenasPracticasId and E2.estatus=4 and E2.empresaId=E.empresaId and B.tipoRequisitoId=3
+			group by E2.empresaId) as puntosTresTerminadas
+			from bp_empresa_buenaPractica E
+			group by E.empresaId";
+		$resultado=$this->db->query($sql);
+
+		while($linea=$resultado->fetch_assoc()){
+			if(in_array($linea['empresaId'], $arrDatosEmpresaAdmin)){
+				$sumaEmpresasAdmin++;
+				$sumaUnoTerminadas+=$linea['puntosUnoTerminadas'];
+				$sumaDosTerminadas+=$linea['puntosDosTerminadas'];
+				$sumaTresTerminadas+=$linea['puntosTresTerminadas'];
+			}else{
+				$sumaEmpresasOtras++;
+				$sumaUnoTodas+=$linea['puntosUnoTerminadas'];
+				$sumaDosTodas+=$linea['puntosDosTerminadas'];
+				$sumaTresTodas+=$linea['puntosTresTerminadas'];
+			}
+		}
+		if($sumaEmpresasAdmin>0) {
+			$promedioUnoTerminadas = $sumaUnoTerminadas / $sumaEmpresasAdmin;
+			$promedioDosTerminadas = $sumaDosTerminadas / $sumaEmpresasAdmin;
+			$promedioTresTerminadas = $sumaTresTerminadas / $sumaEmpresasAdmin;
+		}else{
+			$promedioUnoTerminadas = 0;
+			$promedioDosTerminadas = 0;
+			$promedioTresTerminadas = 0;
+		}
+		if($sumaEmpresasOtras>0) {
+			$promedioUnoTodas = $sumaUnoTodas / $sumaEmpresasOtras;
+			$promedioDosTodas = $sumaDosTodas / $sumaEmpresasOtras;
+			$promedioTresTodas = $sumaTresTodas / $sumaEmpresasOtras;
+		}else{
+			$promedioUnoTodas =0;
+			$promedioDosTodas =0;
+			$promedioTresTodas=0;
+		}
+
+		$sql="select tipoRequisitoId,sum(puntosMaximos) as puntos
+			  from bp_buenasPracticas group by tipoRequisitoId order by tipoRequisitoId";
+		$resultado=$this->db->query($sql);
+		while($linea=$resultado->fetch_assoc()){
+			if($linea['tipoRequisitoId']==1){
+				$arrTotalesPosibles['uno']=$linea['puntos'];
+			}else if ($linea['tipoRequisitoId']==2){
+				$arrTotalesPosibles['dos']=$linea['puntos'];
+			}else{
+				$arrTotalesPosibles['tres']=$linea['puntos'];
+			}
+		}
+
+		$arrTmp['arrAdmin']=array('promedioUno'=>$promedioUnoTerminadas,'promedioDos'=>$promedioDosTerminadas,'promedioTres'=>$promedioTresTerminadas);
+		$arrTmp['arrTodas']=array('promedioUno'=>$promedioUnoTodas,'promedioDos'=>$promedioDosTodas,'promedioTres'=>$promedioTresTodas);
+		$arrTmp['arrTotalesPosibles']=$arrTotalesPosibles;
+
+		return($arrTmp);
+	}
+
+	/**
+	 *
+	 * Hace un arreglo para representar los avances en la seccion derecha de administrador
+	 *
+	 * @param $nivel
+	 * @param $idPersonal
+	 *
+	 * @return array
+	 */
+	function hacerArregloEstadisticasPracticas($nivel, $idPersonal)
+	{
+		// buscar todas las practicas organizadas según las categorias y hacer un arreglo
+		$sql = "select bp_categorias.nombre as categoria,
+				bp_buenasPracticas.categoriaId,bp_buenasPracticas.id,  bp_buenasPracticas.tituloCorto as titulo
+				from bp_categorias
+				left join bp_buenasPracticas on bp_categorias.id = bp_buenasPracticas.categoriaId
+				where publico=1 order by bp_categorias.orden,bp_buenasPracticas.orden";
+		$arrTmp=array();
+		$arrTmpSub=array();
+		$resultado = $this->db->query($sql);
+		$categoriaSel=0;
+		$nombreCategoriaSel="";
+		while ($fila = $resultado->fetch_assoc()) {
+			if($fila['categoriaId']!=$categoriaSel){
+
+				// grabar arreglo hecho hasta ahora
+				if($categoriaSel!=0) {
+					$arrTmp[] = array(
+						'idCategoria' => $categoriaSel,
+						'nombreCategoria' => $nombreCategoriaSel,
+						'practicas' => $arrTmpSub
+					);
+				}
+				$categoriaSel=$fila['categoriaId'];
+				$nombreCategoriaSel=$fila['categoria'];
+				$arrTmpSub=array();
+				$arrTmpSub[]=array(
+					'idPractica' => $fila['id'],
+					'nombrePractica' => $fila['titulo'],
+					'completadasTotal'=>'',
+					'completadasRegional'=>'',
+					'enProcesoTotal'=>'',
+					'enProcesoRegional'=>'',
+				);
+
+
+			}else{
+				$arrTmpSub[]=array(
+					'idPractica' => $fila['id'],
+					'nombrePractica' => $fila['titulo'],
+					'completadasTotal'=>'',
+					'completadasRegional'=>'',
+					'enProcesoTotal'=>'',
+					'enProcesoRegional'=>'',
+				);
+			}
+		}
+		$arrTmp[] = array(
+			'idCategoria' => $categoriaSel,
+			'nombreCategoria' => $nombreCategoriaSel,
+			'practicas' => $arrTmpSub
+		);
+		$tamanoMaximo=0;
+
+		$sql="select buenasPracticasId, count(*) as cuantos from bp_empresa_buenaPractica where estatus=4 group by buenasPracticasId";
+		$resultado=$this->db->query($sql);
+		while($linea=$resultado->fetch_assoc()){
+			if($linea['cuantos']>$tamanoMaximo) $tamanoMaximo=$linea['cuantos'];
+			for($x=0;$x<count($arrTmp);$x++){
+				for($y=0;$y<count($arrTmp[$x]['practicas']);$y++){
+					if($arrTmp[$x]['practicas'][$y]['idPractica']==$linea['buenasPracticasId']) $arrTmp[$x]['practicas'][$y]['completadasTotal']=$linea['cuantos'];
+				}
+			}
+		}
+
+		$sql="select buenasPracticasId, count(*) as cuantos from bp_empresa_buenaPractica where estatus=2 group by buenasPracticasId";
+		$resultado=$this->db->query($sql);
+		while($linea=$resultado->fetch_assoc()){
+			if($linea['cuantos']>$tamanoMaximo) $tamanoMaximo=$linea['cuantos'];
+			for($x=0;$x<count($arrTmp);$x++){
+				for($y=0;$y<count($arrTmp[$x]['practicas']);$y++){
+					if($arrTmp[$x]['practicas'][$y]['idPractica']==$linea['buenasPracticasId']) $arrTmp[$x]['practicas'][$y]['enProcesoTotal']=$linea['cuantos'];
+				}
+			}
+		}
+
+		if($nivel==2) {
+
+			$sql = "select buenasPracticasId, count(*) as cuantos from bp_empresa_buenaPractica where estatus=4
+				and empresaId in (select id from bp_empresas where mentorId in (select Id from bp_personal where superiorId=$idPersonal))
+				group by buenasPracticasId";
+			$resultado=$this->db->query($sql);
+			while($linea=$resultado->fetch_assoc()){
+				if($linea['cuantos']>$tamanoMaximo) $tamanoMaximo=$linea['cuantos'];
+				for($x=0;$x<count($arrTmp);$x++){
+					for($y=0;$y<count($arrTmp[$x]['practicas']);$y++){
+						if($arrTmp[$x]['practicas'][$y]['idPractica']==$linea['buenasPracticasId']) $arrTmp[$x]['practicas'][$y]['completadasRegional']=$linea['cuantos'];
+					}
+				}
+			}
+
+			$sql = "select buenasPracticasId, count(*) as cuantos from bp_empresa_buenaPractica where estatus=2
+				and empresaId in (select id from bp_empresas where mentorId in (select Id from bp_personal where superiorId=$idPersonal))
+				group by buenasPracticasId";
+			$resultado=$this->db->query($sql);
+			while($linea=$resultado->fetch_assoc()){
+				if($linea['cuantos']>$tamanoMaximo) $tamanoMaximo=$linea['cuantos'];
+				for($x=0;$x<count($arrTmp);$x++){
+					for($y=0;$y<count($arrTmp[$x]['practicas']);$y++){
+						if($arrTmp[$x]['practicas'][$y]['idPractica']==$linea['buenasPracticasId']) $arrTmp[$x]['practicas'][$y]['enProcesoRegional']=$linea['cuantos'];
+					}
+				}
+			}
+
+		}
+		$arrTmp['tamanoMaximo']=$tamanoMaximo;
 		return ($arrTmp);
 	}
 
@@ -1010,20 +1716,27 @@ class Modelo
 	 * Si son correctos y el registro es de una persona existente hace el update del registro en la tabla bp_personal
 	 *
 	 * @param $arrDatosPersona
+	 * @param $nivel
+	 * @param $nombreAdmin
+	 * @param $correoAdmin
+	 * @param $region
 	 *
 	 * @return int
 	 */
-	function validarDatosPersona($arrDatosPersona)
+	function validarDatosPersona($arrDatosPersona, $nivel, $nombreAdmin, $correoAdmin, $region)
 	{
 		// TODO: Definir correctamente las validaciones por hacer
-		// TODO: Implementar grabado y validado de clave según modelo de Michael
 		$correcto=1;
 		if(strlen($arrDatosPersona['nombre'])==0) $correcto=0;
 		if(strlen($arrDatosPersona['usuario'])==0) $correcto=0;
 		if(strlen($arrDatosPersona['clave'])==0) $correcto=0;
 		if(strlen($arrDatosPersona['email'])==0) $correcto=0;
-		//if(strlen($arrDatosPersona['nota'])==0) $correcto=0;
-		if($arrDatosPersona['esSuperAdmin']>1 && $arrDatosPersona['esSuperAdmin']<0) $correcto=0;
+		if($nivel==1) {
+			if(strlen($arrDatosPersona['region'])==0) $correcto=0;
+		}else{
+			$arrDatosPersona['region']='';
+		}
+
 		if($arrDatosPersona['correoNotificacionCadaXHoras']<1) $correcto=0;
 
 		if($correcto){
@@ -1031,35 +1744,48 @@ class Modelo
 				$sql = "INSERT INTO bp_personal SET
 					nombre='".$arrDatosPersona['nombre']."',
 					usuario='".$arrDatosPersona['usuario']."',
-					clave='".$arrDatosPersona['clave']."',
+					clave='".crypt($arrDatosPersona['clave'],SALT)."',
 					email='".$arrDatosPersona['email']."',
+					region='".$arrDatosPersona['region']."',
+					nivelId='".$arrDatosPersona['nivelId']."',
+					superiorId='".$arrDatosPersona['superiorId']."',
 					fechaCreado='".HOY."',
 					fechaClaveUpdate='".HOY."',
 					nota='".$arrDatosPersona['nota']."',
-					esSuperAdmin='".$arrDatosPersona['esSuperAdmin']."',
 					correoNotificacionCadaXHoras='".$arrDatosPersona['correoNotificacionCadaXHoras']."'";
+				if($arrDatosPersona['nivelId']==3) $modalidad='agregarMentor';
+				if($arrDatosPersona['nivelId']==2) $modalidad='agregarAdmonRegional';
 			} else {
 
 				$sql="select usuario,clave from bp_personal where id=".$arrDatosPersona['id'];
 				$resultado=$this->db->query($sql);
 				$linea=$resultado->fetch_assoc();
 
+				$textoClave=($linea['clave']!=$arrDatosPersona['clave'])? "clave='".crypt($arrDatosPersona['clave'],SALT)."'," : "";
+
 				$variableFechaClaveUpdate=($linea['usuario']!=$arrDatosPersona['usuario'] || $linea['clave']!=$arrDatosPersona['clave']) ?
 					"fechaClaveUpdate='".HOY."'," : "";
 
-				//if($linea['usuario']!=$arrDatosPersona['usuario'] || $linea['clave']!=$arrDatosPersona['clave'])
 
 				$sql = "update bp_personal SET
 					nombre='".$arrDatosPersona['nombre']."',
 					usuario='".$arrDatosPersona['usuario']."',
-					clave='".$arrDatosPersona['clave']."',
+					$textoClave
 					email='".$arrDatosPersona['email']."',
+					region='".$arrDatosPersona['region']."',
 					$variableFechaClaveUpdate
 					nota='".$arrDatosPersona['nota']."',
-					esSuperAdmin='".$arrDatosPersona['esSuperAdmin']."',
 					correoNotificacionCadaXHoras='".$arrDatosPersona['correoNotificacionCadaXHoras']."' where id=".$arrDatosPersona['id'];
+
+				if($arrDatosPersona['nivelId']==3) $modalidad='actualizarMentor';
+				if($arrDatosPersona['nivelId']==2) $modalidad='actualizarAdmonRegional';
+				//$modalidad='actualizarMentor';
 			}
 			$this->db->query($sql);
+
+			$this->enviarCorreoAlta($modalidad,$arrDatosPersona['email'],$arrDatosPersona['nombre'],'',
+				$arrDatosPersona['usuario'],$arrDatosPersona['clave'],$nombreAdmin,$correoAdmin,$region);
+
 		}
 		return ($correcto);
 	}
@@ -1068,9 +1794,12 @@ class Modelo
 	 *
 	 * genera un string de formato GeoJson para desplegar empresas en el mapa
 	 *
+	 * @param $nivel
+	 * @param $personalId
+	 *
 	 * @return string
 	 */
-	function hacerGeoJSONparaMapa()
+	function hacerGeoJSONparaMapa($nivel, $personalId)
 	{
 
 		$geojson = array(
@@ -1078,8 +1807,13 @@ class Modelo
 			'features'  => array()
 		);
 
+		if($nivel==2){
+			$sql="select *, X(ubicacion) as latitud,Y(ubicacion) as longitud
+				from bp_empresas where mentorId in (select id from bp_personal where superiorId=$personalId)";
+		}else {
+			$sql="select *, X(ubicacion) as latitud, Y(ubicacion) as longitud from bp_empresas";
+		}
 
-		$sql="select *, X(ubicacion) as latitud, Y(ubicacion) as longitud from bp_empresas";
 		$resultado=$this->db->query($sql);
 		while($linea=$resultado->fetch_assoc()){
 			$propiedades = $linea;
@@ -1108,198 +1842,45 @@ class Modelo
 		return json_encode($geojson, JSON_NUMERIC_CHECK);
 	}
 
-
-
-	// funciones por borrar
-
-
-	function llenarDatosFicticios()
+	/**
+	 *
+	 * Cambia empresas de un mentor a otro
+	 *
+	 * @param $donador
+	 * @param $receptor
+	 */
+	function transferirEmpresas($post,$receptor)
 	{
-
-		// limpiar tablas de practicas y de eventos
-		$sqlLimpiezaEventos="delete from bp_empresa_buenaPractica_eventos";
-		$this->db->query($sqlLimpiezaEventos);
-		$sql0="ALTER TABLE bp_empresa_buenaPractica_eventos AUTO_INCREMENT=1";
-		$this->db->query($sql0);
-
-		$sqlLimpiezaPracticas="delete from bp_empresa_buenaPractica";
-		$this->db->query($sqlLimpiezaPracticas);
-		$sql0="ALTER TABLE bp_empresa_buenaPractica AUTO_INCREMENT=1";
-		$this->db->query($sql0);
-
-		// hacer arr de mentores id
-		//$arrIdMentores=$this->hacerArrIdMentores();
-		//$cuantosMentores=count($arrIdMentores);
-
-
-		$sqlIdEmpresa="select id from bp_empresas order by id limit 0,20";
-		$resultadoIdEmpresa=$this->db->query($sqlIdEmpresa);
-		$arrInserts=array();
-		while($lineaIdEmpresa=$resultadoIdEmpresa->fetch_assoc()){
-			$idEmpresa=$lineaIdEmpresa['id'];
-
-			// poner mentor a la empresa
-			//$mentor=rand(0,$cuantosMentores-1);
-			//$idMentor=$arrIdMentores[$mentor];
-			//$sqlMentor="update bp_empresas set mentorId=$idMentor where id=$idEmpresa";
-			//$this->db->query($sqlMentor);
-
-			// poner practicas a la empresa
-			$cuantasPracticas=rand(0,31);
-			echo "idEmpresa=$idEmpresa -> $cuantasPracticas<br>";
-
-			$completo=0;
-			$arrPracticasDeEmpresa=array();
-			while($completo==0){
-				$idPractica=rand(1,35);
-				if(!in_array($idPractica,$arrPracticasDeEmpresa)) $arrPracticasDeEmpresa[]=$idPractica;
-				if(count($arrPracticasDeEmpresa)==$cuantasPracticas) $completo=1;
+		$txtId='';
+		foreach($post as $clave=>$valor){
+			if(substr($clave,0,6)=="chBox_"){
+				$id=substr($clave,6);
+				if(strlen($txtId)>0) $txtId.=",";
+				$txtId.=$id;
 			}
-			print "<pre>";
-			print_r($arrPracticasDeEmpresa);
-			print "</pre>";
-			for($x=0;$x<count($arrPracticasDeEmpresa);$x++){
-				$dia=rand(1,28);
-				$mes=rand(1,12);
-				$ano=2015;
-				$fechaInicio="$ano-$mes-$dia";
-				//$arrInserts=array('idEmpresa'=>$idEmpresa,'arrPracticasDeEmpresa'=>$arrPracticasDeEmpresa[$x],'fechaInicio'=>$fechaInicio);
-				$this->agregarPracticaAEmpresa($idEmpresa, $arrPracticasDeEmpresa[$x], '2', $fechaInicio, '1', 'Agregada por rutina de llenado masivo', '3');
-			}
-
-
-
 		}
-
-		/*
-
-		$sqlIdEmpresaPractica="select bp_empresa_buenaPractica.*, bp_empresas.nombreEmpresa as nombreDeEmpresa from bp_empresa_buenaPractica
-							left join bp_empresas on bp_empresas.id=bp_empresa_buenaPractica.empresaId limit 10";
-		$resultadoIdEmpresaPractica=$this->db->query($sqlIdEmpresaPractica);
-		while($lineaIdEmpresaPractica=$resultadoIdEmpresaPractica->fetch_assoc()){
-
-			$practicaAprovada=0;
-			$arrCriterios=array();
-			$sqlIdCriterios="select id from bp_criterios where buenaPracticaId =".$lineaIdEmpresaPractica['buenasPracticasId'];
-			$resultadoIdCriterios=$this->db->query($sqlIdCriterios);
-			while($lineaIdCriterios=$resultadoIdCriterios->fetch_assoc()){
-				$arrCriterios[]=$lineaIdCriterios['id'];
-			}
-			$arrTmp=array();
-			$arrTmp2=array();
-			$arrCriteriosAprobados=array();
-			$arrCriteriosConEvidencia=array();
-			$cuantosCriterios=count($arrCriterios);
-			$criteriosAprobados=rand(0,$cuantosCriterios);
-			if($criteriosAprobados==$cuantosCriterios){
-				echo 'practica aprobada';
-				$practicaAprovada=1;
-				$criteriosEntregados=$cuantosCriterios;
-				$arrCriteriosConEvidencia=$arrCriterios;
-				$arrCriteriosAprobados=$arrCriterios;
-			}else{
-				$criteriosEntregados=rand($criteriosAprobados,$cuantosCriterios);
-				if($criteriosEntregados>1) {
-					$arrTmp= array_rand ( $arrCriterios, $criteriosEntregados);
-					for ($x = 0; $x < count($arrTmp); $x++) {
-						$arrCriteriosConEvidencia[] = $arrCriterios[$arrTmp[$x]];
-					}
-
-					// hacer arreglo de criteriosAprobados
-					if($criteriosAprobados==1){
-						$cual=rand(0,count($arrCriteriosConEvidencia)-1);
-						$arrCriteriosAprobados[]=$arrCriteriosConEvidencia[$cual];
-					}else if($criteriosAprobados>1){
-						$arrTmp2= array_rand ( $arrCriteriosConEvidencia, $criteriosAprobados);
-						for ($x = 0; $x < count($arrTmp2); $x++) {
-							$arrCriteriosAprobados[] = $arrCriteriosConEvidencia[$arrTmp2[$x]];
-						}
-					}else{
-						$arrCriteriosAprobados=array();
-					}
-				}else if ($criteriosEntregados==1){
-					$cual=rand(0,$cuantosCriterios-1);
-					$arrCriteriosConEvidencia[]=$arrCriterios[$cual];
-					if($criteriosAprobados==1){
-						$arrCriteriosAprobados=$arrCriteriosConEvidencia;
-					}else{
-						$arrCriteriosAprobados=array();
-					}
-				}else{
-					$arrCriteriosConEvidencia=array();
-				}
-			}
-
-			print "<pre>";
-			print_r($lineaIdEmpresaPractica);
-			echo "arrCriterios";
-			print_r($arrCriterios);
-
-			echo "criteriosEntregados=$criteriosEntregados<br>";
-			echo "arrCriteriosConEvidencia<br>";
-			print_r($arrCriteriosConEvidencia);
-
-			echo "criteriosAprobados=$criteriosAprobados<br>";
-			print_r($arrCriteriosAprobados);
-
-			echo "arrTmp";
-			print_r($arrTmp);
-			print "</pre>";
-
-
-			for($z=0;$z<count($arrCriteriosConEvidencia);$z++){
-				$archivo=$this->grabarEvidencia($lineaIdEmpresaPractica['nombreDeEmpresa'],$lineaIdEmpresaPractica['buenasPracticasId'],$arrCriteriosConEvidencia[$z]);
-				$this->agregarEvidencia('2',$lineaIdEmpresaPractica['id'],$arrCriteriosConEvidencia[$z],$archivo,'1','2','Llenado masivo','3');
-			}
-			for($z=0;$z<count($arrCriteriosAprobados);$z++){
-
-
-
-			//	$sql="insert into bp_empresa_buenaPractica_eventos (idTipoDeEvento,empresa_buenaPracticaId,criterioId,fecha,estatusCriterio,mensaje,prioridad,idEventoAprobado)
-			//values('4',$lineaIdEmpresaPractica['id'],$arrCriteriosAprobados[$z],'".HOY."','3','Llenado masivo','3',$empresaBuenapracticaEventosId)";
-
-			}
-
-		}
-		*/
-
+		$txtId="(".$txtId.")";
+		$sql="update bp_empresas set mentorId=$receptor where id in $txtId";
+		$this->db->query($sql);
 	}
 
-	function grabarEvidencia($nombreEmpresa,$idPractica,$idCriterio)
-	{
-		$folderEmpresa=str_replace(' ','_',$nombreEmpresa);
-		$folderPractica="Practica_".$idPractica;
-		$folderCriterio="Criterio_".$idCriterio;
-		$directorioDestino = ROOT_FOLDER_EVIDENCIAS."$folderEmpresa/$folderPractica/$folderCriterio/";
-		if (!file_exists($directorioDestino)) mkdir($directorioDestino, 0777, true);
-		$copiado= copy ( '/Users/jom/Desktop/elMio.png' , $directorioDestino."evidencia.png" );
-		$archivoCopiado=$directorioDestino."evidencia.png";
-
-		return($archivoCopiado);
-
-
-	}
-
-	function agregarPracticaAEmpresaTmp($arrValores)
-	{
-		//$textoValores="($empresaId,$practicaId,$statusId,'".$fechaInicio."')";
-		//$sql="insert into bp_empresa_buenaPractica (empresaId,buenasPracticasId,estatus,fechaIncio) values $textoValores";
-		//$this->db->query($sql);
-		//$idNuevo=$this->db->insert_id;
-		//
-		//$textoValores1="($tipoEventoId,$idNuevo,'".$fechaInicio."',$statusId,'".$mensaje."',$prioridadId)";
-		//$sql1="insert into bp_empresa_buenaPractica_eventos (idTipoDeEvento,empresa_buenaPracticaId,fecha,estatusBuenaPractica,mensaje,prioridad) values $textoValores1";
-		//$this->db->query($sql1);
-	}
-
-	function hacerArrIdMentores()
+	/**
+	 *
+	 * Hace un arreglo id, nombre de empresa para la pantalla de transferencia de empresas a otro mentor
+	 *
+	 * @param $donadorId
+	 *
+	 * @return array
+	 */
+	function hacerArrEmpresasDeMentorDonador($donadorId)
 	{
 		$arrTmp=array();
-		$sql="select id from bp_personal where esSuperAdmin=0 order by id";
+		$sql="select id, nombreEmpresa from bp_empresas where mentorId=$donadorId";
 		$resultado=$this->db->query($sql);
 		while($linea=$resultado->fetch_assoc()){
-			$arrTmp[]=$linea['id'];
+			$arrTmp[]=$linea;
 		}
-		return ($arrTmp);
+		return($arrTmp);
 	}
+
 }

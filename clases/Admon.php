@@ -46,6 +46,13 @@ class Admon
 
 	/**
 	 *
+	 *  Variable que almacena el nivel del administrador (super administrador o administrador regional)
+	 *
+	 */
+	var $nivel;
+
+	/**
+	 *
 	 *  Variable que almacena arreglo con lmentores supervisados por el admon logueado
 	 *
 	 */
@@ -59,6 +66,42 @@ class Admon
 	var $geoJSON;
 
 	/**
+	 *
+	 *  Variable que almacena un array con las practicas y sus desempeños
+	 *
+	 */
+	var $estadisticasPracticas=array();
+
+	/**
+	 *
+	 *  Variable que almacena un array con las empresas y sus desempeños
+	 *
+	 */
+	var $estadisticasEmpresas=array();
+
+	/**
+	 *
+	 *  Variable que almacena el id del mentor del que se migran las empresas
+	 *
+	 */
+	var $mentorDonador;
+
+	/**
+	 *
+	 *  Variable que almacena arreglo de empresas pertenecientes al mentor donador
+	 *
+	 */
+	var $arrEmpresasDeMentorDonador=array();
+
+	/**
+	 *
+	 *  Variable que almacena el id del mentor que recibe las empresas migradas
+	 *
+	 */
+	var $mentorReceptor;
+
+	/**
+	 *
 	 * constructor de clase Admon.
 	 *
 	 * @param $usuario
@@ -66,10 +109,12 @@ class Admon
 	function __construct($usuario)
 	{
 		$this->id=$usuario['id'];
+		$this->nivel=$usuario['nivelId'];
 		$this->datos = $usuario;
 	}
 
 	/**
+	 *
 	 *  destructor de la clase
 	 *  por ahora no se usa
 	 */

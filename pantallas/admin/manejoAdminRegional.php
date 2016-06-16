@@ -26,25 +26,19 @@ $valor="";
 		Bienvenido <?php echo ($this->admon->datos['nombre']);   ?>
 	</div>
 	<div class="subtitulo">
-		Manejo de mentores
+		Manejo de Directores de ANP
 	</div>
 
 	<div id="ColIzquierda30">
 		<div id="textoLateralIzq">
 			<?php
 				for($x=0;$x<count($this->admon->arrPersonal);$x++) {
-					$this->fx->ponerBoton('admin', 'seleccionarPersona', $this->admon->arrPersonal[$x]['id'], $this->admon->arrPersonal[$x]['nombre'], NULL, NULL, NULL, 'btn', 1);
+					echo "<div id='itemIzquierda'>";
+					$this->fx->ponerBoton('admin', 'seleccionarPersona', $this->admon->arrPersonal[$x]['id'], $this->admon->arrPersonal[$x]['nombre'], NULL, NULL, NULL, 'botonAzul', 1);
+					echo "</div>";
 				}
 			?>
 		</div>
-		<div id="textoLateralIzq">
-			<?php $this->fx->ponerBoton('admin', 'agregarPersona', 'nuevo', 'Nuevo', NULL, NULL, NULL, 'btn', 1); ?>
-		</div>
-		<?php
-		//ponerMenuMultiple($nombre,$titulo,$arreglo,$valorCategoria,$valor,$accion=null,$subaccion=null,$item=null,$clase=null,$enviarFormulario=null,$multiple,$renglones=8);
-		//$this->fx->ponerMenuRenglones('listaPersonal','Personal',$this->admon->arrPersonal,'','','admin','seleccionarPersona',null,'texto',1,0,10);
-		?>
-
 	</div>
 
 	<div id="ColDerecha70">
@@ -91,7 +85,7 @@ $valor="";
 				</tr>
 				<tr>
 					<td colspan="3" class="formularioCampo">
-						<?php $this->fx->ponerInput('input','clavePersona',70,255,$this->arrDatosPersonaTmp['clave'],'formularioCampo');?>
+						<?php $this->fx->ponerInput('password','clavePersona',70,255,$this->arrDatosPersonaTmp['clave'],'formularioCampo');?>
 					</td>
 				</tr>
 				<tr>
@@ -107,9 +101,27 @@ $valor="";
 				</tr>
 				<tr>
 					<td colspan="3" class="formularioCampo">
-						<?php $this->fx->ponerInput('input','correoPersona',70,45,$this->arrDatosPersonaTmp['email'],'formularioCampo');?>
+						<?php $this->fx->ponerInput('input','correoPersona',70,255,$this->arrDatosPersonaTmp['email'],'formularioCampo');?>
 					</td>
 				</tr>
+
+				<tr>
+					<td colspan="3" class="espacioArriba">
+						&nbsp;
+					</td>
+				</tr>
+
+				<tr>
+					<td colspan="3" class="formularioEtiqueta">
+						Oficina regional
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3" class="formularioCampo">
+						<?php $this->fx->ponerInput('input','region',70,45,$this->arrDatosPersonaTmp['region'],'formularioCampo');?>
+					</td>
+				</tr>
+
 				<tr>
 					<td colspan="3" class="espacioArriba">
 						&nbsp;
@@ -126,22 +138,7 @@ $valor="";
 						<?php $this->fx->ponerAreaTexto("Nota",50,8,'formularioCampo',$this->arrDatosPersonaTmp['nota']);?>
 					</td>
 				</tr>
-				<tr>
-					<td colspan="3" class="espacioArriba">
-						&nbsp;
-					</td>
-				</tr>
 
-				<tr>
-					<td colspan="3" class="formularioEtiqueta">
-						Es administrador?
-					</td>
-				</tr>
-				<tr>
-					<td colspan="3" class="formularioCampo">
-						<?php $this->fx->ponerRadioButtons('esSuperAdmin',$arreglo,$this->arrDatosPersonaTmp['esSuperAdmin'],'formularioCampo');?>
-					</td>
-				</tr>
 				<tr>
 					<td colspan="3" class="espacioArriba">
 						&nbsp;
@@ -168,9 +165,9 @@ $valor="";
 		<?php
 
 			if($this->arrDatosPersonaTmp['id']=='nuevo'){
-				$this->fx->ponerBoton('admin','grabarNuevo','','Agregar',NULL,NULL,NULL,'btn btn-primary',0);
+				$this->fx->ponerBoton('admin','grabarAdministrador','','Agregar',NULL,NULL,NULL,'btn btn-primary',0);
 			}else{
-				$this->fx->ponerBoton('admin','editarPersona','','Actualizar',NULL,NULL,NULL,'btn btn-primary',0);
+				$this->fx->ponerBoton('admin','editarAdministrador','','Actualizar',NULL,NULL,NULL,'btn btn-primary',0);
 			}
 
 
@@ -191,7 +188,4 @@ $valor="";
 	<div class="espacioArriba"></div>
 
 </div>
-
-<?php $this->fx->ponerBoton('admin','irA','inicio','Inicio',NULL,NULL,NULL,'btn btn-primary',0);?>
-<?php $this->fx->ponerBoton('logout','','','Logout',NULL,NULL,NULL,'btn btn-primary',0);?>
 

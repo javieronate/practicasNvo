@@ -47,8 +47,6 @@ if(isset($_POST['accion']) && $_POST['accion']=='mentor' && $_POST['subaccion']=
 	$bodyEtiqueta="<body link='White' vlink='White' alink='White' bgcolor='#FFFFFF'>";
 }
 
-
-
 ?>
 
 <!DOCTYPE html>
@@ -58,6 +56,9 @@ if(isset($_POST['accion']) && $_POST['accion']=='mentor' && $_POST['subaccion']=
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<link href="includes/estilos.css" rel="stylesheet" type="text/css">
 
+
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="js/Chart.js-master/dist/Chart.bundle.js"></script>
 	<!-- Iconos -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
@@ -73,10 +74,14 @@ if(isset($_POST['accion']) && $_POST['accion']=='mentor' && $_POST['subaccion']=
 	<!-- tomado de tema de wordPress-->
 	<link rel='stylesheet' id='tc-gfonts-css'  href='//fonts.googleapis.com/css?family=Alegreya:700|Roboto' type='text/css' media='all' />
 
-	<script type="text/javascript" src="js/jquery.js" ></script>
+	<!--<script type="text/javascript" src="js/jquery.js" ></script>-->
+
 
 	<!--mapas admon-->
-	<?php  if(isset($_SESSION['controlador']->admon->id)){?>
+	<?php  if(isset($_SESSION['controlador']->admon->id)){
+		$idAdmonMapa=$_SESSION['controlador']->admon->id;
+		$nivelAdmonMapa=$_SESSION['controlador']->admon->nivel;
+	?>
 		<script
 			src="https://maps.googleapis.com/maps/api/js?libraries=visualization">
 		</script>
@@ -94,7 +99,7 @@ if(isset($_POST['accion']) && $_POST['accion']=='mentor' && $_POST['subaccion']=
 				var script = document.createElement('script');
 				// (In this example we use a locally stored copy instead.)
 				// script.src = 'http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojsonp';
-				script.src = './json/geoJson.php';
+				script.src = './json/geoJson.php?id=' + <?php echo $idAdmonMapa;?> + '&nivel=' +<?php echo $nivelAdmonMapa;?>;
 				document.getElementsByTagName('head')[0].appendChild(script);
 
 			}
@@ -104,25 +109,29 @@ if(isset($_POST['accion']) && $_POST['accion']=='mentor' && $_POST['subaccion']=
 			window.eqfeed_callback = function(results) {
 				var infowindow = new google.maps.InfoWindow();
 				for (var i = 0; i < results.features.length; i++) {
+
+					var pin='./imagenes/generales/' +  results.features[i].properties.pin;
 					var coords = results.features[i].geometry.coordinates;
 					var latLng = new google.maps.LatLng(coords[0],coords[1]);
 					var nombre = results.features[i].properties.nombreEmpresa;
 					var marker = new google.maps.Marker({
 						position: latLng,
-						icon: './imagenes/generales/pin7R.png',
+						icon: "./imagenes/generales/" + results.features[i].properties.pin,
 						title: results.features[i].properties.nombreEmpresa,
 						map: map
 					});
 					google.maps.event.addListener(marker, 'click', (function(marker, i) {
 						return function() {
-							var contenido="<div class='empresaMapa'>" + results.features[i].properties.nombreEmpresa + "</div>";
+							var contenido="<img src='./imagenes/empresas/" + results.features[i].properties.foto + "' width='150px'/>" ;
+							contenido = contenido +"<div class='empresaMapa'>" + results.features[i].properties.nombreEmpresa + "</div>";
 							contenido = contenido +"<div class='contactoMapa'>" + results.features[i].properties.contactoNombre + "</div>";
-							contenido = contenido +"<div class='textoMapa'>" + results.features[i].properties.telefono + "</div>";
-							contenido = contenido +"<div class='textoMapa'>" + results.features[i].properties.correos + "</div>";
-							contenido = contenido +"<div class='textoMapa'>" + results.features[i].properties.sitioWeb + "</div>";
+							contenido = contenido +"<div class='textoMapa'>Teléfono:" + results.features[i].properties.telefono + "</div>";
+							contenido = contenido +"<div class='textoMapa'>Correos:" + results.features[i].properties.correos + "</div>";
+							contenido = contenido +"<div class='textoMapa'>web:" + results.features[i].properties.sitioWeb + "</div>";
 							contenido = contenido +"<div class='textoMapa'> Fecha de creación: " + results.features[i].properties.fechaCreacion + "</div>";
 							contenido = contenido +"<div class='textoMapa'> Ultima vez que entro al sitio: " + results.features[i].properties.ultimoLogin + "</div>";
-
+							contenido = contenido +"<div class='textoMapa'> Prácticas aprobadas: " + results.features[i].properties.terminadas + "</div>";
+							contenido = contenido +"<div class='textoMapa'> Prácticas en proceso: " + results.features[i].properties.proceso + "</div>";
 							infowindow.setContent(contenido);
 							infowindow.open(map, marker);
 						}
@@ -132,7 +141,25 @@ if(isset($_POST['accion']) && $_POST['accion']=='mentor' && $_POST['subaccion']=
 			}
 			google.maps.event.addDomListener(window, 'load', initialize)
 		</script>
-	<?php } ?>
+	<?php }
+	if(isset($_SESSION['controlador']->admon->id) or isset($_SESSION['controlador']->empresa->id)){?>
+		<style>
+			canvas {
+				-moz-user-select: none;
+				-webkit-user-select: none;
+				-ms-user-select: none;
+			}
+		</style>
+		<script>
+			var myChart = new Chart(ctx, {
+				type: 'doughnut',
+				data: data,
+				options: options
+			});
+		</script>
+	<?php }?>
+
+
 </head>
 
 
@@ -149,7 +176,6 @@ if(isset($_POST['accion']) && $_POST['accion']=='mentor' && $_POST['subaccion']=
 			<?php $_SESSION["controlador"]->mostrarPantalla();?>
 		</form>
 	</div>
-	<!-- Contenido -->
 </body>
 </html>
 

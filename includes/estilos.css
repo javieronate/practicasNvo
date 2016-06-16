@@ -1,5 +1,198 @@
 @CHARSET "UTF-8";
 
+
+.contactoEmpresa{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 18px;
+	font-variant: normal;
+	font-size: 14px;
+	color: #666;
+	margin-left: 0px;
+}
+.datosEmpresa{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 14px;
+	font-variant: normal;
+	font-size: 12px;
+	color: #666;
+	margin-left: 0px;
+	margin-bottom: 20px;
+}
+
+
+.modalDialog {
+	position: fixed;
+	font-family: Arial, Helvetica, sans-serif;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: rgba(0,0,0,0.8);
+	z-index: 99999;
+	opacity:0;
+	-webkit-transition: opacity 400ms ease-in;
+	-moz-transition: opacity 400ms ease-in;
+	transition: opacity 400ms ease-in;
+	pointer-events: none;
+}
+
+.modalDialog:target {
+	opacity:1;
+	pointer-events: auto;
+}
+
+.modalDialog > div {
+	width: 400px;
+	position: relative;
+	margin: 10% auto;
+	padding: 5px 20px 13px 20px;
+	border-radius: 10px;
+	background: #fff;
+	background: -moz-linear-gradient(#fff, #999);
+	background: -webkit-linear-gradient(#fff, #999);
+	background: -o-linear-gradient(#fff, #999);
+}
+
+.close {
+	background: #606061;
+	color: #FFFFFF;
+	line-height: 25px;
+	position: absolute;
+	right: -12px;
+	text-align: center;
+	top: -10px;
+	width: 24px;
+	text-decoration: none;
+	font-weight: bold;
+	-webkit-border-radius: 12px;
+	-moz-border-radius: 12px;
+	border-radius: 12px;
+	-moz-box-shadow: 1px 1px 3px #000;
+	-webkit-box-shadow: 1px 1px 3px #000;
+	box-shadow: 1px 1px 3px #000;
+}
+
+.close:hover { background: #00d9ff; }
+
+
+
+
+.rayaDelgada{
+	line-height: 2px;
+	border-top: 1px solid rgba(0,0,0,.25);
+	margin-left: 60px;
+	margin-right: 30px;
+}
+
+.textoGraficaEmpresa{
+	font-family: Arial, sans-serif;
+	font-weight: lighter;
+	font-style: normal;
+	line-height: 15px;
+	font-variant: normal;
+	font-size: 10px;
+	color: #000;
+	margin-left: 5px;
+}
+
+.altoGraficaEmpresa{
+	font-family: Arial, sans-serif;
+	font-weight: lighter;
+	font-style: normal;
+	line-height: 25px;
+	font-variant: normal;
+	font-size: 10px;
+	color: #000;
+}
+
+#graficaEmpresa{
+	background-image: url("../imagenes/generales/fondoGrafica.png");
+	background-repeat: no-repeat;
+}
+
+#graficaEmpresa2{
+	background-image: url("../imagenes/generales/fondoGrafica2.png");
+	background-repeat: no-repeat;
+}
+
+.tituloGraficaEmpresa{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 18px;
+	font-variant: normal;
+	font-size: 14px;
+	color: #666;
+	margin-left: 5px;
+}
+#ladoDerecho30{
+	width: 350px;
+	/*margin-top: 10px;*/
+	/*text-align: center;*/
+	float: left;
+	margin-left: 20px;
+	/*background-color: #981f32;*/
+}
+
+
+
+#ladoIzquierdo70{
+	width: 500px;
+	float: left;
+	background-color: #2C3C00;
+}
+
+.tituloTablaEmpresa{
+	font-family: Arial, sans-serif;
+	font-weight: bold;
+	font-style: normal;
+	line-height: 18px;
+	font-variant: normal;
+	font-size: 14px;
+	color: #666;
+	margin-left: 5px;
+}
+
+
+
+#canvas-holder {
+	width: 100%;
+	margin-top: 10px;
+	text-align: center;
+	/*background-color: #981f32;*/
+}
+#canvas-holder2 {
+	width: 100%;
+	margin-top: 10px;
+	text-align: center;
+	float: left;
+	/*background-color: #981f32;*/
+}
+
+
+
+.itemListaNuevosEventos{
+	font-family: Arial, sans-serif;
+	font-weight: lighter;
+	font-style: normal;
+	line-height: 20px;
+	font-variant: normal;
+	font-size: 14px;
+	color: #999;
+	margin-left: 30px;
+	margin-right: 50px;
+	margin-top: 10px;
+}
+
+.itemListaNuevosEventosFecha{
+	margin-left: -30px;
+	color: #000;
+}
+
 /* botones */
 
 .botonAzul{
@@ -10,6 +203,14 @@
 	color: #003bb3;
 }
 
+.botonAzulChico{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 12px;
+	color: #003bb3;
+	float: right;
+}
 .botonAzulAngosto{
 	width: 100px;
 	font-family: Arial, sans-serif;
@@ -38,7 +239,7 @@
 
 #map {
 	width: 430px;
-	height: 306px;
+	height: 450px;
 	background-color: #1f6377;
 }
 
@@ -87,7 +288,11 @@
 	margin-top: 10px;
 }
 
-#taxtoListaMentorStauts{
+#textoNombreCriterioAngosto{
+	width: 	600px;
+}
+
+#textoListaMentorStauts{
 	font-family: Arial, sans-serif;
 	font-weight: normal;
 	font-style: italic;
@@ -107,6 +312,7 @@
 	color:            #666;
 	margin-left:      80px;
 	margin-top:       0px;
+	width: 600px;
 	/*border-bottom-width: 1px;*/
 	/*border-bottom-style: inset;*/
 	/*border-bottom-color: #333;*/
@@ -179,6 +385,9 @@
 	font-size: 12px;
 	color: #666;
 	margin-left: 30px;
+	margin-right: 30px;
+	border-top: outset;
+	border-top-color: #981f32;
 }
 
 .nombreCriterioAdmon{
@@ -190,6 +399,8 @@
 	font-size: 12px;
 	color: #666;
 	margin-left: 60px;
+	margin-right: 30px;
+	margin-top: 10px;
 }
 
 .nombreEventosAdmon{
@@ -201,6 +412,17 @@
 	font-size: 10px;
 	color: #999;
 	margin-left: 90px;
+}
+
+.comentariosDelMentor{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: italic;
+	line-height: 14px;
+	font-variant: normal;
+	font-size: 12px;
+	color: #999;
+	margin-left: 60px;
 }
 
 #nombreStatus{
@@ -387,7 +609,7 @@
 }
 
 .textoEnProceso{
-	color:        #B8860B;
+	color:        #bd41a9;
 }
 
 .fechaDesempeno{
@@ -399,6 +621,17 @@
 	font-size: 9px;
 	color: #666;
 }
+
+.fechaVencimiento{
+	font-family: Arial, sans-serif;
+	font-weight: normal;
+	font-style: normal;
+	line-height: 12px;
+	font-variant: normal;
+	font-size: 9px;
+	color: #dd1144;
+}
+
 .lineaDelgada{
 	border-top: 1px inset;
 }
@@ -420,14 +653,14 @@
 #EmpresaColIzquierda{
 	width: 295px;
 	float: left;
-	/*background-color: darkcyan;*/
+	background-color: darkcyan;
 	/*height: 500px;*/
 }
 
 #EmpresaColDerecha{
 	float: right;
 	width: 295px;
-	/*background-color: gray;*/
+	background-color: gray;
 	/*height: 500px;*/
 }
 
@@ -436,7 +669,7 @@
 	width: 295px;
 	/*margin-left: 25px;*/
 	/*height: 150px;*/
-	/*background-color: gold;*/
+	background-color: gold;
 	/*padding: 10px;*/
 }
 
@@ -484,7 +717,7 @@
 	line-height: 12px;
 	font-variant: normal;
 	font-size: 9px;
-	color: darkgoldenrod;
+	color: #bd41a9;
 }
 
 
@@ -546,11 +779,19 @@
 }
 
 .TextoMenu{
-	font-family:    Roboto, sans-serif;
+	font-family:    Arial, sans-serif;
+	font-size: 20px;
+	font-weight: normal;
+	color: #000000;
 	text-indent:    30px;
 	line-height:    85px;
 	vertical-align: middle;
+	margin-right : 40px;
 	/*padding-right: 40px;*/
+}
+.TextoMenu:hover{
+	color: #ff0000;
+	text-decoration: none;
 }
 
 #Pie{
@@ -563,7 +804,7 @@
 }
 
 .textoPie{
-	font-family: Roboto;
+	font-family: Roboto, sans-serif;
 	font-size: 12px;
 	line-height: 20px;
 	color: #ccc;
@@ -578,7 +819,7 @@
 	font-style: normal;
 	line-height: 18px;
 	font-variant: normal;
-	font-size: 14px;
+	font-size: 12px;
 	color: #666;
 }
 
@@ -613,6 +854,10 @@
 	font-size: 10px;
 	color: #666;
 	margin-left: 5px;
+}
+
+.textoLateralDer li{
+	margin-left: -10px;
 }
 
 .subtitulo{
@@ -652,7 +897,11 @@
 	margin-top: 0px;
 	margin-left: 5px;
 }
-
+.imagenLateralDer{
+	line-height: 20px;
+	margin-top: 0px;
+	margin-left: -20px;
+}
 
 .espacioArriba{
 	margin-top: 20px;
@@ -692,18 +941,19 @@
 #ColDerecha70{
 	width: 65%;
 	float: right;
-
 	/*background-color: #981f32;*/
 }
 
 #ColIzquierda50{
 	width: 450px;
 	float: left;
+	/*background-color: cornflowerblue;*/
 }
 
 #ColDerecha50{
-	width: 450px;
-	float: right;
+	width:            450px;
+	float:            right;
+	/*background-color: #ed393c;*/
 }
 
 
@@ -799,7 +1049,7 @@
 	font-style: normal;
 	line-height: 50px;
 	font-variant: normal;
-	font-size: 35px;
+	font-size: 30px;
 	color: #666;
 }
 
@@ -814,8 +1064,15 @@
 
 .texto{
 	font-family: Arial,sans-serif;
-	font-size: 12px;
+	font-size: 14px;
 	line-height: 20px;
+	color: #999;
+}
+
+.textoIncio{
+	font-family: Arial,sans-serif;
+	font-size: 14px;
+	line-height: 22px;
 	color: #999;
 }
 
@@ -824,11 +1081,16 @@
 }
 
 .floatleft210 {
-	float: left;
-	width: 220px;
-	margin: auto;
+	float:  left;
+	width:  220px;
+	margin: auto auto auto 5px;
 }
 
+.centradoInicio{
+	clear:both;
+	background: #499249;
+
+}
 
 /* hojas de categorias */
 
@@ -871,6 +1133,19 @@
 	padding-left: 17px;
 }
 
+.categorias .textoDelgado{
+	/*position: relative;*/
+
+	font-family: Arial, sans-serif;
+	font-weight: lighter;
+	font-style: normal;
+	line-height: 22px;
+	font-variant: normal;
+	font-size: 14px;
+	color: #999;
+	padding-left: 17px;
+}
+
 .categorias .fotoIzquierda{
 	text-align: left;
 	left: 0px;
@@ -901,7 +1176,7 @@
 .tab-panels ul li {
 	list-style-type: none;
 	display: inline-block;
-	background: #999;
+	background: #499249;
 	margin: 0;
 	padding: 3px 10px;
 	border-radius: 10px 10px 0 0;
@@ -917,14 +1192,19 @@
 
 .tab-panels ul li.active {
 	color: #fff;
-	background: #666;
+	background: #2C3C00;
 }
 
 .tab-panels .panel {
-	display:none;
-	background: #eee;
-	padding: 30px;
-	border-radius: 0 10px 10px 10px;
+	display:             none;
+	background:          #ffffff;
+	padding:             30px;
+
+	border-width: 1px;
+	border-color: #2c3c00;
+	border-style: solid;
+
+	border-radius:  0 5px 5px 5px;
 }
 
 .tab-panels .panel.active {
@@ -941,3 +1221,9 @@
 	color: #666;
 	margin-bottom: 20px;
 }
+
+
+
+
+/* para los popups*/
+

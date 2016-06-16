@@ -18,7 +18,13 @@ $jom2='';
 				Situación de <?php echo ($this->arrEmpresaSeleccionada['nombreEmpresa']); ?>
 			</div>
 
-
+			<div class="contactoEmpresa">
+				<?php echo ("Contacto: ".$this->arrEmpresaSeleccionada['contactoNombre']); ?>
+			</div>
+			<div class="datosEmpresa">
+				<?php echo ("Teléfono: ".$this->arrEmpresaSeleccionada['telefono']); ?>
+				<?php echo ("<br>Correos: ".$this->arrEmpresaSeleccionada['correos']); ?>
+			</div>
 			<div class="tituloDesempeno">
 				Lista de practicas autorizadas para la empresa:
 			</div>
@@ -65,10 +71,10 @@ $jom2='';
 						$itemBoton = "$x;$y";
 						$nombreComentarios="comentariosMentor".$itemBoton;
 						// nombre de criterio
-						echo("<div id='textoCriterio'>".$this->arrEmpresaSeleccionada['practicas'][$x]['criterios'][$y]['criterioNombre']);
-						echo "<span id='taxtoListaMentorStauts'>";
+						echo("<div id='textoCriterio'><span id='textoNombreCriterioAngosto'>".$this->arrEmpresaSeleccionada['practicas'][$x]['criterios'][$y]['criterioNombre']);
+						echo "<span id='textoListaMentorStauts'>";
 						echo ("   ".$this->arrEmpresaSeleccionada['practicas'][$x]['criterios'][$y]['nombreStatus']);
-						echo "</span>";
+						echo "</span></span>";
 
 
 						// botones de aprobar/rechazar

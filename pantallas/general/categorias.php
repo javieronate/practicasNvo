@@ -10,7 +10,7 @@
  * @author  Javier Oñate Mendía (Dédalo)
  */
 
-$jom2='';
+$cuantasPracticas=count($this->arrPracticasDeCategoria);
 ?>
 <div class="categorias">
 	<div class="titulo">
@@ -42,25 +42,20 @@ $jom2='';
 	<div id="ColCentroCentro">
 		<div class="espacioArriba">  </div>
 		<div class="subtitulo">
-			Buenas practicas de esta categoría
+			<?php echo ($cuantasPracticas);?>&nbsp;Buenas practicas de esta categoría
 		</div>
 		<div id="listaBotones">
 		<?php
 		for($x=0;$x<count($this->arrPracticasDeCategoria);$x++){
-			$this->fx->ponerBoton('general','irAPractica',$this->arrPracticasDeCategoria[$x]['id'],$this->arrPracticasDeCategoria[$x]['nombre'],NULL,NULL,NULL,'btn',0);
+			$y=$x+1;
+			//echo "$y&nbsp;";
+			$this->fx->ponerBoton('general','irAPractica',$this->arrPracticasDeCategoria[$x]['id'],$y."&nbsp;".$this->arrPracticasDeCategoria[$x]['nombre'],NULL,NULL,NULL,'btn',0);
 			echo "<br>";
 		}
 		?>
 		</div>
 
 	</div>
-
-	    <div id="ColCentroAbajo">
-		    <div class="espacioArriba">
-		        <?php //$this->fx->ponerBoton('general','irA','innovacion','Innovación',NULL,NULL,NULL,'',0);?>
-		    </div>
-	    </div>
-
 </div>
 <!--categoria-->
 

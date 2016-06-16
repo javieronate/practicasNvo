@@ -12,8 +12,9 @@
  */
 
 $jom2='';
+$nombreVentanaModal1="#openModalJom";
+$nombreVentanaModal="openModalJom";
 ?>
-
 
 <div id="empresas">
 	<div class="titulo">
@@ -21,9 +22,9 @@ $jom2='';
 	</div>
 
 	<div class="subtitulo">
-		Administración de Practicas y Evidencias
+		Administración de Practicas y Evidencias<br>
+		<span class="textoPequeno">Para aprobar una práctica se requiere cumplir con todos los criterios de la misma</span>
 	</div>
-
 	<div id="ColIzquierda50">
 		<div class="tituloSeccion">
 			Practicas en proceso
@@ -32,14 +33,42 @@ $jom2='';
 			<div class="nombrePracticaAdmon">
 				<?php echo ($this->empresa->arrPracticasEnProceso[$x]['nombrePractica'] ); ?>
 			</div>
-			<?php for($y=0;$y<count($this->empresa->arrPracticasEnProceso[$x]['criterios']);$y++) { ?>
+			<?php for($y=0;$y<count($this->empresa->arrPracticasEnProceso[$x]['criterios']);$y++) {
+			$nombrePopup1="#comentario$x$y";
+			$nombrePopup="comentario$x$y";
+			?>
 				<div class="nombreCriterioAdmon">
 					<?php $this->fx->ponerBoton('empresa','seleccionarCriterio',"$x:$y",
 												$this->empresa->arrPracticasEnProceso[$x]['criterios'][$y]['nombre'],
 												NULL,NULL,NULL,'botonAzul',1);
 					?>
-				</div>
+					<span class="botonAzulChico">
+						<a href="<?php echo "$nombrePopup1"; ?>">
+						<img src="imagenes/generales/botonAyuda.png" width="18px"></a>
+					</span>
 
+					<div id="<?php echo "$nombrePopup"; ?>" class="modalDialog">
+						<div>
+							<a href="#close" title="Close" class="close">X</a>
+							<h3>Ayuda </h3>
+							<?php echo ($this->empresa->arrPracticasEnProceso[$x]['criterios'][$y]['orientacionMentor']); ?>
+						</div>
+					</div>
+
+
+
+
+
+
+
+
+
+					</div>
+				<?php if(strlen($this->empresa->arrPracticasEnProceso[$x]['criterios'][$y]['comentariosMentor'])>0){?>
+					<div class="comentariosDelMentor">
+						<?php echo ("Comentarios del mentor: ".$this->empresa->arrPracticasEnProceso[$x]['criterios'][$y]['comentariosMentor']);?>
+					</div>
+				<?php }?>
 				<?php for($z=0;$z<count($this->empresa->arrPracticasEnProceso[$x]['criterios'][$y]['evidencias']);$z++) { ?>
 					<div class="nombreEventosAdmon">
 						<?php
@@ -49,6 +78,7 @@ $jom2='';
 						?>
 					</div>
 				<?php } ?>
+				<div class="rayaDelgada">&nbsp;</div>
 			<?php } ?>
 		<?php } ?>
 	</div>
@@ -103,3 +133,16 @@ $jom2='';
 		</div>
 	</div>
 </div>
+
+
+
+
+<?php $texto ="a ver si asi sale"; ?>
+<script type="text/javascript">
+
+	function informacion(texto) {
+
+		alert(texto);
+	}
+</script>
+

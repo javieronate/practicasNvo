@@ -51,6 +51,26 @@ class Mentor
 	 */
 	var $arrEmpresasSupervisadas=array();
 
+	/**
+	 *
+	 *  arreglo que almacena lista de eventos posteriores al último login del mentor
+	 *
+	 */
+	var $arrEventosNuevos=array();
+
+	/**
+	 *
+	 *  arreglo que almacena datos para la grafica de inicio de mentor
+	 *
+	 */
+	var $arrGraficaMentor=array();
+
+	/**
+	 *
+	 *  arreglo que almacena datos de la empresa que se muestar en el detalle de empresa
+	 *
+	 */
+	var $arrEmpesaSeleccionada=array();
 
 	/**
 	 * constructor de clase Mentor.

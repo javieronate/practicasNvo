@@ -26,15 +26,19 @@ $jom2='';
 		<p>&nbsp;</p>
 		<p>&nbsp;</p>
 		<div class="tituloLateralIzq">
-			Registra esta practica
+			<img src="imagenes/generales/registro.png " width='160px'>
 		</div>
 		<div class="textoLateralIzq">
-			Muestra tu desempeño sustentable al registrar esta práctica en las operaciones de tu empresa
+
+			<?php $this->fx->ponerBoton('general', 'irA', 'login','Muestra tu desempeño sustentable al registrar esta práctica en las operaciones de tu empresa', NULL, NULL, NULL, 'textoLateralIzq', 0); ?>
 		</div>
+		<p>&nbsp;</p>
+		<p>&nbsp;</p>
+		<img src="<?php echo (FOLDER_IMAGENES_PRACTICAS.$this->arrDatosPaginaPractica['imagen2']);?>" border="1" align="left" width="150px"/>
 	</div>
 
 	<div id="ColCentroArriba">
-		<div class="texto">
+		<div class="textoDelgado">
 			<?php echo ($this->arrDatosPaginaPractica['descripcion']);?>
 		</div>
 
@@ -52,13 +56,13 @@ $jom2='';
 					<li rel="competitividad">La competitividad</li>
 				</ul>
 
-				<div id="experiencia" class="panel active">
+				<div id="experiencia" class="panel active textoDelgado">
 					<?php echo ($this->arrDatosPaginaPractica['experiencia']);?>
 				</div>
-				<div id="sustentabilidad" class="panel">
+				<div id="sustentabilidad" class="panel textoDelgado">
 					<?php echo ($this->arrDatosPaginaPractica['sustentabilidad']);?>
 				</div>
-				<div id="competitividad" class="panel">
+				<div id="competitividad" class="panel textoDelgado">
 					<?php echo ($this->arrDatosPaginaPractica['competitividad']);?>
 				</div>
 			</div>
@@ -66,21 +70,25 @@ $jom2='';
 			<div class="subtitulo">
 				Ejemplos del cumplimiento de esta práctica
 			</div>
-			<div class="texto">
+			<div class="textoDelgado">
 				<?php echo ($this->arrDatosPaginaPractica['ejemplosCumplimiento']);?>
 			</div>
 		</div>
 
 		<div id="ColCentroAbajo" >
 			<div class="subtitulo">
-				Criterios de cumplimiento de esta práctica
+				Requisitos de cumplimiento para esta práctica
 			</div>
-			<div class="texto">
+			<div class="textoDelgado">
+				<ul>
 				<?php
 					for($x=0;$x<count($this->arrDatosPaginaPractica['criterios']);$x++){
-						echo ($this->arrDatosPaginaPractica['criterios'][$x]['nombre']."<br>");
+						echo "<li>";
+							echo ($this->arrDatosPaginaPractica['criterios'][$x]['nombre']."<br>");
+						echo "</li>";
 					}
 				?>
+				</ul>
 			</div>
 
 
@@ -90,18 +98,18 @@ $jom2='';
 	</div>
 
 	<div id="ColDerecha" >
-		<div class="tituloLateralDer">
-			Registra esta practica
+		<div class="imagenLateralDer">
+			<img src="imagenes/generales/donde.png " width='160px'>
 		</div>
 		<div class="textoLateralDer">
-			aqui va mapa de lugares
+			<?php echo ($this->arrDatosPaginaPractica['ANPAplicacion']);?>
 		</div>
 
 		<div class="espacioArriba">
 			&nbsp;
 		</div>
-		<div class="tituloLateralDer">
-			Aprender más
+		<div class="imagenLateralDer">
+			<img src="imagenes/generales/aprender.png " width='160px'>
 		</div>
 		<div class="textoLateralDer">
 			<?php echo ($this->arrDatosPaginaPractica['aprenderMas']);?>
@@ -110,8 +118,8 @@ $jom2='';
 		<div class="espacioArriba">
 			&nbsp;
 		</div>
-		<div class="tituloLateralDer">
-			Variaciones
+		<div class="imagenLateralDer">
+			<img src="imagenes/generales/variaciones.png " width='160px'>
 		</div>
 		<div class="textoLateralDer">
 			<?php echo ($this->arrDatosPaginaPractica['variaciones']);?>
@@ -120,40 +128,28 @@ $jom2='';
 		<div class="espacioArriba">
 			&nbsp;
 		</div>
-		<div class="tituloLateralDer">
-			Imprimir
+		<div class="imagenLateralDer">
+			<img src="imagenes/generales/imprimir.png " width='160px'>
 		</div>
 		<div class="textoLateralDer">
 			<?php
 			for($x=0;$x<count($this->arrDatosPaginaPractica['impresos']);$x++){
 				echo "<a href='".FOLDER_IMPRESOS_PRACTICAS.$this->arrDatosPaginaPractica['impresos'][$x]['archivo']."' target='_blank'>";
-				echo ($this->arrDatosPaginaPractica['impresos'][$x]['archivo']);
+				echo ($this->arrDatosPaginaPractica['impresos'][$x]['nombre']);
 				echo "</a>";
+				echo "<br>";
 			}
 			?>
 		</div>
 		<div class="espacioArriba">
 			&nbsp;
 		</div>
-
-		<div class="empresaTitulo">
-			<?php
-
-			if(isset($this->empresa->id) && $this->empresa->id > 0){
-				//$this->fx->ponerBoton('empresa','irA','inicio','Regresar',NULL,NULL,NULL,'btn btn-primary',0);
-			}else{
-				//$this->fx->ponerBoton('general','irACategoria',$this->arrDatosPaginaPractica['categoriaId'],'Regresar',NULL,NULL,NULL,'btn btn-primary',0);
-			}
-			?>
-		</div>
 	</div>
 
 
 
 </div>
-<div class="">
 
-</div>
 
 
 <!--funcion para cambiar las pestañas-->

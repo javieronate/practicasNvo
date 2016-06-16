@@ -65,19 +65,20 @@ class FxFormularios
 
 	/**
 	 *
-	 * Función para insertar un campo de texto
+	 * Funcion para insertar un botón
 	 *
-	 * @param $accion
-	 * @param $subaccion
-	 * @param $item
-	 * @param $etiqueta
-	 * @param $imagen
-	 * @param $anchoImagen
-	 * @param $altoImagen
-	 * @param $clase
-	 * @param $borde
+	 * @param      $accion
+	 * @param      $subaccion
+	 * @param      $item
+	 * @param      $etiqueta
+	 * @param      $imagen
+	 * @param      $anchoImagen
+	 * @param      $altoImagen
+	 * @param      $clase
+	 * @param      $borde
+	 * @param null $subitem
 	 */
-	function ponerBoton($accion,$subaccion,$item,$etiqueta,$imagen,$anchoImagen,$altoImagen,$clase,$borde,$subitem=null)
+	function ponerBoton($accion, $subaccion, $item, $etiqueta, $imagen, $anchoImagen, $altoImagen, $clase, $borde, $subitem=null)
 	{
 		$accionTxt = ($accion!='') ? "document.".NOMBRE_FORMULARIO.".accion.value='".$accion."';" : "";
 		$subAccionTxt = ($subaccion!='') ? "document.".NOMBRE_FORMULARIO.".subaccion.value='".$subaccion."';" : "";
@@ -338,8 +339,15 @@ class FxFormularios
 		return($texto);
 	}
 
-
-	function convertirAASCII( $texto )
+	/**
+	 *
+	 * Elimina caracteres acentuados, eñes y caracteres raros
+	 *
+	 * @param $texto
+	 *
+	 * @return string
+	 */
+	function convertirAASCII($texto )
 	{
         return strtr(utf8_decode($texto),
         utf8_decode(
@@ -377,6 +385,23 @@ class FxFormularios
 		$end = strtotime($fin);
 		$days_between = ceil(abs($end - $start) / 86400);
 		return($days_between);
+	}
+
+	/**
+	 *
+	 * Devuelve fecha de vencimiento segun constante DIAS_DE_VENCIMIENTO
+	 *
+	 * @param $fechaInicial
+	 *
+	 * @return string
+	 */
+	function definirFechaVencimiento($fechaInicial)
+	{
+		$intervalo='P'.DIAS_DE_VENCIMIENTO.'D';
+		$fechaVencimiento = new DateTime($fechaInicial);
+		$fechaVencimiento->add(new DateInterval($intervalo));
+		//echo $fecha->format('Y-m-d') . "\n";
+		return($fechaVencimiento->format('d-m-Y'));
 	}
 
 	/**

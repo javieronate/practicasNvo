@@ -33,7 +33,6 @@ include_once ("Empresa.php");
 include_once ("Mentor.php");
 include_once ("Admon.php");
 include_once ("FxFormularios.php");
-//include_once ("Pantallas.php");
 
 /**
  *
@@ -56,8 +55,6 @@ class Controlador
 	 * Almacena objeto de tipo fx, que es un helper para elementos de formularios
 	 */
     var $fx;
-
-	//var $pantallas;
 
 	/**
 	 * Almacena variable que indica en que zona del sitio se encuentra el usuario
@@ -164,7 +161,9 @@ class Controlador
     }
 
 	/**
-	 *  destructor de la clase
+	 *
+	 *
+	 * destructor de la clase
 	 *  por ahora no se usa
 	 */
 	function __destruct()
@@ -204,7 +203,6 @@ class Controlador
 	 */
 	function evaluarPost($post)
     {
-	    // TODO: Hacer función de limpieza de arreglos
         switch ($post['accion']){
 	        case 'general':
 		        $this->evaluarPostGeneral($post);
@@ -236,14 +234,14 @@ class Controlador
 					$this->empresa=null;
 					$this->mentor=null;
 					$this->admon= new Admon($usuario);
-					$this->logueado='si';
+					$this->logueado='adminRegional';
 					$this->hacerArreglosDeSeccionAdmonRegional($post);
 					$this->pantalla='pantallas/admin/inicio.php';
 				}else if($usuario['rol']=='superAdmin'){
 					$this->empresa=null;
 					$this->mentor=null;
 					$this->admon= new Admon($usuario);
-					$this->logueado='si';
+					$this->logueado='superAdmin';
 					$this->hacerArreglosDeSeccionAdmon($post);
 					$this->pantalla='pantallas/admin/inicio.php';
 				}
@@ -328,6 +326,9 @@ class Controlador
 					$this->pantalla='pantallas/empresa/perfil.php';
 				}
 				break;
+			case 'fotoGrabar':
+				$this->grabarFotoEmpresa($post);
+				break;
 			case 'cambiarEstado':
 				$this->actualizarDatosPerfilTmp($post);
 				$this->arrDatosEmpresaTmp['municipio']='Municipio';
@@ -341,6 +342,10 @@ class Controlador
 					$this->modelo->agregarPracticaAEmpresa($this->empresa->id, $post['menuPracticaPendiente'], '2',$this->empresa->datos['nombreEmpresa'],$this->empresa->datos['mentorId']);
 					$this->hacerArreglosDeSeccionEmpresa();
 				}
+				break;
+			case 'agregarPracticaDePaginaPrincipal':
+				$this->modelo->agregarPracticaAEmpresa($this->empresa->id, $post['item'],'2',$this->empresa->datos['nombreEmpresa'],$this->empresa->datos['mentorId']);
+				$this->hacerArreglosDeSeccionEmpresa();
 				break;
 			case 'seleccionarCriterio':
 				$this->empresa->criterioIdSeleccionado=$post['item'];
@@ -376,8 +381,16 @@ class Controlador
 			case 'agregarEmpresa':
 				$this->pantalla='pantallas/mentor/nuevaEmpresa.php';
 				break;
+			case 'editarEmpresa':
+				//$item=;
+				$this->mentor->arrEmpesaSeleccionada=$this->mentor->arrEmpresasSupervisadas[$post['item']];
+				$this->pantalla='pantallas/mentor/nuevaClave.php';
+				break;
+			case 'grabarNuevaClave':
+				$this->modelo->grabarNuevaClave($post,$this->mentor->arrEmpesaSeleccionada,$this->mentor->datos['nombre'],$this->mentor->datos['email']);
+				break;
 			case 'grabarNuevaEmpresa':
-				$this->modelo->agregarEmpresa($post,$this->mentor->id);
+				$this->modelo->agregarEmpresa($post,$this->mentor->id,$this->mentor->datos['nombre'],$this->mentor->datos['email']);
 				// actualizar arreglo de empresas
 				$this->mentor->arrEmpresasSupervisadas=$this->modelo->hacerArregloEmpresasDeMentor($this->mentor->id);
 				break;
@@ -432,22 +445,48 @@ class Controlador
 					case 'manejoMentor':
 						$this->pantalla='pantallas/admin/manejoMentor.php';
 						break;
+					case 'manejoAdminRegional':
+						$this->pantalla='pantallas/admin/manejoAdminRegional.php';
+						break;
 				}
 				break;
 			case 'seleccionarPersona':
 				$this->arrDatosPersonaTmp = $this->buscarDatosPersona($post['item']);
 				break;
 			case 'agregarPersona':
-				$this->arrDatosPersonaTmp = $this->llenarArrDatosPersonaTmpVacio();
+				$this->arrDatosPersonaTmp = $this->llenarArrDatosPersonaTmpVacio($this->admon->datos['id'],$this->admon->datos['nivelId']);
+				$this->pantalla='pantallas/admin/manejoMentor.php';
+				break;
+			case 'agregarAdminRegional':
+				$this->arrDatosPersonaTmp = $this->llenarArrDatosPersonaTmpVacio($this->admon->datos['id'],$this->admon->datos['nivelId']);
+				$this->pantalla='pantallas/admin/manejoAdminRegional.php';
+				break;
+			case 'grabarAdministrador':
+			case 'editarAdministrador':
+				$this->actualizarDatosPersonaTmp($post);
+				$correcto=$this->modelo->validarDatosPersona($this->arrDatosPersonaTmp,$this->admon->datos['nivelId'],$this->admon->datos['nombre'],$this->admon->datos['email'],$this->admon->datos['region']);
+				if($correcto==1) $this->admon->arrPersonal=$this->modelo->hacerArregloPersonal($this->admon);
 				break;
 			case 'grabarNuevo':
 			case 'editarPersona':
 				$this->actualizarDatosPersonaTmp($post);
-				$correcto=$this->modelo->validarDatosPersona($this->arrDatosPersonaTmp);
-				if($correcto==1) $this->admon->arrPersonal=$this->modelo->hacerArregloPersonal();
+				$correcto=$this->modelo->validarDatosPersona($this->arrDatosPersonaTmp,$this->admon->datos['nivelId'],$this->admon->datos['nombre'],$this->admon->datos['email'],$this->admon->datos['region']);
+				if($correcto==1) $this->admon->arrPersonal=$this->modelo->hacerArregloPersonal($this->admon);
 				break;
-			case 'llenarDatos':
-				$this->modelo->llenarDatosFicticios();
+			case 'buscarEmpresasDeDonador':
+				$this->admon->mentorDonador=$post['donador'];
+				$this->admon->mentorReceptor=$post['receptor'];
+				$this->admon->arrEmpresasDeMentorDonador=$this->modelo->hacerArrEmpresasDeMentorDonador($post['donador']);
+				break;
+			case 'reasignarEmpresas':
+				$this->pantalla='pantallas/admin/reasignacion.php';
+				break;
+			case 'grabarReasignacionDeEmpresas':
+				if($post['donador']!='Seleccione' && $post['donador']>0 && $post['receptor']!='Seleccione' && $post['receptor']>0){
+					$this->modelo->transferirEmpresas($post,$post['receptor']);
+					$this->admon->arrEmpresasDeMentorDonador=$this->modelo->hacerArrEmpresasDeMentorDonador($post['donador']);
+				}
+				$this->pantalla='pantallas/admin/reasignacion.php';
 				break;
 		}
 	}
@@ -512,6 +551,7 @@ class Controlador
 
 		// hacer arreglo de las practicas en proceso de la empresa
 		$this->hacerArregloPracticasEnProceso();
+		$this->empresa->datosNuevosGraficas=$this->modelo->buscarDatosGraficasEmpresa($this->empresa->id);
 
 	}
 
@@ -524,6 +564,22 @@ class Controlador
 	{
 		// hacer arreglo de las empresas supervisadas por el mentor
 		$this->mentor->arrEmpresasSupervisadas=$this->modelo->hacerArregloEmpresasDeMentor($this->mentor->id);
+		$this->mentor->arrEventosNuevos=$this->modelo->hacerArregloEventosNuevosDeMentor($this->mentor->id,$this->mentor->datos['ultimoLogin']);
+		$this->mentor->arrGraficaMentor=$this->modelo->hacerArregloGraficaMentor($this->mentor->id);
+	}
+
+	/**
+	 *
+	 * Construye los arreglos que se requieren para la sección de administrador
+	 *
+	 * @param $post
+	 */
+	function hacerArreglosDeSeccionAdmon($post)
+	{
+		$this->admon->arrPersonal=$this->modelo->hacerArregloPersonal($this->admon);
+		$this->admon->geoJSON=$this->modelo->hacerGeoJSONparaMapa($this->admon->nivel,$this->admon->id);
+		$this->admon->estadisticasPracticas=$this->modelo->hacerArregloEstadisticasPracticas($this->admon->nivel,$this->admon->id);
+		$this->admon->estadisticasEmpresas=$this->modelo->hacerArregloEstadisticasEmpresas($this->admon->nivel,$this->admon->id);
 	}
 
 	/**
@@ -535,7 +591,9 @@ class Controlador
 	function hacerArreglosDeSeccionAdmonRegional($post)
 	{
 		$this->admon->arrPersonal=$this->modelo->hacerArregloPersonal($this->admon);
-		$this->admon->geoJSON=$this->modelo->hacerGeoJSONparaMapa();
+		$this->admon->geoJSON=$this->modelo->hacerGeoJSONparaMapa($this->admon->nivel,$this->admon->id);
+		$this->admon->estadisticasPracticas=$this->modelo->hacerArregloEstadisticasPracticas($this->admon->nivel,$this->admon->id);
+		$this->admon->estadisticasEmpresas=$this->modelo->hacerArregloEstadisticasEmpresas($this->admon->nivel,$this->admon->id);
 	}
 
 	/**
@@ -606,6 +664,42 @@ class Controlador
 		if(isset($post['sitioWeb']))  $this->arrDatosEmpresaTmp['sitioWeb'] = $post['sitioWeb'];
 		if(isset($post['usuario']))  $this->arrDatosEmpresaTmp['usuario'] = $post['usuario'];
 		if(isset($post['clave']))  $this->arrDatosEmpresaTmp['clave'] = $post['clave'];
+	}
+
+	/**
+	 *
+	 * Evalua la foto de la empresa enviada la grabaa con un nombre aleatorio y llama
+	 * a la funcion grabarNombreFotoEmpresa para grabarla en la tabla bp_empresas
+	 *
+	 * @param $post
+	 *
+	 * @return string
+	 */
+	function grabarFotoEmpresa($post)
+	{
+		$nombreArchivo='';
+		$tamano=filesize($_FILES["fotoEmpresa"]["tmp_name"]);
+
+		if($tamano<TAMANO_MAX_FOTO_EMPRESA) {
+			$nombreArchivo = '';
+			if (strlen($_FILES['fotoEmpresa']['name']) > 0) {
+				$nombreOriginal = pathinfo($_FILES["fotoEmpresa"]["name"]);
+				$nombreExtension = $nombreOriginal['extension'];
+				$existe = 1;
+				while ($existe == 1) {
+					$nombreArchivo = $this->fx->hacerAlfanumericoAleatorio(12);
+					$rutaCompletaArchivoDestino = FOLDER_IMAGENES_EMPRESAS.$nombreArchivo.".".$nombreExtension;
+					if (!file_exists($rutaCompletaArchivoDestino)) {
+						move_uploaded_file($_FILES["fotoEmpresa"]["tmp_name"], $rutaCompletaArchivoDestino);
+						$nombreFoto = $nombreArchivo.".".$nombreExtension;
+						$this->modelo->grabarNombreFotoEmpresa($this->empresa->id, $nombreFoto);
+						$this->empresa->datos['foto'] = $nombreFoto;
+						$existe = 0;
+					}
+				}
+			}
+		}
+		return($nombreArchivo);
 	}
 
 	/**
@@ -683,7 +777,7 @@ class Controlador
 						if (!file_exists($rutaCompletaArchivoDestino)) {
 							move_uploaded_file($_FILES["nombresArchivos"]["tmp_name"], $rutaCompletaArchivoDestino);
 							$this->modelo->agregarEvidencia('2', $empresa_buenaPracticaId,$empresaPracticaCriterioId, $buenaPracticaId, $criterioId, $rutaCompletaArchivoDestino,
-														$nombreParaDespliegue, $tipoEvidencia, '2',$post['comentarios'], '3');
+														$nombreParaDespliegue, $tipoEvidencia,$post['comentarios'], '3');
 							$mensaje="La empresa ".$this->empresa->datos['nombreEmpresa'].
 								" ha añadido la evidencia \"$nombreParaDespliegue\" al criterio \"".
 								$this->empresa->arrPracticasEnProceso[$cachos['0']]['criterios'][$cachos['1']]['nombre']
@@ -737,10 +831,14 @@ class Controlador
 	 *
 	 * Llena el arreglo temporal arrDatosPersonaTmp con datos vacios. Se usa en admon
 	 *
+	 * @param $id
+	 * @param $nivel
+	 *
 	 * @return array
 	 */
-	function llenarArrDatosPersonaTmpVacio()
+	function llenarArrDatosPersonaTmpVacio($id, $nivel)
 	{
+
 		$arrTmp=array(
 			'id' => 'nuevo',
 			'nombre' => '',
@@ -750,7 +848,9 @@ class Controlador
 			'fechaCreado' => '',
 			'fechaClaveUpdate' => '',
 			'nota' => '',
-			'esSuperAdmin' => 0,
+			'region' => '',
+			'superiorId'=>$id,
+			'nivelId'=>$nivel+1,
 			'correoNotificacionCadaXHoras' => 4,
 			'correoUltimoEnviado' => '',
 			'ultimoLogin' => '');
@@ -770,8 +870,8 @@ class Controlador
 		if(isset($post['usuarioPersona']))  $this->arrDatosPersonaTmp['usuario'] = $post['usuarioPersona'];
 		if(isset($post['clavePersona']))  $this->arrDatosPersonaTmp['clave'] = $post['clavePersona'];
 		if(isset($post['correoPersona']))  $this->arrDatosPersonaTmp['email'] = $post['correoPersona'];
+		if(isset($post['region']))  $this->arrDatosPersonaTmp['region'] = $post['region'];
 		if(isset($post['Nota']))  $this->arrDatosPersonaTmp['nota'] = $post['Nota'];
-		if(isset($post['esSuperAdmin']))  $this->arrDatosPersonaTmp['esSuperAdmin'] = $post['esSuperAdmin'];
 		if(isset($post['notificarPorCorreoCadaHorasPersona']))  $this->arrDatosPersonaTmp['correoNotificacionCadaXHoras'] = $post['notificarPorCorreoCadaHorasPersona'];
 	}
 

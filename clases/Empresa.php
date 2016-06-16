@@ -63,7 +63,14 @@ class Empresa
 	 *  Variable que almacena el id del criterio seleccionado para agregar evidencia
 	 *
 	 */
-	VAR $criterioIdSeleccionado='';
+	var $criterioIdSeleccionado='';
+
+	/**
+	 *
+	 *  arreglo que almacena datos para las gráficas de empresa
+	 *
+	 */
+	var $datosNuevosGraficas=array();
 
 	/**
 	 * constructor de clase Empresa.

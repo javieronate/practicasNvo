@@ -39,16 +39,6 @@ $valor="";
 				}
 			?>
 		</div>
-		<div id="textoLateralIzq">
-			<div id='itemIzquierda'>
-				<?php $this->fx->ponerBoton('admin', 'agregarPersona', 'nuevo', 'Nuevo', NULL, NULL, NULL, 'btn', 1); ?>
-			</div>
-		</div>
-		<?php
-		//ponerMenuMultiple($nombre,$titulo,$arreglo,$valorCategoria,$valor,$accion=null,$subaccion=null,$item=null,$clase=null,$enviarFormulario=null,$multiple,$renglones=8);
-		//$this->fx->ponerMenuRenglones('listaPersonal','Personal',$this->admon->arrPersonal,'','','admin','seleccionarPersona',null,'texto',1,0,10);
-		?>
-
 	</div>
 
 	<div id="ColDerecha70">
@@ -95,7 +85,7 @@ $valor="";
 				</tr>
 				<tr>
 					<td colspan="3" class="formularioCampo">
-						<?php $this->fx->ponerInput('input','clavePersona',70,255,$this->arrDatosPersonaTmp['clave'],'formularioCampo');?>
+						<?php $this->fx->ponerInput('password','clavePersona',70,255,$this->arrDatosPersonaTmp['clave'],'formularioCampo');?>
 					</td>
 				</tr>
 				<tr>
@@ -111,7 +101,7 @@ $valor="";
 				</tr>
 				<tr>
 					<td colspan="3" class="formularioCampo">
-						<?php $this->fx->ponerInput('input','correoPersona',70,45,$this->arrDatosPersonaTmp['email'],'formularioCampo');?>
+						<?php $this->fx->ponerInput('input','correoPersona',70,255,$this->arrDatosPersonaTmp['email'],'formularioCampo');?>
 					</td>
 				</tr>
 				<tr>
@@ -130,22 +120,7 @@ $valor="";
 						<?php $this->fx->ponerAreaTexto("Nota",50,8,'formularioCampo',$this->arrDatosPersonaTmp['nota']);?>
 					</td>
 				</tr>
-				<tr>
-					<td colspan="3" class="espacioArriba">
-						&nbsp;
-					</td>
-				</tr>
 
-				<tr>
-					<td colspan="3" class="formularioEtiqueta">
-						Es administrador?
-					</td>
-				</tr>
-				<tr>
-					<td colspan="3" class="formularioCampo">
-						<?php $this->fx->ponerRadioButtons('esSuperAdmin',$arreglo,$this->arrDatosPersonaTmp['esSuperAdmin'],'formularioCampo');?>
-					</td>
-				</tr>
 				<tr>
 					<td colspan="3" class="espacioArriba">
 						&nbsp;
@@ -183,18 +158,5 @@ $valor="";
 	</div>
 
 
-
-
-
-
-	<div class="texto">
-
-	</div>
-	<div class="espacioArriba"></div>
-	<div class="espacioArriba"></div>
-	<div class="espacioArriba"></div>
-
 </div>
 
-<?php $this->fx->ponerBoton('admin','irA','inicio','Inicio',NULL,NULL,NULL,'btn btn-primary',0);?>
-<?php $this->fx->ponerBoton('logout','','','Logout',NULL,NULL,NULL,'btn btn-primary',0);?>
